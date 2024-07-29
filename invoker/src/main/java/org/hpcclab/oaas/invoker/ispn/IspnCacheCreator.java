@@ -135,7 +135,8 @@ public class IspnCacheCreator {
       .maxSize(cacheStore.maxSize().orElse(null))
       .maxCount(cacheStore.maxCount().orElse(-1L))
       .whenFull(EvictionStrategy.REMOVE)
-      .statistics().enabled(true);
+      .statistics()
+      .enabled(true);
     if (datastoreConf==null || cls.getConstraints().ephemeral())
       return builder.build();
 
