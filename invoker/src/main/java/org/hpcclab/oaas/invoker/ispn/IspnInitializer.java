@@ -49,7 +49,7 @@ public class IspnInitializer {
         .addProperty("configurationFile", "default-configs/default-jgroups-kubernetes.xml");
     }
     globalConfigurationBuilder.transport()
-      .raftMember(podName)
+//      .raftMember(podName)
       .nodeName(podName);
     globalConfigurationBuilder.globalState()
       .persistentLocation("ispn")
