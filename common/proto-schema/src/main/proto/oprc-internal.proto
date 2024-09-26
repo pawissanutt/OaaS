@@ -1,5 +1,5 @@
 syntax = "proto3";
-import "oprc-package.proto";
+
 import "oprc-class.proto";
 import "oprc-function.proto";
 import "oprc-cr.proto";
