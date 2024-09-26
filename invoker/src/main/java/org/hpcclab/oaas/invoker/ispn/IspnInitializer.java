@@ -51,6 +51,7 @@ public class IspnInitializer {
     globalConfigurationBuilder.transport()
 //      .raftMember(podName)
       .nodeName(podName);
+
     globalConfigurationBuilder.globalState()
       .persistentLocation("ispn")
       .configurationStorage(ConfigurationStorage.VOLATILE)
