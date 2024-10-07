@@ -4,6 +4,7 @@ import org.hpcclab.oaas.crm.filter.CrFilter;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
 import org.hpcclab.oaas.proto.OFunctionStatusUpdate;
+import org.hpcclab.oaas.proto.ProtoDeploymentCondition;
 import org.hpcclab.oaas.proto.ProtoOFunction;
 import org.hpcclab.oaas.proto.ProtoOFunctionDeploymentStatus;
 
@@ -102,10 +103,14 @@ public interface FnCrComponentController<T>  extends CrComponentController<T>{
     @Override
     public OFunctionStatusUpdate buildStatusUpdate() {
       String staticUrl = this.function.getConfig().getStaticUrl();
+      var statusBuilder = ProtoOFunctionDeploymentStatus.newBuilder();
+      statusBuilder.setInvocationUrl(staticUrl);
+      statusBuilder.setCondition(ProtoDeploymentCondition.PROTO_DEPLOYMENT_CONDITION_RUNNING);
       return OFunctionStatusUpdate.newBuilder()
-        .setStatus(ProtoOFunctionDeploymentStatus.newBuilder()
-          .setInvocationUrl(staticUrl)
+        .setKey(function.getKey())
+        .setStatus(statusBuilder
           .build())
+        .setProvision(function.getProvision())
         .build();
     }
   }
