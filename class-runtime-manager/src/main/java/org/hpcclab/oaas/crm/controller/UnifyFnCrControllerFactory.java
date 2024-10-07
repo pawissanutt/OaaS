@@ -42,6 +42,8 @@ public class UnifyFnCrControllerFactory implements FnCrControllerFactory<HasMeta
         fnConfig, envConfig, function);
       filters.forEach(controller::addFilter);
       return controller;
+    } else if (!function.getConfig().getStaticUrl().isEmpty()) {
+      return new FnCrComponentController.StaticUrl<>(function);
     }
     throw new CrDeployException("Can not find suitable functions controller for functions:\n" + function);
   }

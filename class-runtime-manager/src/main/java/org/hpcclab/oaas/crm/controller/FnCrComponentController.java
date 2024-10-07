@@ -4,6 +4,8 @@ import org.hpcclab.oaas.crm.filter.CrFilter;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
 import org.hpcclab.oaas.proto.OFunctionStatusUpdate;
+import org.hpcclab.oaas.proto.ProtoOFunction;
+import org.hpcclab.oaas.proto.ProtoOFunctionDeploymentStatus;
 
 import java.util.List;
 
@@ -53,6 +55,58 @@ public interface FnCrComponentController<T>  extends CrComponentController<T>{
     @Override
     public OFunctionStatusUpdate buildStatusUpdate() {
       return null;
+    }
+  }
+
+  class StaticUrl<T> implements FnCrComponentController<T> {
+    ProtoOFunction function;
+    public StaticUrl(ProtoOFunction function) {
+      this.function = function;
+    }
+
+    @Override
+    public void init(CrController parentController) {
+
+    }
+
+    @Override
+    public List<T> createDeployOperation(CrDeploymentPlan instanceSpec) {
+      return List.of();
+    }
+
+    @Override
+    public List<T> createAdjustOperation(CrAdjustmentPlan instanceSpec) {
+      return List.of();
+    }
+
+    @Override
+    public List<T> createDeleteOperation() {
+      return List.of();
+    }
+
+    @Override
+    public void updateStableTime() {
+
+    }
+
+    @Override
+    public long getStableTime() {
+      return 0;
+    }
+
+    @Override
+    public void addFilter(CrFilter<List<T>> filter) {
+
+    }
+
+    @Override
+    public OFunctionStatusUpdate buildStatusUpdate() {
+      String staticUrl = this.function.getConfig().getStaticUrl();
+      return OFunctionStatusUpdate.newBuilder()
+        .setStatus(ProtoOFunctionDeploymentStatus.newBuilder()
+          .setInvocationUrl(staticUrl)
+          .build())
+        .build();
     }
   }
 }
