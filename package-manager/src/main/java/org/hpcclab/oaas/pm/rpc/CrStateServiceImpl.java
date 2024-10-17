@@ -19,7 +19,7 @@ public class CrStateServiceImpl implements InternalCrStateService, CrStateServic
   @Override
   @RunOnVirtualThread
   public Uni<ProtoCr> get(SingleKeyQuery request) {
-    return stateManager.get(request.getKey());
+    return stateManager.getAsProto(request.getKey());
   }
 
   @Override

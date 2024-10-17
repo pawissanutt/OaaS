@@ -18,11 +18,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class K8SCrController implements CrController {
   public static final String CR_LABEL_KEY = "cr-id";
   public static final String CR_COMPONENT_LABEL_KEY = "cr-part";
   public static final String CR_FN_KEY = "cr-fn";
+  public static final String CR_TEMP_TYPE_KEY = "cr-template-type";
   public static final String NAME_SECRET = "secret";
   public static final String NAME_FUNCTION = "function";
   public static final String NAME_CONFIGMAP = "cm";
@@ -38,9 +40,11 @@ public class K8SCrController implements CrController {
   final Map<String, FnCrComponentController<HasMetadata>> fnControllers = Maps.mutable.empty();
   final FnCrControllerFactory<HasMetadata> factory;
   final String namespace;
+  final Map<String, FuncRouting> routing = Maps.mutable.empty();
   CrDeploymentPlan currentPlan;
   boolean deleted = false;
   boolean initialized = false;
+
 
 
   public K8SCrController(CrTemplate template,
@@ -229,9 +233,9 @@ public class K8SCrController implements CrController {
         continue;
       FnCrComponentController<HasMetadata> controller = fnControllers.get(entry.getKey());
       resource.addAll(controller.createAdjustOperation(adjustmentPlan));
-      OFunctionStatusUpdate update = controller.buildStatusUpdate();
-      if (update!=null)
-        crOperation.getFnUpdates().add(update);
+      var optional = controller.buildStatusUpdate();
+      if (optional.isPresent())
+        crOperation.getFnUpdates().add(optional.get());
     }
     return crOperation;
   }
@@ -247,11 +251,14 @@ public class K8SCrController implements CrController {
     fnController.init(this);
     fnControllers.put(function.getKey(), fnController);
     List<HasMetadata> resources = fnController.createDeployOperation(newPlan);
-    OFunctionStatusUpdate update = fnController.buildStatusUpdate();
-    if (update != null)
+    var optional = fnController.buildStatusUpdate();
+    if (optional.isPresent()) {
+      var update = optional.get();
+      updateRouting(function.getKey(), update.getStatus());
       return new FnResourcePlan(resources, List.of(update));
-    else
+    } else {
       return new FnResourcePlan(resources, List.of());
+    }
   }
 
   protected List<HasMetadata> removeFunction(String fnKey) throws CrUpdateException {
@@ -265,6 +272,9 @@ public class K8SCrController implements CrController {
   @Override
   public ProtoCr dump() {
     var str = Json.encode(currentPlan);
+    PartitionRouting partitionRouting = PartitionRouting.newBuilder()
+      .putAllFuncs(routing)
+      .build();
     return ProtoCr.newBuilder()
       .setId(id)
       .setTemplate(template.name())
@@ -272,6 +282,7 @@ public class K8SCrController implements CrController {
       .addAllAttachedCls(attachedCls.values())
       .addAllAttachedFn(attachedFn.values())
       .setState(ProtoCrState.newBuilder().setJsonDump(str).build())
+      .addPartitions(ClassPartition.newBuilder().setRouting(partitionRouting).build())
       .setDeleted(deleted)
       .build();
   }
@@ -293,5 +304,34 @@ public class K8SCrController implements CrController {
     if (fnControllers.containsKey(name))
       return fnControllers.get(name).getStableTime();
     return -1;
+  }
+
+  @Override
+  public Optional<OFunctionStatusUpdate> updateFunctionStatus(String fnKey, ProtoOFunctionDeploymentStatus status) {
+    ProtoOFunction func = getAttachedFn().get(fnKey);
+    if (func==null) return Optional.empty();
+    ProtoOFunction newFunc = func.toBuilder()
+      .setStatus(status)
+      .build();
+    attachedFn.put(fnKey, newFunc);
+    updateRouting(fnKey, status);
+
+    return Optional.of(OFunctionStatusUpdate.newBuilder()
+      .setKey(fnKey)
+      .setStatus(status)
+      .setProvision(newFunc.getProvision())
+      .build());
+  }
+
+  private void updateRouting(String fnKey,ProtoOFunctionDeploymentStatus status) {
+    if (status.getCondition() == ProtoDeploymentCondition.PROTO_DEPLOYMENT_CONDITION_RUNNING) {
+      for (ProtoOClass cls : attachedCls.values()) {
+        cls.getFunctionsList().stream()
+          .filter(fb -> fb.getFunction().equals(fnKey))
+          .forEach(fb -> {
+            routing.put(fb.getName(), FuncRouting.newBuilder().setUri(status.getInvocationUrl()).build());
+          });
+      }
+    }
   }
 }

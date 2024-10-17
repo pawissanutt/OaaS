@@ -26,8 +26,18 @@ public class CrTemplateFactoryImpl implements CrTemplateFactory {
 
   @Override
   public CrTemplate create(String name, CrtMappingConfig.CrtConfig config) {
-    if (config.type().equals(DEFAULT)) {
-      return new DefaultCrTemplate(
+    if (config.type().equalsIgnoreCase("v1") ||
+      config.type().equalsIgnoreCase("default")) {
+      return new V1CrTemplate(
+        name,
+        kubernetesClient,
+        this::selectOptimizer,
+        config,
+        crmConfig
+      );
+    }
+    else if (config.type().equalsIgnoreCase("v2alpha")) {
+      return new V2AlphaCrTemplate(
         name,
         kubernetesClient,
         this::selectOptimizer,

@@ -16,4 +16,11 @@ public enum CrComponent {
   public String getSvc() {
     return svc;
   }
+
+  @Override
+  public String toString() {
+    return svc;
+  }
+
+
 }

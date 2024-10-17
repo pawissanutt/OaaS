@@ -14,8 +14,9 @@ public record OClassRuntime(
   String template,
   List<OClass> attachedCls,
   List<OFunction> attachedFn,
+  OcrRouting routing,
   String namespace,
-  OrbitState state,
+  CrState state,
   boolean deleted,
   long stabilizationTime
 ) {
@@ -28,6 +29,6 @@ public record OClassRuntime(
     return Tsid.from(id).toLowerCase();
   }
 
-  public record OrbitState(String jsonDump) {
+  public record CrState(String jsonDump) {
   }
 }

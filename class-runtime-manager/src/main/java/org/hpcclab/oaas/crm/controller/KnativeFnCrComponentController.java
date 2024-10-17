@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hpcclab.oaas.crm.controller.K8SCrController.*;
 import static org.hpcclab.oaas.crm.controller.K8sResourceUtil.makeAnnotation;
@@ -34,7 +35,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
   implements FnCrComponentController<HasMetadata> {
   private static final Logger logger = LoggerFactory.getLogger(KnativeFnCrComponentController.class);
   final CrtMappingConfig.FnConfig fnConfig;
-  final ProtoOFunction function;
+  ProtoOFunction function;
   KnativeClient knativeClient;
 
   protected KnativeFnCrComponentController(CrtMappingConfig.FnConfig fnConfig,
@@ -63,6 +64,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
       .getKnative().toBuilder();
     var labels = Maps.mutable.of(
       CR_LABEL_KEY, parentController.getTsidString(),
+      CR_TEMP_TYPE_KEY, parentController.template.type(),
       CR_COMPONENT_LABEL_KEY, NAME_FUNCTION,
       CR_FN_KEY, function.getKey()
     );
@@ -153,18 +155,22 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
   }
 
   @Override
-  public OFunctionStatusUpdate buildStatusUpdate() {
+  public Optional<OFunctionStatusUpdate> buildStatusUpdate() {
     var statusBuilder = ProtoOFunctionDeploymentStatus.newBuilder()
       .setCondition(ProtoDeploymentCondition.PROTO_DEPLOYMENT_CONDITION_DEPLOYING);
     if (!function.getStatus().getInvocationUrl().isEmpty()) {
       statusBuilder.setInvocationUrl(function.getStatus().getInvocationUrl());
       statusBuilder.setCondition(ProtoDeploymentCondition.PROTO_DEPLOYMENT_CONDITION_RUNNING);
     }
-    return OFunctionStatusUpdate.newBuilder()
+    function = function.toBuilder()
+      .setStatus(statusBuilder)
+      .build();
+    return Optional.of(OFunctionStatusUpdate.newBuilder()
       .setKey(function.getKey())
       .setStatus(statusBuilder
         .build())
       .setProvision(function.getProvision())
-      .build();
+      .build()
+    );
   }
 }

@@ -9,12 +9,13 @@ import org.hpcclab.oaas.proto.ProtoOFunction;
 import org.hpcclab.oaas.proto.ProtoOFunctionDeploymentStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Pawissanutt
  */
 public interface FnCrComponentController<T>  extends CrComponentController<T>{
-  OFunctionStatusUpdate buildStatusUpdate();
+  Optional<OFunctionStatusUpdate> buildStatusUpdate();
 
   class NoOp<T> implements FnCrComponentController<T> {
 
@@ -54,8 +55,8 @@ public interface FnCrComponentController<T>  extends CrComponentController<T>{
     }
 
     @Override
-    public OFunctionStatusUpdate buildStatusUpdate() {
-      return null;
+    public Optional<OFunctionStatusUpdate> buildStatusUpdate() {
+      return Optional.empty();
     }
   }
 
@@ -101,17 +102,17 @@ public interface FnCrComponentController<T>  extends CrComponentController<T>{
     }
 
     @Override
-    public OFunctionStatusUpdate buildStatusUpdate() {
+    public Optional<OFunctionStatusUpdate> buildStatusUpdate() {
       String staticUrl = this.function.getConfig().getStaticUrl();
       var statusBuilder = ProtoOFunctionDeploymentStatus.newBuilder();
       statusBuilder.setInvocationUrl(staticUrl);
       statusBuilder.setCondition(ProtoDeploymentCondition.PROTO_DEPLOYMENT_CONDITION_RUNNING);
-      return OFunctionStatusUpdate.newBuilder()
+      return Optional.of(OFunctionStatusUpdate.newBuilder()
         .setKey(function.getKey())
         .setStatus(statusBuilder
           .build())
         .setProvision(function.getProvision())
-        .build();
+        .build());
     }
   }
 }

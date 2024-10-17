@@ -11,7 +11,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.factory.Maps;
-import org.hpcclab.oaas.crm.CrComponent;
 import org.hpcclab.oaas.crm.CrmConfig;
 import org.hpcclab.oaas.crm.observe.CrPerformanceMetrics.DataPoint;
 import org.slf4j.Logger;
@@ -22,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.hpcclab.oaas.crm.CrComponent.INVOKER;
+import static org.hpcclab.oaas.crm.CrComponent.STORAGE_ADAPTER;
 import static org.hpcclab.oaas.crm.observe.CrPerformanceMetrics.addingMerge;
 
 @ApplicationScoped
@@ -53,22 +54,22 @@ public class PrometheusCrMetricObserver implements CrMetricObserver {
     var rpsMetricMap = parseResp(rpsJson);
     var latencyJson = loadLatencyForInvoker(scope);
     var latencyMetricMap = parseResp(latencyJson);
-    Map<String, Map<CrComponent, List<DataPoint>>> cpuCore = Maps.mutable.empty();
+    Map<String, Map<String, List<DataPoint>>> cpuCore = Maps.mutable.empty();
     Map<String, Map<String, List<DataPoint>>> cpuFn = Maps.mutable.empty();
     extract(cpuMetricMap, cpuCore, cpuFn);
-    Map<String, Map<CrComponent, List<DataPoint>>> memCore = Maps.mutable.empty();
+    Map<String, Map<String, List<DataPoint>>> memCore = Maps.mutable.empty();
     Map<String, Map<String, List<DataPoint>>> memFn = Maps.mutable.empty();
     extract(memMetricMap, memCore, memFn);
-    Map<String, Map<CrComponent, List<DataPoint>>> rpsCore = Maps.mutable.empty();
+    Map<String, Map<String, List<DataPoint>>> rpsCore = Maps.mutable.empty();
     Map<String, Map<String, List<DataPoint>>> rpsFn = Maps.mutable.empty();
     extractWithMetricKey(rpsMetricMap, rpsCore, rpsFn);
-    Map<String, Map<CrComponent, List<DataPoint>>> latencyCore = Maps.mutable.empty();
+    Map<String, Map<String, List<DataPoint>>> latencyCore = Maps.mutable.empty();
     Map<String, Map<String, List<DataPoint>>> latencyFn = Maps.mutable.empty();
     extractWithMetricKey(latencyMetricMap, latencyCore, latencyFn);
 
     Map<String, CrPerformanceMetrics> mergeMetrics = Maps.mutable.empty();
     for (String key : cpuCore.keySet()) {
-      Map<CrComponent, CrPerformanceMetrics.SvcPerformanceMetrics> coreMetrics = merge(
+      Map<String, CrPerformanceMetrics.SvcPerformanceMetrics> coreMetrics = merge(
         cpuCore.getOrDefault(key, Map.of()),
         memCore.getOrDefault(key, Map.of()),
         rpsCore.getOrDefault(key, Map.of()),
@@ -106,7 +107,7 @@ public class PrometheusCrMetricObserver implements CrMetricObserver {
   }
 
   private void extract(Map<String, List<DataPoint>> metricMap,
-                       Map<String, Map<CrComponent, List<DataPoint>>> groupByCrCoreMap,
+                       Map<String, Map<String, List<DataPoint>>> groupByCrCoreMap,
                        Map<String, Map<String, List<DataPoint>>> groupByCrFnMap) {
     for (var entry : metricMap.entrySet()) {
       var splitKey = entry.getKey().split("-");
@@ -122,11 +123,11 @@ public class PrometheusCrMetricObserver implements CrMetricObserver {
             return addingMerge(v, entry.getValue());
           });
         }
-        case "invoker" -> currentCpuCore.compute(CrComponent.INVOKER, (k, v) -> {
+        case "invoker" -> currentCpuCore.compute(INVOKER.getSvc(), (k, v) -> {
           if (v==null) return entry.getValue();
           return addingMerge(v, entry.getValue());
         });
-        case "storage" -> currentCpuCore.compute(CrComponent.STORAGE_ADAPTER, (k, v) -> {
+        case "storage" -> currentCpuCore.compute(STORAGE_ADAPTER.getSvc(), (k, v) -> {
           if (v==null) return entry.getValue();
           return addingMerge(v, entry.getValue());
         });
@@ -135,7 +136,7 @@ public class PrometheusCrMetricObserver implements CrMetricObserver {
   }
 
   private void extractWithMetricKey(Map<MetricKey, List<DataPoint>> metricMap,
-                                    Map<String, Map<CrComponent, List<DataPoint>>> groupByCrCoreMap,
+                                    Map<String, Map<String, List<DataPoint>>> groupByCrCoreMap,
                                     Map<String, Map<String, List<DataPoint>>> groupByCrFnMap) {
     for (var entry : metricMap.entrySet()) {
       var crid = entry.getKey().crId();
@@ -154,7 +155,7 @@ public class PrometheusCrMetricObserver implements CrMetricObserver {
         .stream()
         .map(Map.Entry::getValue)
         .reduce(CrPerformanceMetrics::addingMerge);
-      currentCpuCore.put(CrComponent.INVOKER, crDataPoints.orElse(List.of()));
+      currentCpuCore.put(INVOKER.getSvc(), crDataPoints.orElse(List.of()));
     }
 
   }

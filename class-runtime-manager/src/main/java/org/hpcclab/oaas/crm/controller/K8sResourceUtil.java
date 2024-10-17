@@ -127,4 +127,10 @@ public class K8sResourceUtil {
       .toList();
   }
 
+  public static List<EnvVar> makeEnv(Map<String, String> env) {
+    return env.entrySet()
+      .stream()
+      .map(e -> new EnvVar(e.getKey(), e.getValue(), null))
+      .toList();
+  }
 }

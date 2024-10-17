@@ -11,16 +11,16 @@ option java_package = "org.hpcclab.oaas.proto";
 package oprc;
 
 service DeploymentStatusUpdater {
-  rpc updateCls(OClassStatusUpdate) returns (OprcResponse) {};
-  rpc updateClsAll(OClassStatusUpdates) returns (OprcResponse) {};
-  rpc updateFn(OFunctionStatusUpdate) returns (OprcResponse) {};
-  rpc updateFnAll(OFunctionStatusUpdates) returns (OprcResponse) {};
+  rpc UpdateCls(OClassStatusUpdate) returns (OprcResponse) {};
+  rpc UpdateClsAll(OClassStatusUpdates) returns (OprcResponse) {};
+  rpc UpdateFn(OFunctionStatusUpdate) returns (OprcResponse) {};
+  rpc UpdateFnAll(OFunctionStatusUpdates) returns (OprcResponse) {};
 }
 service InternalCrStateService{
-  rpc updateCr(ProtoCr) returns (OprcResponse) {};
-  rpc updateHash(ProtoCrHash) returns (ProtoCrHash) {};
-  rpc getHash(SingleKeyQuery) returns (ProtoCrHash) {};
-  rpc listHash(PaginateQuery) returns (stream ProtoCrHash) {};
+  rpc UpdateCr(ProtoCr) returns (OprcResponse) {};
+  rpc UpdateHash(ProtoCrHash) returns (ProtoCrHash) {};
+  rpc GetHash(SingleKeyQuery) returns (ProtoCrHash) {};
+  rpc ListHash(PaginateQuery) returns (stream ProtoCrHash) {};
 }
 
 service CrManager{
@@ -72,7 +72,6 @@ message ProtoCrHash {
   string cls = 1;
   int32 numSegment = 2;
   repeated ProtoApiAddress segmentAddr = 3;
-//  ProtoHashTopology hashTopology = 4;
   int64 ts = 4;
 }
 

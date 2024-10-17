@@ -61,7 +61,7 @@ public class SaK8sCrComponentController extends AbstractK8sCrComponentController
 
   @Override
   protected List<HasMetadata> doCreateAdjustOperation(CrAdjustmentPlan plan) {
-    var instanceSpec = plan.coreInstances().get(STORAGE_ADAPTER);
+    var instanceSpec = plan.coreInstances().get(STORAGE_ADAPTER.getSvc());
     if (instanceSpec == null || instanceSpec.disable())
       return List.of();
     String name = prefix + STORAGE_ADAPTER.getSvc();

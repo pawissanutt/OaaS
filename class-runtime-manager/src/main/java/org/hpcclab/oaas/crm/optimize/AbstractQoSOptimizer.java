@@ -2,7 +2,6 @@ package org.hpcclab.oaas.crm.optimize;
 
 import io.fabric8.kubernetes.api.model.Quantity;
 import org.eclipse.collections.api.factory.Maps;
-import org.hpcclab.oaas.crm.CrComponent;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
 import org.hpcclab.oaas.crm.controller.CrController;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
@@ -90,7 +89,7 @@ public abstract class AbstractQoSOptimizer implements QosOptimizer {
       );
       if (adjust.change()) fnInstance.put(fnKey, adjust.spec());
     }
-    Map<CrComponent, CrInstanceSpec> coreInstance = computeCls(controller, metrics);
+    Map<String, CrInstanceSpec> coreInstance = computeCls(controller, metrics);
 
     if (currentPlan==null)
       return CrAdjustmentPlan.DEFAULT;
@@ -130,22 +129,27 @@ public abstract class AbstractQoSOptimizer implements QosOptimizer {
       dataSpec = new CrDataSpec(replicaN);
       minAvail = minInstance;
     }
-    CrtMappingConfig.CrComponentConfig invoker = crtConfig.services()
-      .get(CrComponent.INVOKER.getSvc());
-    CrInstanceSpec invokerSpec = CrInstanceSpec.builder()
-      .minInstance(getStartReplica(invoker, qos, minInstance))
-      .maxInstance(invoker.maxReplicas())
-      .scaleDownDelay(null)
-      .targetConcurrency(-1)
-      .requestsCpu(parseCpu(invoker.requestCpu()))
-      .requestsMemory(parseMem(invoker.requestMemory()))
-      .limitsCpu(parseCpu(invoker.limitCpu()))
-      .limitsMemory(parseMem(invoker.limitMemory()))
-      .minAvail(minAvail)
-      .enableHpa(invoker.enableHpa())
-      .build();
 
-    var instances = Maps.mutable.of(CrComponent.INVOKER, invokerSpec);
+    Map<String, CrInstanceSpec> instances = Maps.mutable.empty();
+    for (var entry : crtConfig.services().entrySet()) {
+      CrtMappingConfig.CrComponentConfig componentConfig =
+        entry.getValue();
+      CrInstanceSpec invokerSpec = CrInstanceSpec.builder()
+        .minInstance(getStartReplica(componentConfig, qos, minInstance))
+        .maxInstance(componentConfig.maxReplicas())
+        .scaleDownDelay(null)
+        .targetConcurrency(-1)
+        .requestsCpu(parseCpu(componentConfig.requestCpu()))
+        .requestsMemory(parseMem(componentConfig.requestMemory()))
+        .limitsCpu(parseCpu(componentConfig.limitCpu()))
+        .limitsMemory(parseMem(componentConfig.limitMemory()))
+        .minAvail(minAvail)
+        .enableHpa(componentConfig.enableHpa())
+        .build();
+
+      instances.put(entry.getKey(), invokerSpec);
+    }
+
 
     var fnInstances = unit.getFnListList()
       .stream()
@@ -218,22 +222,26 @@ public abstract class AbstractQoSOptimizer implements QosOptimizer {
   }
 
 
-  private Map<CrComponent, CrInstanceSpec> computeCls(CrController controller,
-                                                      CrPerformanceMetrics metrics) {
-    Map<CrComponent, CrInstanceSpec> adjustPlanMap = Maps.mutable.empty();
+  private Map<String, CrInstanceSpec> computeCls(CrController controller,
+                                                 CrPerformanceMetrics metrics) {
+    Map<String, CrInstanceSpec> adjustPlanMap = Maps.mutable.empty();
     var cls = controller.getAttachedCls().values().iterator().next();
     CrDeploymentPlan currentPlan = controller.currentPlan();
-    CrInstanceSpec instanceSpec = currentPlan.coreInstances().get(CrComponent.INVOKER);
-    var adjust = adjustComponent(
-      controller,
-      instanceSpec,
-      controller.getTemplate().getConfig().services().get(CrComponent.INVOKER.getSvc()),
-      cls.getRequirements(),
-      metrics.coreMetrics().get(CrComponent.INVOKER),
-      CrComponent.INVOKER.name(),
-      false);
-    if (adjust.change)
-      adjustPlanMap.put(CrComponent.INVOKER, adjust.spec);
+
+    for (var entry : crtConfig.services().entrySet()) {
+      CrInstanceSpec instanceSpec = currentPlan.coreInstances().get(entry.getKey());
+      var adjust = adjustComponent(
+        controller,
+        instanceSpec,
+        entry.getValue(),
+        cls.getRequirements(),
+        metrics.coreMetrics().get(entry.getKey()),
+        entry.getKey(),
+        false);
+      if (adjust.change)
+        adjustPlanMap.put(entry.getKey(), adjust.spec);
+    }
+
     return adjustPlanMap;
   }
 

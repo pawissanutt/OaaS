@@ -4,12 +4,10 @@ import com.github.f4b6a3.tsid.Tsid;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
 import org.hpcclab.oaas.crm.template.CrTemplate;
-import org.hpcclab.oaas.proto.DeploymentUnit;
-import org.hpcclab.oaas.proto.ProtoCr;
-import org.hpcclab.oaas.proto.ProtoOClass;
-import org.hpcclab.oaas.proto.ProtoOFunction;
+import org.hpcclab.oaas.proto.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 public interface CrController {
   long getId();
@@ -29,4 +27,7 @@ public interface CrController {
   ProtoCr dump();
   boolean isInitialized();
   boolean isDeleted();
+
+  Optional<OFunctionStatusUpdate> updateFunctionStatus(String fnKey,
+                                                      ProtoOFunctionDeploymentStatus status);
 }

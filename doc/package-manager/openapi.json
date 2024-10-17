@@ -290,6 +290,14 @@
         "enum" : [ "NONE", "EVENTUAL", "SEQUENTIAL", "LINEARIZATION" ],
         "type" : "string"
       },
+      "CrState" : {
+        "type" : "object",
+        "properties" : {
+          "jsonDump" : {
+            "type" : "string"
+          }
+        }
+      },
       "DeploymentCondition" : {
         "enum" : [ "PENDING", "DEPLOYING", "RUNNING", "DOWN", "DELETED" ],
         "type" : "string"
@@ -381,6 +389,14 @@
           "override" : {
             "type" : "object",
             "additionalProperties" : { }
+          }
+        }
+      },
+      "FunctionRouting" : {
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "type" : "string"
           }
         }
       },
@@ -960,11 +976,14 @@
               "$ref" : "#/components/schemas/OFunction"
             }
           },
+          "routing" : {
+            "$ref" : "#/components/schemas/OcrRouting"
+          },
           "namespace" : {
             "type" : "string"
           },
           "state" : {
-            "$ref" : "#/components/schemas/OrbitState"
+            "$ref" : "#/components/schemas/CrState"
           },
           "deleted" : {
             "type" : "boolean"
@@ -1321,6 +1340,17 @@
           "$ref" : "#/components/schemas/JsonNode_Public"
         }
       },
+      "OcrRouting" : {
+        "type" : "object",
+        "properties" : {
+          "partitions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PartitionRouting"
+            }
+          }
+        }
+      },
       "OffloadingMode" : {
         "enum" : [ "JSON", "PROTOBUF", "GRPC" ],
         "type" : "string"
@@ -1328,14 +1358,6 @@
       "OffloadingMode_Public" : {
         "enum" : [ "JSON", "PROTOBUF", "GRPC" ],
         "type" : "string"
-      },
-      "OrbitState" : {
-        "type" : "object",
-        "properties" : {
-          "jsonDump" : {
-            "type" : "string"
-          }
-        }
       },
       "PaginationOClassRuntime" : {
         "type" : "object",
@@ -1402,6 +1424,17 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/OFunction_Public"
+            }
+          }
+        }
+      },
+      "PartitionRouting" : {
+        "type" : "object",
+        "properties" : {
+          "functions" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/FunctionRouting"
             }
           }
         }

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hpcclab.oaas.crm.controller.K8SCrController.*;
 import static org.hpcclab.oaas.crm.controller.K8sResourceUtil.makeResourceRequirements;
@@ -247,16 +248,16 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
   }
 
   @Override
-  public OFunctionStatusUpdate buildStatusUpdate() {
+  public Optional<OFunctionStatusUpdate> buildStatusUpdate() {
     var statusBuilder = ProtoOFunctionDeploymentStatus.newBuilder()
       .setInvocationUrl("http://" + createName(function.getKey()) + "." + namespace + ".svc.cluster.local")
       .setCondition(ProtoDeploymentCondition.PROTO_DEPLOYMENT_CONDITION_RUNNING)
       .setTs(System.currentTimeMillis());
-    return OFunctionStatusUpdate.newBuilder()
+    return Optional.of(OFunctionStatusUpdate.newBuilder()
       .setKey(function.getKey())
       .setStatus(statusBuilder
         .build())
       .setProvision(function.getProvision())
-      .build();
+      .build());
   }
 }

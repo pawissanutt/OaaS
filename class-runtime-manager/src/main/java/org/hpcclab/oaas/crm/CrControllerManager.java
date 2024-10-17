@@ -122,19 +122,15 @@ public class CrControllerManager {
     if (count==0) return;
     var id = Tsid.from(crId).toLong();
     var controller = get(id);
-    if (controller != null && controller.isInitialized()) {
+    if (controller!=null && controller.isInitialized()) {
       vertx.executeBlockingAndForget(() -> {
-        ProtoOFunction func = controller.getAttachedFn().get(fnKey);
-        if (func==null) return 0;
-        ProtoOFunction newFunc = func.toBuilder()
-          .setStatus(status)
-          .build();
-        controller.getAttachedFn().put(fnKey, func);
-        deploymentStatusUpdater.updateFn(OFunctionStatusUpdate.newBuilder()
-          .setKey(fnKey)
-          .setStatus(status)
-          .setProvision(newFunc.getProvision())
-          .build());
+        var option = controller.updateFunctionStatus(fnKey, status);
+
+        option.ifPresent(request -> {
+          // deprecated
+          deploymentStatusUpdater.updateFn(request);
+          saveToRemote(controller);
+        });
         return 0;
       });
     } else {

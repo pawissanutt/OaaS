@@ -13,7 +13,6 @@ import org.hpcclab.oaas.crm.controller.*;
 import org.hpcclab.oaas.crm.env.EnvironmentManager;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.filter.K8sFilterFactory;
-import org.hpcclab.oaas.crm.filter.PodMonitorInjectingFilter;
 import org.hpcclab.oaas.crm.observe.FnEventObserver;
 import org.hpcclab.oaas.crm.optimize.QosOptimizer;
 import org.hpcclab.oaas.proto.DeploymentUnit;
@@ -22,13 +21,13 @@ import org.hpcclab.oaas.proto.ProtoCr;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.hpcclab.oaas.crm.CrComponent.*;
+import static org.hpcclab.oaas.crm.CrComponent.CONFIG;
 
-public class DefaultCrTemplate extends AbstractCrTemplate {
+public class V2AlphaCrTemplate extends AbstractCrTemplate {
   final K8sFilterFactory filterFactory;
 
 
-  public DefaultCrTemplate(String name,
+  public V2AlphaCrTemplate(String name,
                            KubernetesClient k8sClient,
                            Function<CrtConfig, QosOptimizer> optimizerBuilder,
                            CrtConfig config,
@@ -45,7 +44,7 @@ public class DefaultCrTemplate extends AbstractCrTemplate {
       crControllerManager,
       environmentManager
     );
-    fnEventObserver.start(K8SCrController.CR_FN_KEY);
+    fnEventObserver.start(Map.of(K8SCrController.CR_TEMP_TYPE_KEY, type()));
   }
 
   @Override
@@ -85,40 +84,29 @@ public class DefaultCrTemplate extends AbstractCrTemplate {
   }
 
   private Map<String, CrComponentController<HasMetadata>> createComponentControllers(OprcEnvironment.Config envConf) {
+
     var conf = new ConfigK8sCrComponentController(null, envConf);
-    var invoker = createInvoker3c(envConf);
-    var sa = createSa3c(envConf);
     MutableMap<String, CrComponentController<HasMetadata>> map = Maps.mutable
       .of( CONFIG.getSvc(), conf);
-    if (invoker != null) map.put(INVOKER.getSvc(), invoker);
-    if (sa != null) map.put(STORAGE_ADAPTER.getSvc(), sa);
+    for (var entry : this.config.services().entrySet()) {
+         map.put(entry.getKey(), createGeneric3c( entry.getKey(), entry.getValue(), envConf));
+    }
     return map;
   }
 
-  private SaK8sCrComponentController createSa3c(OprcEnvironment.Config envConf) {
-    CrtMappingConfig.CrComponentConfig svcConfig = config.services().get(STORAGE_ADAPTER.getSvc());
-    if (svcConfig == null) return null;
-    SaK8sCrComponentController sa = new SaK8sCrComponentController(
-      svcConfig, envConf);
-    filterFactory.injectFilter(svcConfig.filters(), sa);
-    return sa;
-  }
+  private GenericK8sCrComponentController createGeneric3c(String name ,
+                                                          CrtMappingConfig.CrComponentConfig svcConfig,
+                                                          OprcEnvironment.Config envConf) {
+    var controller = new GenericK8sCrComponentController(svcConfig, envConf, name);
 
-  private InvokerK8sCrComponentController createInvoker3c(OprcEnvironment.Config envConf) {
-    CrtMappingConfig.CrComponentConfig svcConfig = config.services().get(INVOKER.getSvc());
-    if (svcConfig == null) return null;
-    var invoker = new InvokerK8sCrComponentController(svcConfig, envConf);
-    if (!crmConfig.monitorDisable()) {
-      invoker.addFilter(new PodMonitorInjectingFilter(k8sClient));
-    }
-    filterFactory.injectFilter(svcConfig.filters(), invoker);
-    return invoker;
+    filterFactory.injectFilter(svcConfig.filters(), controller);
+    return controller;
   }
 
 
 
   @Override
   public String type() {
-    return "default";
+    return "v2alpha";
   }
 }

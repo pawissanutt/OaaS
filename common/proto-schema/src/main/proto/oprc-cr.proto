@@ -4,6 +4,7 @@ option java_multiple_files = true;
 option java_package = "org.hpcclab.oaas.proto";
 import "oprc-class.proto";
 import "oprc-function.proto";
+import "oprc-route.proto";
 
 package oprc;
 
@@ -16,6 +17,12 @@ message ProtoCr {
   ProtoCrState state = 6;
   bool deleted = 7;
   int64 stabilizationTime = 8;
+  repeated ClassPartition partitions = 9;
+}
+
+message ClassPartition {
+//  ProtoCrState state = 1;
+  PartitionRouting routing = 2;
 }
 
 message ProtoCrState{

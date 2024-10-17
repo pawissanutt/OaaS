@@ -83,7 +83,7 @@ quarkus:
       enable-reflection-service: true
       use-separate-server: false
     clients:
-      orbit-manager:
+      cr-manager:
         use-quarkus-grpc-client: true
         host: ${oprc.pm.crmHost}
         port: ${oprc.pm.crmPort}

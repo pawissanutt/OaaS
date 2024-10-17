@@ -22,7 +22,7 @@ message ClsRoutingTable {
 message ClsRouting {
   string name = 1;
   int32 partitions = 2;
-  repeated PartitionRouting routings = 3;
+  repeated PartitionRouting routing = 3;
 }
 
 message PartitionRouting {

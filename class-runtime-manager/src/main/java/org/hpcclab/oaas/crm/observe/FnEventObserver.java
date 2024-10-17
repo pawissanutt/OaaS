@@ -50,11 +50,11 @@ public class FnEventObserver {
     return observers.computeIfAbsent(name, n -> new FnEventObserver(knativeClient, controllerManager, environmentManager));
   }
 
-  public void start(String label) {
+  public void start(Map<String, String> labels) {
     if (watch==null) {
       logger.info("start kn functions watcher");
       watch = knativeClient.services()
-        .withLabel(label)
+        .withLabels(labels)
         .watch(new FnEventWatcher(controllerManager, environmentManager));
     }
   }

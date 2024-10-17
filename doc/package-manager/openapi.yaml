@@ -207,6 +207,11 @@ components:
       - SEQUENTIAL
       - LINEARIZATION
       type: string
+    CrState:
+      type: object
+      properties:
+        jsonDump:
+          type: string
     DeploymentCondition:
       enum:
       - PENDING
@@ -287,6 +292,11 @@ components:
         override:
           type: object
           additionalProperties: {}
+    FunctionRouting:
+      type: object
+      properties:
+        url:
+          type: string
     FunctionState:
       enum:
       - ENABLED
@@ -726,10 +736,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OFunction"
+        routing:
+          $ref: "#/components/schemas/OcrRouting"
         namespace:
           type: string
         state:
-          $ref: "#/components/schemas/OrbitState"
+          $ref: "#/components/schemas/CrState"
         deleted:
           type: boolean
         stabilizationTime:
@@ -974,6 +986,13 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/JsonNode_Public"
+    OcrRouting:
+      type: object
+      properties:
+        partitions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PartitionRouting"
     OffloadingMode:
       enum:
       - JSON
@@ -986,11 +1005,6 @@ components:
       - PROTOBUF
       - GRPC
       type: string
-    OrbitState:
-      type: object
-      properties:
-        jsonDump:
-          type: string
     PaginationOClassRuntime:
       type: object
       properties:
@@ -1039,6 +1053,13 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OFunction_Public"
+    PartitionRouting:
+      type: object
+      properties:
+        functions:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/FunctionRouting"
     ProvisionConfig:
       type: object
       properties:

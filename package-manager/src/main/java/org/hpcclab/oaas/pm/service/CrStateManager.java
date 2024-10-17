@@ -5,13 +5,13 @@ import com.github.f4b6a3.tsid.Tsid;
 import io.quarkus.grpc.GrpcClient;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
 import io.smallrye.reactive.messaging.MutinyEmitter;
 import io.smallrye.reactive.messaging.kafka.Record;
 import io.vertx.core.buffer.Buffer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.hpcclab.oaas.arango.RepoFactory;
 import org.hpcclab.oaas.arango.repo.GenericArgRepository;
 import org.hpcclab.oaas.mapper.ProtoMapper;
 import org.hpcclab.oaas.mapper.ProtoMapperImpl;
@@ -22,7 +22,6 @@ import org.hpcclab.oaas.model.function.OFunction;
 import org.hpcclab.oaas.proto.*;
 import org.hpcclab.oaas.repository.ClassRepository;
 import org.hpcclab.oaas.repository.FunctionRepository;
-import org.hpcclab.oaas.repository.store.DatastoreConfRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,22 +37,24 @@ public class CrStateManager {
   final FunctionRepository fnRepo;
   ProtoMapper protoMapper = new ProtoMapperImpl();
   GenericArgRepository<OClassRuntime> crRepo;
+  BroadcastProcessor<OClassRuntime> crBroadcaster;
   GenericArgRepository<CrHash> hashRepo;
-  @GrpcClient("orbit-manager")
+  @GrpcClient("cr-manager")
   CrManagerGrpc.CrManagerBlockingStub crManager;
   @Channel("crHashs")
   MutinyEmitter<Record<String, Buffer>> crHashEmitter;
 
+
   @Inject
-  public CrStateManager(ClassRepository clsRepo, FunctionRepository fnRepo) {
+  public CrStateManager(ClassRepository clsRepo,
+                        FunctionRepository fnRepo,
+                        GenericArgRepository<OClassRuntime> crRepo,
+                        GenericArgRepository<CrHash> hashRepo) {
     this.clsRepo = clsRepo;
     this.fnRepo = fnRepo;
-    DatastoreConfRegistry registry = DatastoreConfRegistry.getDefault();
-    var fac = new RepoFactory(registry.getConfMap().get("PKG"));
-    crRepo = fac.createGenericRepo(OClassRuntime.class, OClassRuntime::getKey, "cr");
-    crRepo.createIfNotExist();
-    hashRepo = fac.createGenericRepo(CrHash.class, CrHash::getKey, "crHash");
-    hashRepo.createIfNotExist();
+    this.crRepo = crRepo;
+    this.hashRepo = hashRepo;
+    this.crBroadcaster = BroadcastProcessor.create();
   }
 
   public GenericArgRepository<OClassRuntime> getCrRepo() {
@@ -63,6 +64,7 @@ public class CrStateManager {
   public Uni<OprcResponse> updateCr(ProtoCr protoCr) {
     var cr = protoMapper.fromProto(protoCr);
     return crRepo.persistAsync(cr)
+      .invoke(ocr -> crBroadcaster.onNext(ocr))
       .map(entity -> OprcResponse.newBuilder()
         .setSuccess(true)
         .build());
@@ -88,7 +90,7 @@ public class CrStateManager {
       .map(protoMapper::toProto);
   }
 
-  public Uni<ProtoCr> get(String id) {
+  public Uni<ProtoCr> getAsProto(String id) {
     return crRepo.async().getAsync(id)
       .flatMap(this::refreshFn)
       .map(protoMapper::toProto);
@@ -142,25 +144,27 @@ public class CrStateManager {
       crRepo.remove(OClassRuntime.toKey(newCr.getId()));
       hashRepo.remove(cls.getKey());
     } else {
-      crRepo.persistAsync(protoMapper.fromProto(newCr));
+      var ocr = protoMapper.fromProto(newCr);
+      crRepo.persist(ocr);
+      crBroadcaster.onNext(ocr);
     }
     cls.getStatus().setCrId(0);
   }
 
   public CrOperationResponse deploy(DeploymentUnit unit) {
     var cls = unit.getCls();
-    var orbitId = cls.getStatus().getCrId();
-    if (orbitId==0) {
+    var crId = cls.getStatus().getCrId();
+    if (crId==0) {
       logger.info("deploy a new CR for cls [{}]", cls.getKey());
       var response = crManager.deploy(unit);
       updateCr(response.getCr()).await().indefinitely();
       return response;
     } else {
-      logger.info("update CR [{}] for cls [{}]", orbitId, cls.getKey());
-      var orbit = get(Tsid.from(orbitId).toLowerCase())
+      logger.info("update CR [{}] for cls [{}]", crId, cls.getKey());
+      var cr = getAsProto(Tsid.from(crId).toLowerCase())
         .await().indefinitely();
       var req = CrUpdateRequest.newBuilder()
-        .setOrbit(orbit)
+        .setOrbit(cr)
         .setUnit(unit)
         .build();
       var response = crManager.update(req);
@@ -168,5 +172,9 @@ public class CrStateManager {
         .await().indefinitely();
       return response;
     }
+  }
+
+  public BroadcastProcessor<OClassRuntime> getCrBroadcaster() {
+    return crBroadcaster;
   }
 }
