@@ -55,6 +55,7 @@ public record CrtMappingConfig(
     int maxScaleStep,
     int maxReplicas,
     int startReplicas,
+    int exposePort,
     float startReplicasToTpRatio,
     boolean enableHpa,
     List<FilterConfig> filters,

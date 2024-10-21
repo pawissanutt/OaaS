@@ -17,12 +17,7 @@ message ProtoCr {
   ProtoCrState state = 6;
   bool deleted = 7;
   int64 stabilizationTime = 8;
-  repeated ClassPartition partitions = 9;
-}
-
-message ClassPartition {
-//  ProtoCrState state = 1;
-  PartitionRouting routing = 2;
+  PartitionRouting routing = 9;
 }
 
 message ProtoCrState{

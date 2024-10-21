@@ -14,7 +14,7 @@ public record OClassRuntime(
   String template,
   List<OClass> attachedCls,
   List<OFunction> attachedFn,
-  OcrRouting routing,
+  OcrRouting.PartitionRouting routing,
   String namespace,
   CrState state,
   boolean deleted,

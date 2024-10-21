@@ -142,7 +142,11 @@ public class CrStateManager {
     var newCr = response.getCr();
     if (response.getCr().getAttachedClsList().isEmpty()) {
       crRepo.remove(OClassRuntime.toKey(newCr.getId()));
-      hashRepo.remove(cls.getKey());
+      try {
+        hashRepo.remove(cls.getKey());
+      } catch (ArangoDBException e) {
+        logger.warn("cannot remove hash of '{}': {}", cls.getKey(), e.getMessage());
+      }
     } else {
       var ocr = protoMapper.fromProto(newCr);
       crRepo.persist(ocr);

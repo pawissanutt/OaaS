@@ -100,9 +100,11 @@ public class CrControllerManager {
     controllerMap.put(orbit.getId(), orbit);
   }
 
-  public void saveToRemote(CrController orbit) {
-    saveToLocal(orbit);
-    crStateUpdater.updateCr(orbit.dump());
+  public void saveToRemote(CrController controller) {
+    saveToLocal(controller);
+    ProtoCr cr = controller.dump();
+    logger.debug("update CR to remote {}", cr);
+    crStateUpdater.updateCr(cr);
   }
 
   public void deleteFromLocal(CrController controller) {

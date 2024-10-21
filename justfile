@@ -1,4 +1,5 @@
 mvn := "mvnd"
+shell := "bash"
 #mvn := "./mvnw"
 #export CI_REGISTRY_IMAGE := "ghcr.io/hpcclab/oaas"
 export CI_REGISTRY_IMAGE := "harbor.129.114.109.85.nip.io/oaas"

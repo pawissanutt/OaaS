@@ -6,6 +6,7 @@ import org.hpcclab.oaas.model.cls.OClass;
 import org.hpcclab.oaas.model.cls.OClassDeploymentStatus;
 import org.hpcclab.oaas.model.cr.CrHash;
 import org.hpcclab.oaas.model.cr.OClassRuntime;
+import org.hpcclab.oaas.model.cr.OcrRouting;
 import org.hpcclab.oaas.model.function.OFunction;
 import org.hpcclab.oaas.model.function.OFunctionConfig;
 import org.hpcclab.oaas.model.function.OFunctionDeploymentStatus;
@@ -67,6 +68,8 @@ public interface ProtoMapper {
   CrHash fromProto(ProtoCrHash crHashed);
 
   OClassRuntime fromProto(ProtoCr clsRuntime);
+  OcrRouting.PartitionRouting fromProto(PartitionRouting routing);
+  PartitionRouting toProto(OcrRouting.PartitionRouting routing);
 
   ProtoCrHash toProto(CrHash crHash);
 

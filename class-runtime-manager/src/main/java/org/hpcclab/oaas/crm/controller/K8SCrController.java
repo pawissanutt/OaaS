@@ -273,7 +273,7 @@ public class K8SCrController implements CrController {
   public ProtoCr dump() {
     var str = Json.encode(currentPlan);
     PartitionRouting partitionRouting = PartitionRouting.newBuilder()
-      .putAllFuncs(routing)
+      .putAllFunctions(routing)
       .build();
     return ProtoCr.newBuilder()
       .setId(id)
@@ -282,7 +282,7 @@ public class K8SCrController implements CrController {
       .addAllAttachedCls(attachedCls.values())
       .addAllAttachedFn(attachedFn.values())
       .setState(ProtoCrState.newBuilder().setJsonDump(str).build())
-      .addPartitions(ClassPartition.newBuilder().setRouting(partitionRouting).build())
+      .setRouting(partitionRouting)
       .setDeleted(deleted)
       .build();
   }
@@ -329,7 +329,7 @@ public class K8SCrController implements CrController {
         cls.getFunctionsList().stream()
           .filter(fb -> fb.getFunction().equals(fnKey))
           .forEach(fb -> {
-            routing.put(fb.getName(), FuncRouting.newBuilder().setUri(status.getInvocationUrl()).build());
+            routing.put(fb.getName(), FuncRouting.newBuilder().setUrl(status.getInvocationUrl()).build());
           });
       }
     }

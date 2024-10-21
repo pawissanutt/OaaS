@@ -11,6 +11,8 @@ import org.hpcclab.oaas.model.cr.OcrRouting;
 import org.hpcclab.oaas.pm.service.CrStateManager;
 import org.hpcclab.oaas.proto.*;
 
+import java.util.List;
+
 /**
  * @author Pawissanutt
  */
@@ -48,18 +50,22 @@ public class RoutingServiceImpl implements RoutingService {
 
 
   private ClsRouting createRouting(OClassRuntime ocr) {
-    OcrRouting routing = ocr.routing();
-
-    ClsRouting.Builder builder = ClsRouting.newBuilder();
-    for (OcrRouting.PartitionRouting partition : routing.partitions()) {
+    var routing = List.of(ocr.routing());
+    if (ocr.attachedCls() == null || ocr.attachedCls().isEmpty()) {
+      return ClsRouting.newBuilder().build();
+    }
+    ClsRouting.Builder builder = ClsRouting.newBuilder()
+      .setName(ocr.attachedCls().getFirst().getKey());
+    for (OcrRouting.PartitionRouting partition : routing) {
       PartitionRouting.Builder partitionBuilder = PartitionRouting.newBuilder();
       for (var entry : partition.functions().entrySet()) {
-        partitionBuilder.putFuncs(
+        partitionBuilder.putFunctions(
           entry.getKey(),
-          FuncRouting.newBuilder().setUri(entry.getValue().url()).build()
+          FuncRouting.newBuilder().setUrl(entry.getValue().url()).build()
         );
       }
-      builder.addRouting(partitionBuilder.build());
+      builder
+        .addRouting(partitionBuilder.build());
     }
     return builder
       .build();

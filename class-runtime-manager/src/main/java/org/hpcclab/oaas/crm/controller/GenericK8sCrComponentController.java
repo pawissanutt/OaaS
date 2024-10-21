@@ -3,6 +3,7 @@ package org.hpcclab.oaas.crm.controller;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
+import io.fabric8.kubernetes.api.model.autoscaling.v2.HorizontalPodAutoscaler;
 import org.eclipse.collections.api.factory.Lists;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
@@ -18,9 +19,10 @@ import static org.hpcclab.oaas.crm.controller.K8SCrController.CR_LABEL_KEY;
 
 public class GenericK8sCrComponentController extends AbstractK8sCrComponentController {
   final String serviceName;
+
   public GenericK8sCrComponentController(CrtMappingConfig.CrComponentConfig svcConfig,
-                                            OprcEnvironment.Config envConfig,
-                                            String name) {
+                                         OprcEnvironment.Config envConfig,
+                                         String name) {
     super(svcConfig, envConfig);
     this.serviceName = name;
   }
@@ -28,7 +30,7 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
   @Override
   protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan) {
     var instanceSpec = plan.coreInstances().get(serviceName);
-    if (instanceSpec == null || instanceSpec.disable()) return List.of();
+    if (instanceSpec==null || instanceSpec.disable()) return List.of();
 
     var labels = Map.of(
       CR_LABEL_KEY, parentController.getTsidString(),
@@ -56,8 +58,15 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
       .withName(name)
       .withLabels(labels)
       .endMetadata();
+    int port = svcConfig.exposePort()==0 ? 8080:svcConfig.exposePort();
     serviceBuilder.withNewSpec()
       .addToSelector(labels)
+      .addNewPort()
+      .withName("http")
+      .withPort(port)
+      .withTargetPort(new IntOrString(port))
+      .withProtocol("TCP")
+      .endPort()
       .endSpec();
     return serviceBuilder.build();
   }
@@ -72,15 +81,16 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
       .endMetadata();
 
     ContainerBuilder containerBuilder = new ContainerBuilder()
+      .withName("app")
       .withImage(this.svcConfig.image())
       .withImagePullPolicy(this.svcConfig.imagePullPolicy())
       .withResources(K8sResourceUtil.makeResourceRequirements(instanceSpec))
-      .withEnv(K8sResourceUtil.makeEnv(svcConfig.env()))
-      ;
+      .withEnv(K8sResourceUtil.makeEnv(svcConfig.env()));
     if (svcConfig.imagePullPolicy()!=null && !svcConfig.imagePullPolicy().isEmpty())
       containerBuilder.withImagePullPolicy(svcConfig.imagePullPolicy());
     Container container = containerBuilder.build();
     builder.withNewSpec()
+      .withReplicas(instanceSpec.minInstance())
       .withNewSelector().addToMatchLabels(labels).endSelector()
       .withNewTemplate()
       .withNewMetadata()
@@ -96,11 +106,44 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
 
   @Override
   protected List<HasMetadata> doCreateAdjustOperation(CrAdjustmentPlan plan) {
-    return List.of();
+    var instanceSpec = plan.coreInstances().get(this.serviceName);
+    if (instanceSpec==null) return List.of();
+    String name = prefix + this.serviceName;
+    if (instanceSpec.enableHpa()) {
+      HorizontalPodAutoscaler hpa = editHpa(instanceSpec, name);
+      return hpa==null ? List.of():List.of(hpa);
+    } else {
+      Deployment deployment = kubernetesClient.apps().deployments()
+        .inNamespace(namespace)
+        .withName(name)
+        .get();
+      deployment.getSpec()
+        .setReplicas(instanceSpec.minInstance());
+      return List.of(deployment);
+    }
   }
 
   @Override
   protected List<HasMetadata> doCreateDeleteOperation() {
-    return List.of();
+    List<HasMetadata> toDeleteResource = Lists.mutable.empty();
+    var labels = Map.of(
+      CR_LABEL_KEY, parentController.getTsidString(),
+      CR_COMPONENT_LABEL_KEY, serviceName
+    );
+    var depList = kubernetesClient.apps().deployments()
+      .withLabels(labels)
+      .list()
+      .getItems();
+    toDeleteResource.addAll(depList);
+    var svcList = kubernetesClient.services()
+      .withLabels(labels)
+      .list()
+      .getItems();
+    toDeleteResource.addAll(svcList);
+    var hpa = kubernetesClient.autoscaling().v2().horizontalPodAutoscalers()
+      .withLabels(labels)
+      .list().getItems();
+    toDeleteResource.addAll(hpa);
+    return toDeleteResource;
   }
 }

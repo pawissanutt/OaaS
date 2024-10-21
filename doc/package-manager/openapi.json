@@ -977,7 +977,7 @@
             }
           },
           "routing" : {
-            "$ref" : "#/components/schemas/OcrRouting"
+            "$ref" : "#/components/schemas/PartitionRouting"
           },
           "namespace" : {
             "type" : "string"
@@ -1338,17 +1338,6 @@
         "type" : "array",
         "items" : {
           "$ref" : "#/components/schemas/JsonNode_Public"
-        }
-      },
-      "OcrRouting" : {
-        "type" : "object",
-        "properties" : {
-          "partitions" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/PartitionRouting"
-            }
-          }
         }
       },
       "OffloadingMode" : {
