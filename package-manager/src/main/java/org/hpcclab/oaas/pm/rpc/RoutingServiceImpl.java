@@ -29,10 +29,6 @@ public class RoutingServiceImpl implements RoutingService {
     this.crRepo = crRepo;
   }
 
-  public RoutingServiceImpl(CrStateManager crStateManager) {
-    this.crStateManager = crStateManager;
-  }
-
   @Override
   public Uni<ClsRoutingTable> getClsRouting(ClsRoutingRequest request) {
     return

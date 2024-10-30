@@ -29,6 +29,7 @@ public class FileCliConfig {
   public static class FileCliContext {
     String pmUrl;
     String invUrl;
+    String gatewayUrl;
     String proxy;
     String pmVirtualHost;
     String invVirtualHost;

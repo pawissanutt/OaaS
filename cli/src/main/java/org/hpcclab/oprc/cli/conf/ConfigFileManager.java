@@ -47,6 +47,7 @@ public class ConfigFileManager {
   public FileCliConfig createDefault() {
     var defaultCtx = FileCliConfig.FileCliContext.builder()
       .pmUrl("http://pm.oaas.127.0.0.1.nip.io")
+      .gatewayUrl("http://oaas.127.0.0.1.nip.io")
       .invUrl("http://inv.oaas.127.0.0.1.nip.io")
       .defaultClass("example.record")
       .build();

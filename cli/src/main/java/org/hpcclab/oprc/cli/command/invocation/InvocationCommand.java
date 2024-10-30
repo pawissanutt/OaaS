@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(
   name = "invoke",
-  aliases = {"inv2", "inv", "i2", "i"},
+  aliases = {"inv", "i"},
   description = "Invoke a function with REST API",
   mixinStandardHelpOptions = true
 )
