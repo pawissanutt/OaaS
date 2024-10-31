@@ -1,12 +1,10 @@
 package org.hpcclab.oprc.cli.command.invocation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.tsid.Tsid;
 import com.google.protobuf.ByteString;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.vertx.core.Vertx;
 import io.vertx.grpc.VertxChannelBuilder;
-import io.vertx.grpc.client.GrpcClient;
 import jakarta.inject.Inject;
 import org.hpcclab.oaas.model.invocation.InvocationStats;
 import org.hpcclab.oaas.model.invocation.InvocationStatus;
@@ -74,10 +72,6 @@ public class V2GrpcInvocationCommand implements Callable<Integer> {
   OutputFormatter outputFormatter;
   @Inject
   ConfigFileManager fileManager;
-  @Inject
-  GrpcClient grpcClient;
-  @Inject
-  ObjectMapper objectMapper;
   @Inject
   Vertx vertx;
 
