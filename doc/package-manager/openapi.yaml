@@ -13,6 +13,7 @@ paths:
     get:
       tags:
       - Cr Resource
+      description: List Orbit
       parameters:
       - name: limit
         in: query
@@ -35,6 +36,7 @@ paths:
     delete:
       tags:
       - Cr Resource
+      description: Delete
       parameters:
       - name: id
         in: path
@@ -48,6 +50,7 @@ paths:
     get:
       tags:
       - Class Resource
+      description: List
       parameters:
       - name: desc
         in: query
@@ -79,6 +82,7 @@ paths:
     get:
       tags:
       - Class Resource
+      description: Get
       parameters:
       - name: clsKey
         in: path
@@ -95,6 +99,7 @@ paths:
     delete:
       tags:
       - Class Resource
+      description: Delete
       parameters:
       - name: clsKey
         in: path
@@ -112,6 +117,7 @@ paths:
     get:
       tags:
       - Function Resource
+      description: List
       parameters:
       - name: desc
         in: query
@@ -143,22 +149,7 @@ paths:
     get:
       tags:
       - Function Resource
-      parameters:
-      - name: funcKey
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OFunction_Public"
-    delete:
-      tags:
-      - Function Resource
+      description: Get
       parameters:
       - name: funcKey
         in: path
@@ -176,6 +167,7 @@ paths:
     post:
       tags:
       - Package Resource
+      description: Create
       requestBody:
         content:
           text/x-yaml:
@@ -708,6 +700,25 @@ components:
           type: boolean
         writeThrough:
           type: boolean
+    OClassDeployment:
+      type: object
+      properties:
+        key:
+          type: string
+        partitionCount:
+          format: int32
+          type: integer
+        replicaCount:
+          format: int32
+          type: integer
+        targetEnvs:
+          type: array
+          items:
+            type: string
+        partitions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PartitionDeployment"
     OClassDeploymentStatus:
       type: object
       properties:
@@ -720,6 +731,25 @@ components:
         crId:
           format: int64
           type: integer
+    OClassDeployment_Public:
+      type: object
+      properties:
+        key:
+          type: string
+        partitionCount:
+          format: int32
+          type: integer
+        replicaCount:
+          format: int32
+          type: integer
+        targetEnvs:
+          type: array
+          items:
+            type: string
+        partitions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PartitionDeployment_Public"
     OClassRuntime:
       type: object
       properties:
@@ -957,6 +987,10 @@ components:
           type: array
           items:
             type: string
+        deployments:
+          type: array
+          items:
+            $ref: "#/components/schemas/OClassDeployment"
         disabled:
           type: boolean
     OPackage_Public:
@@ -976,6 +1010,10 @@ components:
           type: array
           items:
             type: string
+        deployments:
+          type: array
+          items:
+            $ref: "#/components/schemas/OClassDeployment_Public"
         disabled:
           type: boolean
     ObjectNode:
@@ -1046,6 +1084,26 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OFunction_Public"
+    PartitionDeployment:
+      type: object
+      properties:
+        partitionId:
+          format: int32
+          type: integer
+        replicas:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReplicaDeployment"
+    PartitionDeployment_Public:
+      type: object
+      properties:
+        partitionId:
+          format: int32
+          type: integer
+        replicas:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReplicaDeployment_Public"
     PartitionRouting:
       type: object
       properties:
@@ -1131,6 +1189,28 @@ components:
           type: string
         access:
           $ref: "#/components/schemas/KeyAccessModifier_Public"
+    ReplicaDeployment:
+      type: object
+      properties:
+        replicaId:
+          format: int32
+          type: integer
+        env:
+          type: string
+        crId:
+          format: int64
+          type: integer
+    ReplicaDeployment_Public:
+      type: object
+      properties:
+        replicaId:
+          format: int32
+          type: integer
+        env:
+          type: string
+        crId:
+          format: int64
+          type: integer
     ResolvedMember:
       type: object
       properties:

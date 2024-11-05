@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -77,9 +77,11 @@ public class V2GrpcInvocationCommand implements Callable<Integer> {
 
   MutinyOprcFunctionGrpc.MutinyOprcFunctionStub createGateway() throws IOException {
     String gatewayUrl = fileManager.current().getGatewayUrl();
-    var url = new URL(gatewayUrl);
-    VertxChannelBuilder builder = VertxChannelBuilder.forAddress(vertx, url.getHost(),
-        url.getPort())
+    var url = URI.create(gatewayUrl).toURL();
+    VertxChannelBuilder builder = VertxChannelBuilder.forAddress(vertx,
+        url.getHost(),
+        url.getPort() > 0? url.getPort() : url.getDefaultPort()
+      )
       .disableRetry();
     if (url.getProtocol().equals("http"))
       builder.usePlaintext();

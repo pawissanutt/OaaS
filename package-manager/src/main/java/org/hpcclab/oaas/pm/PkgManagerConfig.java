@@ -15,6 +15,5 @@ public interface PkgManagerConfig {
   boolean kafkaEnabled();
   @WithDefault("true")
   boolean crmEnabled();
-  String crmHost();
-  int crmPort();
+  String env();
 }

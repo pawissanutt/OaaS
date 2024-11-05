@@ -37,11 +37,11 @@ public class OperationExecutor {
       if (crController.isDeleted()) controllerManager.deleteFromLocal(crController);
       var cr = crController.dump();
       var updates = operation.stateUpdates();
-      logger.debug("apply with clsUpdate[{}] fnUpdate[{}]",
-        updates.clsUpdates().size(), updates.fnUpdates().size());
+      logger.debug("apply with fnUpdate[{}]",
+        updates.fnUpdates().size());
       CrOperationResponse response = CrOperationResponse.newBuilder()
         .setCr(cr)
-        .addAllClsUpdates(updates.clsUpdates())
+
         .addAllFnUpdates(updates.fnUpdates())
         .build();
       return Uni

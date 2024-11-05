@@ -3,15 +3,16 @@ package org.hpcclab.oaas.crm.controller;
 import io.fabric8.knative.serving.v1.RevisionTemplateSpec;
 import io.fabric8.knative.serving.v1.Service;
 import io.fabric8.knative.serving.v1.ServiceSpec;
-import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.PodTemplateSpec;
+import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.eclipse.collections.api.factory.Lists;
 import org.hpcclab.oaas.crm.env.OprcEnvironment.EnvResource;
 import org.hpcclab.oaas.crm.exception.CrDeployException;
-import org.hpcclab.oaas.proto.KnativeProvision;
-import org.hpcclab.oaas.proto.OClassStatusUpdate;
 import org.hpcclab.oaas.proto.OFunctionStatusUpdate;
 
 import java.util.List;
@@ -24,7 +25,6 @@ public class ApplyK8SCrOperation implements CrOperation {
   List<? extends HasMetadata> originalResources;
   Runnable updater;
   List<OFunctionStatusUpdate> fnUpdates = Lists.mutable.empty();
-  List<OClassStatusUpdate> clsUpdates = Lists.mutable.empty();
 
   public ApplyK8SCrOperation(KubernetesClient client,
                              List<? extends HasMetadata> k8sResources,
@@ -107,14 +107,12 @@ public class ApplyK8SCrOperation implements CrOperation {
 
   @Override
   public StateUpdateOperation stateUpdates() {
-    return new StateUpdateOperation(fnUpdates, clsUpdates);
+    return new StateUpdateOperation(fnUpdates);
   }
 
   public List<OFunctionStatusUpdate> getFnUpdates() {
     return fnUpdates;
   }
 
-  public List<OClassStatusUpdate> getClsUpdates() {
-    return clsUpdates;
-  }
+
 }

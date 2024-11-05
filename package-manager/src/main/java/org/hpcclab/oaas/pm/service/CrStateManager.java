@@ -2,7 +2,6 @@ package org.hpcclab.oaas.pm.service;
 
 import com.arangodb.ArangoDBException;
 import com.github.f4b6a3.tsid.Tsid;
-import io.quarkus.grpc.GrpcClient;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
@@ -35,12 +34,11 @@ public class CrStateManager {
   private static final Logger logger = LoggerFactory.getLogger(CrStateManager.class);
   final ClassRepository clsRepo;
   final FunctionRepository fnRepo;
+  final EnvironmentRegistry envRegistry;
   ProtoMapper protoMapper = new ProtoMapperImpl();
   GenericArgRepository<OClassRuntime> crRepo;
   BroadcastProcessor<OClassRuntime> crBroadcaster;
   GenericArgRepository<CrHash> hashRepo;
-  @GrpcClient("cr-manager")
-  CrManagerGrpc.CrManagerBlockingStub crManager;
   @Channel("crHashs")
   MutinyEmitter<Record<String, Buffer>> crHashEmitter;
 
@@ -48,10 +46,12 @@ public class CrStateManager {
   @Inject
   public CrStateManager(ClassRepository clsRepo,
                         FunctionRepository fnRepo,
+                        EnvironmentRegistry envRegistry,
                         GenericArgRepository<OClassRuntime> crRepo,
                         GenericArgRepository<CrHash> hashRepo) {
     this.clsRepo = clsRepo;
     this.fnRepo = fnRepo;
+    this.envRegistry = envRegistry;
     this.crRepo = crRepo;
     this.hashRepo = hashRepo;
     this.crBroadcaster = BroadcastProcessor.create();
@@ -135,6 +135,7 @@ public class CrStateManager {
       logger.warn("No matched CR for give class");
       return;
     }
+    var crManager = envRegistry.getCrmStub();
     var response = crManager.detach(DetachCrRequest.newBuilder()
       .setOrbit(protoMapper.toProto(cr))
       .setCls(protoMapper.toProto(cls))
@@ -155,9 +156,32 @@ public class CrStateManager {
     cls.getStatus().setCrId(0);
   }
 
-  public CrOperationResponse deploy(DeploymentUnit unit) {
+  public OprcResponse undeploy(String env, long crId) {
+    var crm = envRegistry.getCrmStub(env);
+    String key = OClassRuntime.toKey(crId);
+    var cr = crRepo.get(key);
+    var protoCr = protoMapper.toProto(cr);
+    var resp = crm.destroy(protoCr);
+    if (resp.getSuccess()) {
+      crRepo.remove(key);
+    }
+    return resp;
+  }
+
+  public CrOperationResponse deploy(String env, DeploymentUnit unit) {
+    var crManager = envRegistry.getCrmStub(env);
     var cls = unit.getCls();
-    var crId = cls.getStatus().getCrId();
+    logger.info("deploy a [CR:{}, env:{}] for cls [{}]",
+      unit.getCrId(), env, cls.getKey());
+    var response = crManager.deploy(unit);
+    updateCr(response.getCr()).await().indefinitely();
+    return response;
+  }
+
+  public CrOperationResponse deploy(DeploymentUnit unit) {
+    var crManager = envRegistry.getCrmStub();
+    var cls = unit.getCls();
+    var crId = unit.getCrId();
     if (crId==0) {
       logger.info("deploy a new CR for cls [{}]", cls.getKey());
       var response = crManager.deploy(unit);

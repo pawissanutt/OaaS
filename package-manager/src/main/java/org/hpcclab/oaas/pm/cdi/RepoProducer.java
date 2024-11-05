@@ -12,7 +12,12 @@ import org.hpcclab.oaas.invocation.service.VertxPackageRoutes;
 import org.hpcclab.oaas.mapper.ProtoMapper;
 import org.hpcclab.oaas.model.cr.CrHash;
 import org.hpcclab.oaas.model.cr.OClassRuntime;
-import org.hpcclab.oaas.repository.*;
+import org.hpcclab.oaas.model.pkg.OClassDeployment;
+import org.hpcclab.oaas.pm.deploy.ClassDeploymentManager;
+import org.hpcclab.oaas.repository.ClassRepository;
+import org.hpcclab.oaas.repository.ClassResolver;
+import org.hpcclab.oaas.repository.FunctionRepository;
+import org.hpcclab.oaas.repository.PackageValidator;
 import org.hpcclab.oaas.repository.id.IdGenerator;
 import org.hpcclab.oaas.repository.id.TsidGenerator;
 import org.hpcclab.oaas.repository.store.DatastoreConfRegistry;
@@ -56,7 +61,7 @@ public class RepoProducer {
                                          PackageValidator validator,
                                          ClassResolver classResolver,
                                          ProtoMapper protoMapper,
-                                         PackageDeployer packageDeployer) {
+                                         ClassDeploymentManager packageDeployer) {
     return new VertxPackageRoutes(
       classRepo,
       funcRepo,
@@ -85,5 +90,16 @@ public class RepoProducer {
     var hashRepo = fac.createGenericRepo(CrHash.class, CrHash::getKey, "crHash");
     hashRepo.createIfNotExist();
     return hashRepo;
+  }
+
+  @Produces
+  @ApplicationScoped
+  GenericArgRepository<OClassDeployment> deployRepo() {
+    DatastoreConfRegistry registry = DatastoreConfRegistry.getDefault();
+    var fac = new RepoFactory(registry.getConfMap().get("PKG"));
+    var repo = fac.createGenericRepo(OClassDeployment.class,
+      OClassDeployment::getKey, "deployment");
+    repo.createIfNotExist();
+    return repo;
   }
 }

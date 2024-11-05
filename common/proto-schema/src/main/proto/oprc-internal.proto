@@ -11,8 +11,6 @@ option java_package = "org.hpcclab.oaas.proto";
 package oprc;
 
 service DeploymentStatusUpdater {
-  rpc UpdateCls(OClassStatusUpdate) returns (OprcResponse) {};
-  rpc UpdateClsAll(OClassStatusUpdates) returns (OprcResponse) {};
   rpc UpdateFn(OFunctionStatusUpdate) returns (OprcResponse) {};
   rpc UpdateFnAll(OFunctionStatusUpdates) returns (OprcResponse) {};
 }
@@ -43,21 +41,14 @@ message DetachCrRequest{
 message DeploymentUnit{
   ProtoOClass cls = 1;
   repeated ProtoOFunction fnList = 2;
+  int64 crId = 3;
 }
 
 message CrOperationResponse{
   ProtoCr cr = 1;
-  repeated OClassStatusUpdate clsUpdates = 2;
   repeated OFunctionStatusUpdate fnUpdates = 3;
 }
 
-message OClassStatusUpdate {
-  string key = 1;
-  ProtoOClassDeploymentStatus status = 2;
-}
-message OClassStatusUpdates {
-  repeated OClassStatusUpdate updateList = 1;
-}
 
 message OFunctionStatusUpdate {
   string key = 1;

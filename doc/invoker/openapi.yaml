@@ -13,6 +13,7 @@ paths:
     post:
       tags:
       - Data Allocate Resource
+      description: Allocate Post
       requestBody:
         content:
           application/json:
@@ -33,6 +34,7 @@ paths:
     get:
       tags:
       - Data Allocate Resource
+      description: Allocate Get
       parameters:
       - name: oid
         in: path
@@ -55,6 +57,7 @@ paths:
     post:
       tags:
       - Data Allocate Resource
+      description: Allocate Post
       parameters:
       - name: oid
         in: path
@@ -85,6 +88,7 @@ paths:
     get:
       tags:
       - Object Key Allocation Resource
+      description: Get Allocated Urls
       parameters:
       - name: oid
         in: path
@@ -116,6 +120,7 @@ paths:
     get:
       tags:
       - Class Invocation Resource
+      description: Invoke
       parameters:
       - name: cls
         in: path
@@ -142,6 +147,7 @@ paths:
     post:
       tags:
       - Class Invocation Resource
+      description: Invoke With Body
       parameters:
       - name: cls
         in: path
@@ -190,6 +196,7 @@ paths:
     get:
       tags:
       - Object Access Resource
+      description: Get Obj
       parameters:
       - name: cls
         in: path
@@ -212,6 +219,7 @@ paths:
     get:
       tags:
       - Object Access Resource
+      description: Get Object File
       parameters:
       - name: cls
         in: path
@@ -237,6 +245,7 @@ paths:
     get:
       tags:
       - Object Access Resource
+      description: Invoke
       parameters:
       - name: cls
         in: path
@@ -284,6 +293,7 @@ paths:
     post:
       tags:
       - Object Access Resource
+      description: Invoke With Body
       parameters:
       - name: cls
         in: path

@@ -9,6 +9,10 @@
     pm:
       crmEnabled: false
       kafkaEnabled: false
+      env: |
+        defaultEnv: default
+        environments:
+          - name: default
 
 "%dev":
   quarkus:
@@ -32,8 +36,6 @@ oprc:
     kafkaEnabled: true
     crmEnabled: true
     fnProvisionTopic: oaas-fn
-    crmHost: localhost
-    crmPort: 8091
     crHashTopic: oaas-cr-hash
   log: INFO
   name: package-manager
@@ -82,11 +84,6 @@ quarkus:
     server:
       enable-reflection-service: true
       use-separate-server: false
-    clients:
-      cr-manager:
-        use-quarkus-grpc-client: true
-        host: ${oprc.pm.crmHost}
-        port: ${oprc.pm.crmPort}
 mp:
   messaging:
     outgoing:

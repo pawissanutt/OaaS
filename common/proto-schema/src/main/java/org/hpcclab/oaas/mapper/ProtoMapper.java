@@ -3,7 +3,6 @@ package org.hpcclab.oaas.mapper;
 import com.google.protobuf.ByteString;
 import io.vertx.core.json.JsonObject;
 import org.hpcclab.oaas.model.cls.OClass;
-import org.hpcclab.oaas.model.cls.OClassDeploymentStatus;
 import org.hpcclab.oaas.model.cr.CrHash;
 import org.hpcclab.oaas.model.cr.OClassRuntime;
 import org.hpcclab.oaas.model.cr.OcrRouting;
@@ -43,7 +42,6 @@ public interface ProtoMapper {
 
   ProtoOFunctionConfig toProto(OFunctionConfig fn);
 
-  ProtoOClassDeploymentStatus toProto(OClassDeploymentStatus status);
 
   ProtoOPackage toProto(OPackage pkg);
 
@@ -51,7 +49,6 @@ public interface ProtoMapper {
 
   OClass fromProto(ProtoOClass cls);
 
-  OClassDeploymentStatus fromProto(ProtoOClassDeploymentStatus status);
 
   OFunction fromProto(ProtoOFunction fn);
 

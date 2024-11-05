@@ -10,7 +10,6 @@ import org.hpcclab.oaas.model.pkg.OPackage;
 import org.hpcclab.oaas.pm.PkgManagerConfig;
 import org.hpcclab.oaas.proto.CrOperationResponse;
 import org.hpcclab.oaas.proto.DeploymentUnit;
-import org.hpcclab.oaas.proto.OClassStatusUpdate;
 import org.hpcclab.oaas.proto.OFunctionStatusUpdate;
 import org.hpcclab.oaas.repository.FunctionRepository;
 import org.hpcclab.oaas.repository.PackageDeployer;
@@ -45,6 +44,32 @@ public class CrmPackageDeployer implements PackageDeployer {
     this.crmEnabled = config.crmEnabled();
   }
 
+  DeploymentUnit createDeploymentUnit(OClass cls, OPackage pkg) {
+    var resolvedFnList = cls.getResolved()
+      .getFunctions().values()
+      .stream()
+      .map(FunctionBinding::getFunction)
+      .collect(Collectors.toSet());
+    List<OFunction> fnList = Lists.mutable.empty();
+    List<String> fnToLoad = Lists.mutable.empty();
+    for (String key : resolvedFnList) {
+      Optional<OFunction> fnOptional = pkg.getFunctions().stream()
+        .filter(f -> f.getKey().equals(key))
+        .findAny();
+      if (fnOptional.isPresent()) fnList.add(fnOptional.get());
+      else fnToLoad.add(key);
+    }
+    fnList.addAll(funcRepo.list(fnToLoad)
+      .values());
+    var protoFnList = fnList.stream()
+      .map(protoMapper::toProto)
+      .toList();
+    return DeploymentUnit.newBuilder()
+      .setCls(protoMapper.toProto(cls))
+      .addAllFnList(protoFnList)
+      .build();
+  }
+
   @Override
   public void deploy(OPackage pkg) {
     if (pkg.isDisabled()
@@ -54,30 +79,7 @@ public class CrmPackageDeployer implements PackageDeployer {
     for (var cls : pkg.getClasses()) {
       if (cls.isDisabled())
         continue;
-      var resolvedFnList = cls.getResolved()
-        .getFunctions().values()
-        .stream()
-        .map(FunctionBinding::getFunction)
-        .collect(Collectors.toSet());
-      List<OFunction> fnList = Lists.mutable.empty();
-      List<String> fnToLoad = Lists.mutable.empty();
-      for (String key : resolvedFnList) {
-        Optional<OFunction> fnOptional = pkg.getFunctions().stream()
-          .filter(f -> f.getKey().equals(key))
-          .findAny();
-        if (fnOptional.isPresent()) fnList.add(fnOptional.get());
-        else fnToLoad.add(key);
-      }
-      fnList.addAll(funcRepo.list(fnToLoad)
-        .values());
-      var protoFnList = fnList.stream()
-        .map(protoMapper::toProto)
-        .toList();
-      logger.info("deploy [cls={}, fnList={}]", cls.getKey(), resolvedFnList);
-      var unit = DeploymentUnit.newBuilder()
-        .setCls(protoMapper.toProto(cls))
-        .addAllFnList(protoFnList)
-        .build();
+      var unit = createDeploymentUnit(cls, pkg);
       var response = crStateManager.deploy(unit);
       updateState(pkg, response);
     }
@@ -85,14 +87,6 @@ public class CrmPackageDeployer implements PackageDeployer {
   }
 
   void updateState(OPackage pkg, CrOperationResponse response) {
-    for (OClassStatusUpdate statusUpdate : response.getClsUpdatesList()) {
-      var classOptional = pkg.getClasses().stream()
-        .filter(c -> c.getKey().equals(statusUpdate.getKey()))
-        .findAny();
-      if (classOptional.isEmpty()) continue;
-      var cls = classOptional.get();
-      cls.setStatus(protoMapper.fromProto(statusUpdate.getStatus()));
-    }
     for (OFunctionStatusUpdate statusUpdate : response.getFnUpdatesList()) {
       var status = protoMapper.fromProto(statusUpdate.getStatus());
       var provision = protoMapper.fromProto(statusUpdate.getProvision());
@@ -111,11 +105,5 @@ public class CrmPackageDeployer implements PackageDeployer {
   @Override
   public void detach(OClass cls) {
     crStateManager.detach(cls);
-  }
-
-  @Override
-  public void detach(OFunction fn) {
-    if (fn == null) return;
-    packagePublisher.submitDeleteFn(fn.getKey());
   }
 }

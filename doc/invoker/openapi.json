@@ -15,6 +15,7 @@
     "/allocate" : {
       "post" : {
         "tags" : [ "Data Allocate Resource" ],
+        "description" : "Allocate Post",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -47,6 +48,7 @@
     "/allocate/{oid}" : {
       "get" : {
         "tags" : [ "Data Allocate Resource" ],
+        "description" : "Allocate Get",
         "parameters" : [ {
           "name" : "oid",
           "in" : "path",
@@ -79,6 +81,7 @@
       },
       "post" : {
         "tags" : [ "Data Allocate Resource" ],
+        "description" : "Allocate Post",
         "parameters" : [ {
           "name" : "oid",
           "in" : "path",
@@ -125,6 +128,7 @@
     "/api/allocate/{oid}" : {
       "get" : {
         "tags" : [ "Object Key Allocation Resource" ],
+        "description" : "Get Allocated Urls",
         "parameters" : [ {
           "name" : "oid",
           "in" : "path",
@@ -172,6 +176,7 @@
     "/api/classes/{cls}/invokes/{fb}" : {
       "get" : {
         "tags" : [ "Class Invocation Resource" ],
+        "description" : "Invoke",
         "parameters" : [ {
           "name" : "cls",
           "in" : "path",
@@ -209,6 +214,7 @@
       },
       "post" : {
         "tags" : [ "Class Invocation Resource" ],
+        "description" : "Invoke With Body",
         "parameters" : [ {
           "name" : "cls",
           "in" : "path",
@@ -281,6 +287,7 @@
     "/api/classes/{cls}/objects/{objId}" : {
       "get" : {
         "tags" : [ "Object Access Resource" ],
+        "description" : "Get Obj",
         "parameters" : [ {
           "name" : "cls",
           "in" : "path",
@@ -313,6 +320,7 @@
     "/api/classes/{cls}/objects/{objId}/files/{file}" : {
       "get" : {
         "tags" : [ "Object Access Resource" ],
+        "description" : "Get Object File",
         "parameters" : [ {
           "name" : "cls",
           "in" : "path",
@@ -348,6 +356,7 @@
     "/api/classes/{cls}/objects/{objId}/invokes/{fb}" : {
       "get" : {
         "tags" : [ "Object Access Resource" ],
+        "description" : "Invoke",
         "parameters" : [ {
           "name" : "cls",
           "in" : "path",
@@ -416,6 +425,7 @@
       },
       "post" : {
         "tags" : [ "Object Access Resource" ],
+        "description" : "Invoke With Body",
         "parameters" : [ {
           "name" : "cls",
           "in" : "path",

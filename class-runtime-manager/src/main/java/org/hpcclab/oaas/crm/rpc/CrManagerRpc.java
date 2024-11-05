@@ -31,8 +31,7 @@ public class CrManagerRpc implements CrManager {
   @RunOnVirtualThread
   public Uni<CrOperationResponse> deploy(DeploymentUnit deploymentUnit) {
     try {
-      long crId = deploymentUnit.getCls()
-        .getStatus().getCrId();
+      long crId = deploymentUnit.getCrId();
       var env = environmentManager.getEnvironment();
       if (crId > 0) {
         var controller = controllerManager.getOrLoad(crId, env);

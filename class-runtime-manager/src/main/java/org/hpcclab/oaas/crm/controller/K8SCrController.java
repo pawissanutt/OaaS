@@ -139,12 +139,6 @@ public class K8SCrController implements CrController {
     for (var componentController : componentControllers.values()) {
       resourceList.addAll(componentController.createDeployOperation(plan));
     }
-    crOperation.getClsUpdates().add(OClassStatusUpdate.newBuilder()
-      .setKey(unit.getCls().getKey())
-      .setStatus(ProtoOClassDeploymentStatus.newBuilder()
-        .setCrId(getId())
-        .build())
-      .build());
     for (ProtoOFunction fn : unit.getFnListList()) {
       var fnResourcePlan = deployFunction(plan, fn);
       resourceList.addAll(fnResourcePlan.resources());
@@ -165,12 +159,6 @@ public class K8SCrController implements CrController {
       }
       currentPlan = plan;
     });
-    crOperation.getClsUpdates().add(OClassStatusUpdate.newBuilder()
-      .setKey(unit.getCls().getKey())
-      .setStatus(ProtoOClassDeploymentStatus.newBuilder()
-        .setCrId(getId())
-        .build())
-      .build());
 
     for (var f : unit.getFnListList()) {
       var oldFunc = attachedFn.get(f.getKey());

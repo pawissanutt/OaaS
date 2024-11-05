@@ -223,7 +223,6 @@ public class VertxPackageRoutes implements VertxRouteService {
     OFunction removed = funcRepo.remove(funcKey);
     if (removed == null)
       ctx.fail(StdOaasException.notFoundFunc(funcKey, 404));
-    packageDeployer.detach(removed);
     return removed;
   }
 }

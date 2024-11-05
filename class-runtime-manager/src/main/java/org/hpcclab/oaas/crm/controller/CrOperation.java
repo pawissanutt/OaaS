@@ -2,7 +2,6 @@ package org.hpcclab.oaas.crm.controller;
 
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.exception.CrDeployException;
-import org.hpcclab.oaas.proto.OClassStatusUpdate;
 import org.hpcclab.oaas.proto.OFunctionStatusUpdate;
 
 import java.util.List;
@@ -19,10 +18,9 @@ public interface CrOperation {
   default StateUpdateOperation stateUpdates() {
     return EMPTY;
   }
-  StateUpdateOperation EMPTY = new StateUpdateOperation(List.of(), List.of());
+  StateUpdateOperation EMPTY = new StateUpdateOperation(List.of());
   record StateUpdateOperation(
-    List<OFunctionStatusUpdate> fnUpdates,
-    List<OClassStatusUpdate> clsUpdates
+    List<OFunctionStatusUpdate> fnUpdates
   ){
   }
 }

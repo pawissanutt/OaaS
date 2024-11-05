@@ -19,7 +19,6 @@ message ProtoOClass{
   repeated string parents = 11;
   bool markForRemoval = 12;
   optional ProtoOClassConfig config = 14;
-  optional ProtoOClassDeploymentStatus status = 15;
   optional ProtoQosRequirement requirements = 16;
   optional ProtoConstraint constraints = 17;
   optional ProtoResolvedMember resolved = 18;
@@ -70,10 +69,6 @@ message ProtoOClassConfig {
   string crTemplate = 5;
   bool replicated = 6;
   bool writeThrough = 7;
-}
-
-message ProtoOClassDeploymentStatus{
-  int64 crId = 1;
 }
 
 

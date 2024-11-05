@@ -15,6 +15,7 @@
     "/api/class-runtimes" : {
       "get" : {
         "tags" : [ "Cr Resource" ],
+        "description" : "List Orbit",
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
@@ -47,6 +48,7 @@
     "/api/class-runtimes/{id}" : {
       "delete" : {
         "tags" : [ "Cr Resource" ],
+        "description" : "Delete",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -65,6 +67,7 @@
     "/api/classes" : {
       "get" : {
         "tags" : [ "Class Resource" ],
+        "description" : "List",
         "parameters" : [ {
           "name" : "desc",
           "in" : "query",
@@ -110,6 +113,7 @@
     "/api/classes/{clsKey}" : {
       "get" : {
         "tags" : [ "Class Resource" ],
+        "description" : "Get",
         "parameters" : [ {
           "name" : "clsKey",
           "in" : "path",
@@ -133,6 +137,7 @@
       },
       "delete" : {
         "tags" : [ "Class Resource" ],
+        "description" : "Delete",
         "parameters" : [ {
           "name" : "clsKey",
           "in" : "path",
@@ -158,6 +163,7 @@
     "/api/functions" : {
       "get" : {
         "tags" : [ "Function Resource" ],
+        "description" : "List",
         "parameters" : [ {
           "name" : "desc",
           "in" : "query",
@@ -203,29 +209,7 @@
     "/api/functions/{funcKey}" : {
       "get" : {
         "tags" : [ "Function Resource" ],
-        "parameters" : [ {
-          "name" : "funcKey",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/OFunction_Public"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete" : {
-        "tags" : [ "Function Resource" ],
+        "description" : "Get",
         "parameters" : [ {
           "name" : "funcKey",
           "in" : "path",
@@ -251,6 +235,7 @@
     "/api/packages" : {
       "post" : {
         "tags" : [ "Package Resource" ],
+        "description" : "Create",
         "requestBody" : {
           "content" : {
             "text/x-yaml" : {
@@ -936,6 +921,34 @@
           }
         }
       },
+      "OClassDeployment" : {
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "type" : "string"
+          },
+          "partitionCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "replicaCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "targetEnvs" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "partitions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PartitionDeployment"
+            }
+          }
+        }
+      },
       "OClassDeploymentStatus" : {
         "type" : "object",
         "properties" : {
@@ -951,6 +964,34 @@
           "crId" : {
             "format" : "int64",
             "type" : "integer"
+          }
+        }
+      },
+      "OClassDeployment_Public" : {
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "type" : "string"
+          },
+          "partitionCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "replicaCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "targetEnvs" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "partitions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PartitionDeployment_Public"
+            }
           }
         }
       },
@@ -1294,6 +1335,12 @@
               "type" : "string"
             }
           },
+          "deployments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OClassDeployment"
+            }
+          },
           "disabled" : {
             "type" : "boolean"
           }
@@ -1321,6 +1368,12 @@
             "type" : "array",
             "items" : {
               "type" : "string"
+            }
+          },
+          "deployments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OClassDeployment_Public"
             }
           },
           "disabled" : {
@@ -1413,6 +1466,36 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/OFunction_Public"
+            }
+          }
+        }
+      },
+      "PartitionDeployment" : {
+        "type" : "object",
+        "properties" : {
+          "partitionId" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "replicas" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ReplicaDeployment"
+            }
+          }
+        }
+      },
+      "PartitionDeployment_Public" : {
+        "type" : "object",
+        "properties" : {
+          "partitionId" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "replicas" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ReplicaDeployment_Public"
             }
           }
         }
@@ -1543,6 +1626,38 @@
           },
           "access" : {
             "$ref" : "#/components/schemas/KeyAccessModifier_Public"
+          }
+        }
+      },
+      "ReplicaDeployment" : {
+        "type" : "object",
+        "properties" : {
+          "replicaId" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "env" : {
+            "type" : "string"
+          },
+          "crId" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }
+      },
+      "ReplicaDeployment_Public" : {
+        "type" : "object",
+        "properties" : {
+          "replicaId" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "env" : {
+            "type" : "string"
+          },
+          "crId" : {
+            "format" : "int64",
+            "type" : "integer"
           }
         }
       },
