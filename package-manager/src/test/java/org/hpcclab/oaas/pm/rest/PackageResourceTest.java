@@ -55,6 +55,7 @@ class PackageResourceTest {
             - function: f3
               name: func1
               outputCls: base
+      deployments: []
       """;
 
   // language=yaml
@@ -72,6 +73,7 @@ class PackageResourceTest {
             - function: f3
               name: func3
               outputCls: base
+      deployments: []
       """;
 
   // language=yaml

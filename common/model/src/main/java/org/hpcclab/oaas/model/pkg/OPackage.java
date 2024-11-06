@@ -20,6 +20,7 @@ public class OPackage {
   @JsonSetter(nulls = Nulls.AS_EMPTY)
   List<OFunction> functions = List.of();
   List<String> required;
-  List<OClassDeployment> deployments;
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
+  List<OClassDeployment> deployments = List.of();
   boolean disabled;
 }

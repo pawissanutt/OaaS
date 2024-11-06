@@ -174,7 +174,9 @@ public class CrStateManager {
     logger.info("deploy a [CR:{}, env:{}] for cls [{}]",
       unit.getCrId(), env, cls.getKey());
     var response = crManager.deploy(unit);
-    updateCr(response.getCr()).await().indefinitely();
+    ProtoCr cr = response.getCr();
+    cr = cr.toBuilder().setEnv(env).build();
+    updateCr(cr).await().indefinitely();
     return response;
   }
 

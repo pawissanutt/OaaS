@@ -66,14 +66,14 @@ public class CrControllerManager {
   }
 
   public CrController getOrLoad(long id, OprcEnvironment env) {
-    var orbit = controllerMap.get(id);
-    if (orbit==null) {
+    var controller = controllerMap.get(id);
+    if (controller==null) {
       var protoCr = crStateService.get(SingleKeyQuery.newBuilder().setKey(Tsid.from(id).toLowerCase()).build());
       if (protoCr.getId()==0) return null;
-      orbit = templateManager.load(env.config(), protoCr);
-      controllerMap.put(id, orbit);
+      controller = templateManager.load(env.config(), protoCr);
+      controllerMap.put(id, controller);
     }
-    return orbit;
+    return controller;
   }
 
   public CrController getOrLoad(ProtoCr protoCr, OprcEnvironment env) {

@@ -113,6 +113,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OClass_Public"
+  /api/deployments:
+    get:
+      tags:
+      - Deployment Resource
+      description: List
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          format: int32
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginationOClassDeployment"
+  /api/deployments/{id}:
+    delete:
+      tags:
+      - Deployment Resource
+      description: Delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "204":
+          description: No Content
   /api/functions:
     get:
       tags:
@@ -770,6 +806,8 @@ components:
           $ref: "#/components/schemas/PartitionRouting"
         namespace:
           type: string
+        env:
+          type: string
         state:
           $ref: "#/components/schemas/CrState"
         deleted:
@@ -1036,6 +1074,22 @@ components:
       - PROTOBUF
       - GRPC
       type: string
+    PaginationOClassDeployment:
+      type: object
+      properties:
+        total:
+          format: int64
+          type: integer
+        offset:
+          format: int64
+          type: integer
+        itemCount:
+          format: int64
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OClassDeployment"
     PaginationOClassRuntime:
       type: object
       properties:

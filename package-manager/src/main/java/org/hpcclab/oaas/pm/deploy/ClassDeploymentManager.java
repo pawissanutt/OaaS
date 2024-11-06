@@ -12,6 +12,7 @@ import org.hpcclab.oaas.model.function.FunctionBinding;
 import org.hpcclab.oaas.model.function.OFunction;
 import org.hpcclab.oaas.model.pkg.OClassDeployment;
 import org.hpcclab.oaas.model.pkg.OPackage;
+import org.hpcclab.oaas.pm.PkgManagerConfig;
 import org.hpcclab.oaas.pm.service.CrStateManager;
 import org.hpcclab.oaas.pm.service.EnvironmentRegistry;
 import org.hpcclab.oaas.pm.service.PackagePublisher;
@@ -41,6 +42,12 @@ public class ClassDeploymentManager implements PackageDeployer {
   FunctionRepository funcRepo;
   @Inject
   PackagePublisher packagePublisher;
+  @Inject
+  PkgManagerConfig config;
+
+  public GenericArgRepository<OClassDeployment> getRepo() {
+    return repo;
+  }
 
   void reassign(OClassDeployment deployment) {
     var partitionCount = Math.max(1, deployment.getPartitionCount());
@@ -93,7 +100,9 @@ public class ClassDeploymentManager implements PackageDeployer {
         deploy(deploy, unit);
       }
     }
-    packagePublisher.submitNewPkg(pkg).await().indefinitely();
+    if (config.kafkaEnabled()) {
+      packagePublisher.submitNewPkg(pkg).await().indefinitely();
+    }
   }
 
   void deploy(OClassDeployment deployment, DeploymentUnit unit) {
@@ -101,9 +110,10 @@ public class ClassDeploymentManager implements PackageDeployer {
       for (var replica : partition.getReplicas()) {
         DeploymentUnit.Builder builder = unit.toBuilder();
         builder.setCrId(replica.getCrId());
-        crStateManager.deploy(builder.build());
+        crStateManager.deploy(replica.getEnv(), builder.build());
       }
     }
+    repo.persist(deployment);
   }
 
   @Override
@@ -141,5 +151,9 @@ public class ClassDeploymentManager implements PackageDeployer {
       .setCls(protoMapper.toProto(cls))
       .addAllFnList(protoFnList)
       .build();
+  }
+
+  public void destroy(String key) {
+    throw StdOaasException.notImplemented();
   }
 }

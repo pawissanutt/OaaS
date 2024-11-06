@@ -1,9 +1,9 @@
 name: builtin
 disabled: true
 functions:
-  - name: copy
-    type: BUILTIN
-    immutable: true
+#  - name: copy
+#    type: BUILTIN
+#    immutable: true
   - name: new
     type: BUILTIN
   - name: update
@@ -16,11 +16,11 @@ functions:
   - name: file
     type: BUILTIN
     immutable: true
-  - name: project
-    type: BUILTIN
-    immutable: true
-  - name: native-query
-    type: BUILTIN
+#  - name: project
+#    type: BUILTIN
+#    immutable: true
+#  - name: native-query
+#    type: BUILTIN
 classes:
   - name: base
     stateType: FILES
@@ -34,7 +34,7 @@ classes:
         name: get
         function: builtin.get
         outputCls: .record
-      - access: PUBLIC
-        name: file
-        function: builtin.file
-        outputCls: .record
+#      - access: PUBLIC
+#        name: file
+#        function: builtin.file
+#        outputCls: .record

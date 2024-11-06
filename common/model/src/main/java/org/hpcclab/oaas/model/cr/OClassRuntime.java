@@ -16,6 +16,7 @@ public record OClassRuntime(
   List<OFunction> attachedFn,
   OcrRouting.PartitionRouting routing,
   String namespace,
+  String env,
   CrState state,
   boolean deleted,
   long stabilizationTime

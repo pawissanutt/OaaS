@@ -35,18 +35,19 @@ public class CrManagerRpc implements CrManager {
       var env = environmentManager.getEnvironment();
       if (crId > 0) {
         var controller = controllerManager.getOrLoad(crId, env);
-        var plan = controller.getTemplate().getQosOptimizer()
-          .resolve(deploymentUnit, env);
-        var operation = controller.createUpdateOperation(plan, deploymentUnit);
-        return operationExecutor.applyOrRollback(controller, operation, env);
-      } else {
-        var controller = controllerManager.create(env, deploymentUnit);
-        var plan = controller.getTemplate().getQosOptimizer()
-          .resolve(deploymentUnit, env);
-        var operation = controller.createDeployOperation(plan, deploymentUnit);
-        logger.info("deploy CR({}) for cls({})", controller.getTsidString(), deploymentUnit.getCls().getKey());
-        return operationExecutor.applyOrRollback(controller, operation, env);
+        if (controller != null) {
+          var plan = controller.getTemplate().getQosOptimizer()
+            .resolve(deploymentUnit, env);
+          var operation = controller.createUpdateOperation(plan, deploymentUnit);
+          return operationExecutor.applyOrRollback(controller, operation, env);
+        }
       }
+      var controller = controllerManager.create(env, deploymentUnit);
+      var plan = controller.getTemplate().getQosOptimizer()
+        .resolve(deploymentUnit, env);
+      var operation = controller.createDeployOperation(plan, deploymentUnit);
+      logger.info("deploy CR({}) for cls({})", controller.getTsidString(), deploymentUnit.getCls().getKey());
+      return operationExecutor.applyOrRollback(controller, operation, env);
     } catch (Exception e) {
       logger.error("CR deploying error", e);
       return Uni.createFrom().failure(e);

@@ -8,6 +8,8 @@ import org.hpcclab.oprc.cli.command.cr.CrListCommand;
 import org.hpcclab.oprc.cli.command.ctx.ContextGetCommand;
 import org.hpcclab.oprc.cli.command.ctx.ContextSelectCommand;
 import org.hpcclab.oprc.cli.command.ctx.ContextSetCommand;
+import org.hpcclab.oprc.cli.command.deploy.DeployDeleteCommand;
+import org.hpcclab.oprc.cli.command.deploy.DeployListCommand;
 import org.hpcclab.oprc.cli.command.dev.*;
 import org.hpcclab.oprc.cli.command.fn.FnListCommand;
 import org.hpcclab.oprc.cli.command.invocation.GrpcInvocationCommand;
@@ -76,6 +78,21 @@ public class EntryCommand {
     }
   )
   public static class ClsEntryCommand {
+
+  }
+
+
+  @Command(
+    name = "deploy",
+    aliases = {"dep", "de"},
+    description = "Manage deployments",
+    mixinStandardHelpOptions = true,
+    subcommands = {
+      DeployListCommand.class,
+      DeployDeleteCommand.class
+    }
+  )
+  public static class DeployEntryCommand {
 
   }
 

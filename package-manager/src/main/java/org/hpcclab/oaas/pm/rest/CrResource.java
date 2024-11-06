@@ -1,6 +1,5 @@
 package org.hpcclab.oaas.pm.rest;
 
-import io.quarkus.grpc.GrpcClient;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -11,7 +10,7 @@ import org.hpcclab.oaas.model.Pagination;
 import org.hpcclab.oaas.model.cr.OClassRuntime;
 import org.hpcclab.oaas.model.exception.StdOaasException;
 import org.hpcclab.oaas.pm.service.CrStateManager;
-import org.hpcclab.oaas.proto.CrManagerGrpc;
+import org.hpcclab.oaas.pm.service.EnvironmentRegistry;
 import org.jboss.resteasy.reactive.RestQuery;
 
 @Path("/api/class-runtimes")
@@ -19,14 +18,15 @@ import org.jboss.resteasy.reactive.RestQuery;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CrResource {
-  CrStateManager stateManager;
-  CrManagerGrpc.CrManagerBlockingStub orbitManager;
+  final CrStateManager stateManager;
+  final EnvironmentRegistry registry;
 
   @Inject
   public CrResource(CrStateManager stateManager,
-                    @GrpcClient("orbit-manager") CrManagerGrpc.CrManagerBlockingStub orbitManager) {
+                    EnvironmentRegistry registry) {
     this.stateManager = stateManager;
-    this.orbitManager = orbitManager;
+    this.registry = registry;
+
   }
 
   @GET
@@ -43,7 +43,9 @@ public class CrResource {
   public void delete(String id) {
     var cr = stateManager.getAsProto(id).await().indefinitely();
     if (cr!=null) {
-      var res = orbitManager.destroy(cr);
+      var env = cr.getEnv();
+      var crm = registry.getCrmStub(env);
+      var res = crm.destroy(cr);
       stateManager.getCrRepo().delete(id);
       if (!res.getSuccess())
         throw StdOaasException.format("Error deleting cr %s", id);

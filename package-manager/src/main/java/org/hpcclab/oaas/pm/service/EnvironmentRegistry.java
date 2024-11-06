@@ -93,7 +93,8 @@ public class EnvironmentRegistry {
 
   public record Environment(String name,
                             String crmUrl,
-                            String gatewayUrl) {
+                            String localGatewayUrl,
+                            String globalGatewayUrl) {
 
   }
 }
