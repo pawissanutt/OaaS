@@ -180,6 +180,7 @@ public class CrStateManager {
     return response;
   }
 
+  @Deprecated
   public CrOperationResponse deploy(DeploymentUnit unit) {
     var crManager = envRegistry.getCrmStub();
     var cls = unit.getCls();

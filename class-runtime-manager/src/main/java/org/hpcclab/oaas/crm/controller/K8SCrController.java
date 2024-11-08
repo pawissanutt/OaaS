@@ -30,6 +30,7 @@ public class K8SCrController implements CrController {
   public static final String NAME_CONFIGMAP = "cm";
   private static final Logger logger = LoggerFactory.getLogger(K8SCrController.class);
   final long id;
+  final String env;
   final String prefix;
   final CrTemplate template;
   final KubernetesClient kubernetesClient;
@@ -52,12 +53,14 @@ public class K8SCrController implements CrController {
                          Map<String, CrComponentController<HasMetadata>> componentControllers,
                          FnCrControllerFactory<HasMetadata> factory,
                          OprcEnvironment.Config envConfig,
-                         Tsid tsid) {
+                         Tsid tsid,
+                         String env) {
     this.template = template;
     this.kubernetesClient = client;
     this.envConfig = envConfig;
     this.namespace = envConfig.namespace();
     this.id = tsid.toLong();
+    this.env = env;
     this.prefix = "cr-" + tsid.toLowerCase() + "-";
     this.factory = factory;
     this.componentControllers = componentControllers;
@@ -76,7 +79,8 @@ public class K8SCrController implements CrController {
       componentControllers,
       factory,
       envConfig,
-      Tsid.from(protoCr.getId())
+      Tsid.from(protoCr.getId()),
+      protoCr.getEnv()
     );
     for (ProtoOClass protoOClass : protoCr.getAttachedClsList()) {
       attachedCls.put(protoOClass.getKey(), protoOClass);
@@ -265,6 +269,7 @@ public class K8SCrController implements CrController {
       .build();
     return ProtoCr.newBuilder()
       .setId(id)
+      .setEnv(env)
       .setTemplate(template.name())
       .setNamespace(namespace)
       .addAllAttachedCls(attachedCls.values())

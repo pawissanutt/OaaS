@@ -42,6 +42,7 @@ message DeploymentUnit{
   ProtoOClass cls = 1;
   repeated ProtoOFunction fnList = 2;
   int64 crId = 3;
+  string env = 4;
 }
 
 message CrOperationResponse{

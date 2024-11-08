@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  * @author Pawissanutt
  */
 @ApplicationScoped
+@Deprecated
 public class CrmPackageDeployer implements PackageDeployer {
   private static final Logger logger = LoggerFactory.getLogger( CrmPackageDeployer.class );
   final ProtoMapper protoMapper;

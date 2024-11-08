@@ -65,7 +65,8 @@ public class V1CrTemplate extends AbstractCrTemplate {
       componentControllers,
       factory,
       envConf,
-      tsidFactory.create()
+      tsidFactory.create(),
+      deploymentUnit.getEnv()
     );
   }
 

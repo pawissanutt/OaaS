@@ -1,5 +1,6 @@
 package org.hpcclab.oaas.crm.template;
 
+import com.github.f4b6a3.tsid.Tsid;
 import io.fabric8.knative.client.DefaultKnativeClient;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -58,13 +59,20 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
       createComponentControllers(envConf);
     var factory = new UnifyFnCrControllerFactory(config.functions(), envConf);
     filterFactory.injectFilter(config.functions().filters(), factory);
+    Tsid id;
+    if (deploymentUnit.getCrId() != 0) {
+      id = Tsid.from(deploymentUnit.getCrId());
+    } else {
+      id = tsidFactory.create();
+    }
     return new K8SCrController(
       this,
       k8sClient,
       componentControllers,
       factory,
       envConf,
-      tsidFactory.create()
+      id,
+      deploymentUnit.getEnv()
     );
   }
 

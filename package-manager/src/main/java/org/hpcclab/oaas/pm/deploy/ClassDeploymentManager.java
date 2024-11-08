@@ -109,7 +109,8 @@ public class ClassDeploymentManager implements PackageDeployer {
     for (var partition : deployment.getPartitions()) {
       for (var replica : partition.getReplicas()) {
         DeploymentUnit.Builder builder = unit.toBuilder();
-        builder.setCrId(replica.getCrId());
+        builder.setCrId(replica.getCrId())
+          .setEnv(replica.getEnv());
         crStateManager.deploy(replica.getEnv(), builder.build());
       }
     }
