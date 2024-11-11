@@ -30,6 +30,7 @@ import picocli.CommandLine.Command;
     EntryCommand.CrEntryCommand.class,
     EntryCommand.ContextEntryCommand.class,
     EntryCommand.DevEntryCommand.class,
+    EntryCommand.DeployEntryCommand.class,
     EntryCommand.FnEntryCommand.class,
     EntryCommand.PackageEntryCommand.class,
     InvocationCommand.class,

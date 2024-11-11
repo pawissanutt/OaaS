@@ -977,7 +977,7 @@
       "OClassDeployment" : {
         "type" : "object",
         "properties" : {
-          "key" : {
+          "_key" : {
             "type" : "string"
           },
           "partitionCount" : {
@@ -1023,7 +1023,7 @@
       "OClassDeployment_Public" : {
         "type" : "object",
         "properties" : {
-          "key" : {
+          "_key" : {
             "type" : "string"
           },
           "partitionCount" : {
