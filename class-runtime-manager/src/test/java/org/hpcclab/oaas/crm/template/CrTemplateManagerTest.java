@@ -2,9 +2,7 @@ package org.hpcclab.oaas.crm.template;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import org.hpcclab.oaas.proto.DeploymentUnit;
-import org.hpcclab.oaas.proto.ProtoOClass;
-import org.hpcclab.oaas.proto.ProtoQosRequirement;
+import org.hpcclab.oaas.proto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,5 +28,25 @@ class CrTemplateManagerTest {
     CrTemplate template = manager.selectTemplate(deployment);
     System.out.println(template.getConfig());
     assertEquals(10, template.getConfig().priority());
+  }
+
+  @Test
+  void test2() {
+    DeploymentUnit deployment = DeploymentUnit.newBuilder()
+      .setCls(ProtoOClass.newBuilder()
+        .setKey("example.Hello")
+        .addFunctions(ProtoFunctionBinding.newBuilder().setName("new").setFunction("example.new").setNoMain(true))
+        .setRequirements(ProtoQosRequirement.newBuilder().setThroughput(1001))
+      )
+      .addFnList(ProtoOFunction.newBuilder()
+        .setKey("example.new")
+        .setProvision(ProtoProvisionConfig.newBuilder().setKnative(KnativeProvision.newBuilder().setImage("test")))
+        .build())
+      .setDist(DataDistribution.newBuilder().putCollections(
+        "example.Hello",
+        PartitionDistribution.newBuilder().build()
+      ))
+      .build();
+    // TODO
   }
 }

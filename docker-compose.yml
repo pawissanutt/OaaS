@@ -4,11 +4,11 @@ version: '3.1'
 services:
 
   arangodb:
-    image: arangodb:3.11
+    image: arangodb:3.12
     ports:
-      - "31235:8529"
+      - "8529:8529"
     environment:
-#      ARANGO_ROOT_PASSWORD: "changeme"
+#      ARANGO_ROOT_PASSWORD: changeme
       ARANGO_NO_AUTH: "1"
     volumes:
       - arango-data:/var/lib/arangodb3
@@ -27,9 +27,7 @@ services:
       QUARKUS_CONSOLE_COLOR: 'true'
       QUARKUS_HTTP_CORS: 'true'
       KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://redpanda:9092
-      OPRC_OC_PROVISIONTOPIC: msc-provisions
-      OPRC_OC_KAFKAENABLED: 'true'
-      OPRC_OC_STORAGEADAPTERURL: http://sa:8080
+      OPRC_PM_KAFKAENABLED: 'true'
       OPRC_DB_PKG_HOST: arangodb
       OPRC_DB_PKG_PORT: "8529"
       OPRC_DB_PKG_DB: oaas

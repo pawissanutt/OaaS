@@ -9,6 +9,7 @@ import java.util.List;
 
 @Proto
 @Builder(toBuilder = true)
+@Deprecated
 public record CrHash(String cls, int numSegment, List<ApiAddress> segmentAddr, long ts){
   @JsonProperty("_key")
   public String getKey() {

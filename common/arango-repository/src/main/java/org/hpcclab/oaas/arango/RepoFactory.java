@@ -1,8 +1,9 @@
 package org.hpcclab.oaas.arango;
 
 import com.arangodb.*;
-import com.arangodb.entity.LoadBalancingStrategy;
+import com.arangodb.http.HttpProtocolConfig;
 import com.arangodb.serde.jackson.JacksonSerde;
+import io.vertx.core.Vertx;
 import org.hpcclab.oaas.arango.repo.ArgClsRepository;
 import org.hpcclab.oaas.arango.repo.ArgFunctionRepository;
 import org.hpcclab.oaas.arango.repo.GenericArgRepository;
@@ -24,10 +25,11 @@ public class RepoFactory {
       .password(conf.pass()!=null ? conf.pass():"")
       .host(conf.host(), conf.port())
       .maxConnections(30)
-      .loadBalancingStrategy(LoadBalancingStrategy.ROUND_ROBIN)
-      .acquireHostList(true)
-      .protocol(Protocol.VST)
+//      .loadBalancingStrategy(LoadBalancingStrategy.ROUND_ROBIN)
+//      .acquireHostList(true)
+      .protocol(Protocol.HTTP2_VPACK)
       .serde(JacksonSerde.of(ContentType.VPACK))
+      .protocolConfig(HttpProtocolConfig.builder().vertx(Vertx.currentContext().owner()).build())
       .build();
   }
 

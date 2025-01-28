@@ -59,6 +59,7 @@ public record CrtMappingConfig(
     float startReplicasToTpRatio,
     boolean enableHpa,
     List<FilterConfig> filters,
+    List<ExtensionConfig> extensions,
     double objectiveAmplifier,
     double objectiveMissThreshold,
     double idleFilterThreshold,
@@ -83,7 +84,9 @@ public record CrtMappingConfig(
     boolean disableDynamicAdjustment) implements ScalingConfig {
   }
 
+  public record ExtensionConfig(String name) {
 
+  }
 
   public record FilterConfig(String type,
                              @JsonAnyGetter Map<String, Object> conf) {

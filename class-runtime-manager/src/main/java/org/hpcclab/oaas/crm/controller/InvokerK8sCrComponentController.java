@@ -11,6 +11,7 @@ import org.hpcclab.oaas.crm.CrtMappingConfig;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
+import org.hpcclab.oaas.proto.PartitionDistribution;
 
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,11 @@ public class InvokerK8sCrComponentController extends AbstractK8sCrComponentContr
     addEnv(container, "ISPN_DNS_PING",
       invokerSvcPing.getMetadata().getName() + "." + namespace + ".svc.cluster.local");
     addEnv(container, "KUBERNETES_NAMESPACE", namespace);
-    addEnv(container, "OPRC_ISPN_OBJSTORE_OWNER", String.valueOf(dataSpec.replication()));
+    var replica = dataSpec.dist().getCollectionsMap()
+        .values().stream().findFirst()
+        .map(PartitionDistribution::getReplicaCount)
+          .orElse(2);
+    addEnv(container, "OPRC_ISPN_OBJSTORE_OWNER", String.valueOf(replica));
     container.getEnv()
       .add(new EnvVar(
         "ISPN_POD_NAME",

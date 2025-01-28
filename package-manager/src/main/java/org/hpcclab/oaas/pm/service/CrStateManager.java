@@ -5,16 +5,11 @@ import com.github.f4b6a3.tsid.Tsid;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
-import io.smallrye.reactive.messaging.MutinyEmitter;
-import io.smallrye.reactive.messaging.kafka.Record;
-import io.vertx.core.buffer.Buffer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.hpcclab.oaas.arango.repo.GenericArgRepository;
 import org.hpcclab.oaas.mapper.ProtoMapper;
 import org.hpcclab.oaas.mapper.ProtoMapperImpl;
-import org.hpcclab.oaas.model.cls.OClass;
 import org.hpcclab.oaas.model.cr.CrHash;
 import org.hpcclab.oaas.model.cr.OClassRuntime;
 import org.hpcclab.oaas.model.function.OFunction;
@@ -39,8 +34,8 @@ public class CrStateManager {
   GenericArgRepository<OClassRuntime> crRepo;
   BroadcastProcessor<OClassRuntime> crBroadcaster;
   GenericArgRepository<CrHash> hashRepo;
-  @Channel("crHashs")
-  MutinyEmitter<Record<String, Buffer>> crHashEmitter;
+//  @Channel("crHashs")
+//  MutinyEmitter<Record<String, Buffer>> crHashEmitter;
 
 
   @Inject
@@ -82,10 +77,10 @@ public class CrStateManager {
         logger.trace("merged crHash: {}", merged);
         return merged;
       })
-      .call(hash -> crHashEmitter.send(Record.of(
-        hash.getKey(),
-        Buffer.buffer(protoMapper.toProto(hash).toByteArray()))
-      ))
+//      .call(hash -> crHashEmitter.send(Record.of(
+//        hash.getKey(),
+//        Buffer.buffer(protoMapper.toProto(hash).toByteArray()))
+//      ))
       .call(h -> hashRepo.persistAsync(h))
       .map(protoMapper::toProto);
   }
@@ -129,7 +124,12 @@ public class CrStateManager {
       .map(doc -> protoMapper.toProto(doc));
   }
 
-  public void detach(OClass cls) {
+  public void detach(String clsKey) {
+    var cls = clsRepo.get(clsKey);
+    if (cls==null) {
+      logger.warn("No matched class for give key");
+      return;
+    }
     var cr = getCrRepo().get(OClassRuntime.toKey(cls.getStatus().getCrId()));
     if (cr==null) {
       logger.warn("No matched CR for give class");

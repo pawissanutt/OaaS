@@ -56,6 +56,7 @@ public class FnEventObserver {
       watch = knativeClient.services()
         .withLabels(labels)
         .watch(new FnEventWatcher(controllerManager, environmentManager));
+      logger.info("watcher started");
     }
   }
 

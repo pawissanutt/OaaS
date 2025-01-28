@@ -7,10 +7,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.hpcclab.oaas.pm.service.CrStateManager;
 import org.hpcclab.oaas.model.Pagination;
 import org.hpcclab.oaas.model.Views;
 import org.hpcclab.oaas.model.cls.OClass;
+import org.hpcclab.oaas.pm.service.CrStateManager;
 import org.hpcclab.oaas.repository.ClassRepository;
 import org.jboss.resteasy.reactive.RestQuery;
 import org.slf4j.Logger;
@@ -59,7 +59,7 @@ public class ClassResource {
       throw new NotFoundException();
     }
     if (cls.getStatus()!=null && cls.getStatus().getCrId() > 0) {
-      crStateManager.detach(cls);
+      crStateManager.detach(cls.getKey());
     }
     classRepo.remove(clsKey);
     return cls;

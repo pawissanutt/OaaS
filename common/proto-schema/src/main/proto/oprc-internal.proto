@@ -4,6 +4,7 @@ import "oprc-class.proto";
 import "oprc-function.proto";
 import "oprc-cr.proto";
 import "oprc-common.proto";
+import "oprc-data.proto";
 
 option java_multiple_files = true;
 option java_package = "org.hpcclab.oaas.proto";
@@ -43,7 +44,28 @@ message DeploymentUnit{
   repeated ProtoOFunction fnList = 2;
   int64 crId = 3;
   string env = 4;
+  DataDistribution dist = 5;
 }
+
+message DataDistribution{
+  map<string, PartitionDistribution> collections = 1;
+  uint64 node_id = 2;
+  repeated uint64 members = 3;
+}
+
+
+
+message PartitionDistribution{
+  uint32 partition_count = 1;
+  uint32 replica_count = 2;
+  string shard_type = 3;
+  repeated ShardAssignment assignment = 4;
+  map<string, string> options = 5;
+  repeated string disabled_fns = 6;
+  repeated string standby_fns = 7;
+
+}
+
 
 message CrOperationResponse{
   ProtoCr cr = 1;

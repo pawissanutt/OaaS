@@ -16,7 +16,10 @@ import org.hpcclab.oaas.pm.PkgManagerConfig;
 import org.hpcclab.oaas.pm.service.CrStateManager;
 import org.hpcclab.oaas.pm.service.EnvironmentRegistry;
 import org.hpcclab.oaas.pm.service.PackagePublisher;
+import org.hpcclab.oaas.proto.DataDistribution;
 import org.hpcclab.oaas.proto.DeploymentUnit;
+import org.hpcclab.oaas.proto.PartitionDistribution;
+import org.hpcclab.oaas.proto.ShardAssignment;
 import org.hpcclab.oaas.repository.FunctionRepository;
 import org.hpcclab.oaas.repository.PackageDeployer;
 
@@ -67,23 +70,40 @@ public class ClassDeploymentManager implements PackageDeployer {
         }
       }
     }
-    if (deployment.getPartitions().isEmpty()) {
-      List<OClassDeployment.PartitionDeployment> partitions = new ArrayList<>();
-      for (int i = 0; i < partitionCount; i++) {
-        List<OClassDeployment.ReplicaDeployment> replicas = new ArrayList<>();
-        for (int j = 0; j < replicaCount; j++) {
-          int index = (i + j) % possibleEnv.size();
-          replicas.add(new OClassDeployment.ReplicaDeployment()
-            .setReplicaId(j)
-            .setCrId(TsidCreator.getTsid4096().toLong())
-            .setEnv(possibleEnv.get(index)));
-        }
-        partitions.add(new OClassDeployment.PartitionDeployment()
-          .setPartitionId(i)
-          .setReplicas(replicas));
-      }
-      deployment.setPartitions(partitions);
+    if (deployment.getMembers().isEmpty()) {
+      var envs = deployment.getTargetEnvs();
+      var members = envs.stream()
+        .map(env -> new OClassDeployment.MemberGroup()
+          .setId(generateId())
+          .setEnv(env)
+        )
+        .toList();
+      deployment.setMembers(members);
     }
+    if (deployment.getAssignments().isEmpty()) {
+      var members = deployment.getMembers().stream().map(OClassDeployment.MemberGroup::getId).toList();
+      var assignments = new ArrayList<OClassDeployment.ShardAssignment>();
+      var memberIndex = 0;
+      for (int i = 0; i < partitionCount; i++) {
+        var assignment = new OClassDeployment.ShardAssignment();
+        var replicas = new ArrayList<Long>();
+        var shardIds = new ArrayList<Long>();
+        for (int j = 0; j < replicaCount - 1; j++) {
+          shardIds.add(generateId());
+          replicas.add(members.get(memberIndex % members.size()));
+          memberIndex++;
+        }
+        assignment.setPrimary(shardIds.getFirst());
+        assignment.setReplica(replicas);
+        assignment.setShardIds(shardIds);
+        assignments.add(assignment);
+      }
+      deployment.setAssignments(assignments);
+    }
+  }
+
+  long generateId() {
+    return TsidCreator.getTsid1024().toLong();
   }
 
 
@@ -96,8 +116,7 @@ public class ClassDeploymentManager implements PackageDeployer {
         .findFirst();
       if (clsOp.isPresent()) {
         reassign(deploy);
-        var unit = createDeploymentUnit(clsOp.get(), pkg);
-        deploy(deploy, unit);
+        deployToEnvs(deploy, clsOp.get(), pkg);
       }
     }
     if (config.kafkaEnabled()) {
@@ -105,30 +124,30 @@ public class ClassDeploymentManager implements PackageDeployer {
     }
   }
 
-  void deploy(OClassDeployment deployment, DeploymentUnit unit) {
-    for (var partition : deployment.getPartitions()) {
-      for (var replica : partition.getReplicas()) {
-        DeploymentUnit.Builder builder = unit.toBuilder();
-        builder.setCrId(replica.getCrId())
-          .setEnv(replica.getEnv());
-        crStateManager.deploy(replica.getEnv(), builder.build());
-      }
+  void deployToEnvs(OClassDeployment deployment,
+                    OClass cls,
+                    OPackage pkg) {
+    for (var member : deployment.getMembers()) {
+      var unit = createDeploymentUnit(deployment, cls, pkg, member);
+      crStateManager.deploy(member.getEnv(), unit);
     }
     repo.persist(deployment);
   }
 
   @Override
-  public void detach(OClass cls) {
-    var deploy = repo.get(cls.getKey());
-    for (var partition : deploy.getPartitions()) {
-      for (var replica : partition.getReplicas()) {
-        crStateManager.undeploy(replica.getEnv(), replica.getCrId());
-      }
+  public void detach(String clsKey) {
+    var deploy = repo.get(clsKey);
+    for (var member : deploy.getMembers()) {
+      crStateManager.undeploy(member.getEnv(), member.getId());
     }
   }
 
 
-  DeploymentUnit createDeploymentUnit(OClass cls, OPackage pkg) {
+
+  DeploymentUnit createDeploymentUnit(OClassDeployment deploy,
+                                      OClass cls,
+                                      OPackage pkg,
+                                      OClassDeployment.MemberGroup member) {
     var resolvedFnList = cls.getResolved()
       .getFunctions().values()
       .stream()
@@ -149,12 +168,37 @@ public class ClassDeploymentManager implements PackageDeployer {
       .map(protoMapper::toProto)
       .toList();
     return DeploymentUnit.newBuilder()
+      .setCrId(member.getId())
+      .setEnv(member.getEnv())
       .setCls(protoMapper.toProto(cls))
       .addAllFnList(protoFnList)
+      .setDist(toDist(deploy, member))
       .build();
   }
 
-  public void destroy(String key) {
-    throw StdOaasException.notImplemented();
+  DataDistribution.Builder toDist(OClassDeployment deploy, OClassDeployment.MemberGroup member) {
+    var dist = DataDistribution.newBuilder();
+    var members = deploy.getMembers()
+      .stream()
+      .map(OClassDeployment.MemberGroup::getId)
+      .toList();
+    dist.addAllMembers(members);
+    var partDist = PartitionDistribution.newBuilder();
+    List<ShardAssignment> shardAssignments = deploy.getAssignments().stream()
+      .map(assignment -> {
+        var shard = ShardAssignment.newBuilder()
+          .addAllReplica(assignment.getReplica())
+          .addAllShardIds(assignment.getShardIds());
+        if (assignment.getPrimary() > 0) {
+          shard.setPrimary(assignment.getPrimary());
+        }
+        return shard.build();
+      })
+      .toList();
+    partDist.addAllAssignment(shardAssignments);
+
+    dist.putCollections(deploy.getKey(), partDist.build());
+    dist.setNodeId(member.getId());
+    return dist;
   }
 }

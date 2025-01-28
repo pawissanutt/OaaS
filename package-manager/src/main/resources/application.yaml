@@ -25,6 +25,13 @@
     pm:
       crmEnabled: false
       kafkaEnabled: false
+      env: |
+          defaultEnv: default
+          environments:
+          - name: default
+            crmUrl: http://localhost:8091
+            localGatewayUrl: http://localhost:10000
+            globalGatewayUrl: http://localhost:10000
   kafka:
     bootstrap:
       servers: localhost:31000
@@ -40,7 +47,7 @@ oprc:
   log: INFO
   name: package-manager
   env: |
-    OPRC_DB_PKG_HOST=localhost
+    OPRC_DB_PKG_HOST=127.0.0.1
     OPRC_DB_PKG_PORT=8529
     OPRC_DB_PKG_USER=root
     OPRC_DB_PKG_DB=oaas

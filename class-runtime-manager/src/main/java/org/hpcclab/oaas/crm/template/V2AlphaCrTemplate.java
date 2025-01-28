@@ -11,6 +11,7 @@ import org.hpcclab.oaas.crm.CrmConfig;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
 import org.hpcclab.oaas.crm.CrtMappingConfig.CrtConfig;
 import org.hpcclab.oaas.crm.controller.*;
+import org.hpcclab.oaas.crm.controller.ext.OdgmExtension;
 import org.hpcclab.oaas.crm.env.EnvironmentManager;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.filter.K8sFilterFactory;
@@ -20,6 +21,7 @@ import org.hpcclab.oaas.proto.DeploymentUnit;
 import org.hpcclab.oaas.proto.ProtoCr;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static org.hpcclab.oaas.crm.CrComponent.CONFIG;
@@ -45,7 +47,7 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
       crControllerManager,
       environmentManager
     );
-    fnEventObserver.start(Map.of(K8SCrController.CR_TEMP_TYPE_KEY, type()));
+//    fnEventObserver.start(Map.of(K8SCrController.CR_TEMP_TYPE_KEY, type()));
   }
 
   @Override
@@ -60,7 +62,7 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
     var factory = new UnifyFnCrControllerFactory(config.functions(), envConf);
     filterFactory.injectFilter(config.functions().filters(), factory);
     Tsid id;
-    if (deploymentUnit.getCrId() != 0) {
+    if (deploymentUnit.getCrId()!=0) {
       id = Tsid.from(deploymentUnit.getCrId());
     } else {
       id = tsidFactory.create();
@@ -95,22 +97,23 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
 
     var conf = new ConfigK8sCrComponentController(null, envConf);
     MutableMap<String, CrComponentController<HasMetadata>> map = Maps.mutable
-      .of( CONFIG.getSvc(), conf);
+      .of(CONFIG.getSvc(), conf);
     for (var entry : this.config.services().entrySet()) {
-         map.put(entry.getKey(), createGeneric3c( entry.getKey(), entry.getValue(), envConf));
+      map.put(entry.getKey(), createGeneric3c(entry.getKey(), entry.getValue(), envConf));
     }
     return map;
   }
 
-  private GenericK8sCrComponentController createGeneric3c(String name ,
+  private GenericK8sCrComponentController createGeneric3c(String name,
                                                           CrtMappingConfig.CrComponentConfig svcConfig,
                                                           OprcEnvironment.Config envConf) {
     var controller = new GenericK8sCrComponentController(svcConfig, envConf, name);
-
+    svcConfig.extensions().stream().filter(e -> Objects.equals(e.name(), "odgm"))
+      .map(e -> new OdgmExtension())
+      .forEach(controller::addExtension);
     filterFactory.injectFilter(svcConfig.filters(), controller);
     return controller;
   }
-
 
 
   @Override

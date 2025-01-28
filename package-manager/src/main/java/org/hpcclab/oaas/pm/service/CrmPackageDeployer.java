@@ -104,7 +104,7 @@ public class CrmPackageDeployer implements PackageDeployer {
   }
 
   @Override
-  public void detach(OClass cls) {
-    crStateManager.detach(cls);
+  public void detach(String clsKey) {
+    crStateManager.detach(clsKey);
   }
 }

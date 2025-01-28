@@ -1,348 +1,5 @@
 ---
-openapi: 3.0.3
-info:
-  title: oprc-invoker API
-  version: 999-SNAPSHOT
-servers:
-- url: http://localhost:8080
-  description: Auto generated value
-- url: http://0.0.0.0:8080
-  description: Auto generated value
-paths:
-  /allocate:
-    post:
-      tags:
-      - Data Allocate Resource
-      description: Allocate Post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/DataAllocateRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/DataAllocateResponse"
-  /allocate/{oid}:
-    get:
-      tags:
-      - Data Allocate Resource
-      description: Allocate Get
-      parameters:
-      - name: oid
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: contextKey
-        in: query
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: string
-    post:
-      tags:
-      - Data Allocate Resource
-      description: Allocate Post
-      parameters:
-      - name: oid
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: contextKey
-        in: query
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: string
-  /api/allocate/{oid}:
-    get:
-      tags:
-      - Object Key Allocation Resource
-      description: Get Allocated Urls
-      parameters:
-      - name: oid
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: contextKey
-        in: query
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              uniqueItems: true
-              type: array
-              items:
-                type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: string
-  /api/classes/{cls}/invokes/{fb}:
-    get:
-      tags:
-      - Class Invocation Resource
-      description: Invoke
-      parameters:
-      - name: cls
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: fb
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: _async
-        in: query
-        schema:
-          default: false
-          type: boolean
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/InvocationResponse"
-    post:
-      tags:
-      - Class Invocation Resource
-      description: Invoke With Body
-      parameters:
-      - name: cls
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: fb
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: _async
-        in: query
-        schema:
-          type: boolean
-      - name: _showAll
-        in: query
-        schema:
-          type: boolean
-      - name: _showMain
-        in: query
-        schema:
-          type: boolean
-      - name: _showOutput
-        in: query
-        schema:
-          default: true
-          type: boolean
-      - name: _showStat
-        in: query
-        schema:
-          type: boolean
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ObjectNode"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/InvocationResponse"
-  /api/classes/{cls}/objects/{objId}:
-    get:
-      tags:
-      - Object Access Resource
-      description: Get Obj
-      parameters:
-      - name: cls
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: objId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GOObject"
-  /api/classes/{cls}/objects/{objId}/files/{file}:
-    get:
-      tags:
-      - Object Access Resource
-      description: Get Object File
-      parameters:
-      - name: cls
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: file
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: objId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json: {}
-  /api/classes/{cls}/objects/{objId}/invokes/{fb}:
-    get:
-      tags:
-      - Object Access Resource
-      description: Invoke
-      parameters:
-      - name: cls
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: fb
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: objId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: _async
-        in: query
-        schema:
-          type: boolean
-      - name: _showAll
-        in: query
-        schema:
-          type: boolean
-      - name: _showMain
-        in: query
-        schema:
-          type: boolean
-      - name: _showOutput
-        in: query
-        schema:
-          default: true
-          type: boolean
-      - name: _showStat
-        in: query
-        schema:
-          type: boolean
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/InvocationResponse"
-    post:
-      tags:
-      - Object Access Resource
-      description: Invoke With Body
-      parameters:
-      - name: cls
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: fb
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: objId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: _async
-        in: query
-        schema:
-          type: boolean
-      - name: _showAll
-        in: query
-        schema:
-          type: boolean
-      - name: _showMain
-        in: query
-        schema:
-          type: boolean
-      - name: _showOutput
-        in: query
-        schema:
-          default: true
-          type: boolean
-      - name: _showStat
-        in: query
-        schema:
-          type: boolean
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ObjectNode"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/InvocationResponse"
+openapi: 3.1.0
 components:
   schemas:
     DataAllocateRequest:
@@ -405,15 +62,16 @@ components:
       type: object
       properties:
         queTs:
-          format: int64
           type: integer
+          format: int64
         smtTs:
-          format: int64
           type: integer
+          format: int64
         cptTs:
-          format: int64
           type: integer
+          format: int64
     InvocationStatus:
+      type: string
       enum:
       - QUEUE
       - DOING
@@ -421,13 +79,12 @@ components:
       - FAILED
       - DEPENDENCY_FAILED
       - READY
-      type: string
     JsonBytes:
       type: object
       properties:
         bytes:
-          format: binary
           type: string
+          format: binary
         objectNode:
           $ref: "#/components/schemas/JsonNode"
         node:
@@ -484,6 +141,7 @@ components:
         binary:
           type: boolean
     JsonNodeType:
+      type: string
       enum:
       - ARRAY
       - BINARY
@@ -494,15 +152,14 @@ components:
       - OBJECT
       - POJO
       - STRING
-      type: string
     OMeta:
       type: object
       properties:
         id:
           type: string
         revision:
-          format: int64
           type: integer
+          format: int64
         cls:
           type: string
         verIds:
@@ -514,9 +171,357 @@ components:
           additionalProperties:
             type: string
         lastOffset:
-          format: int64
           type: integer
+          format: int64
     ObjectNode:
       type: array
       items:
         $ref: "#/components/schemas/JsonNode"
+paths:
+  /allocate:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/DataAllocateRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DataAllocateResponse"
+      summary: Allocate Post
+      tags:
+      - Data Allocate Resource
+  /allocate/{oid}:
+    post:
+      parameters:
+      - name: oid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: contextKey
+        in: query
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+      summary: Allocate Post
+      tags:
+      - Data Allocate Resource
+    get:
+      parameters:
+      - name: oid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: contextKey
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+      summary: Allocate Get
+      tags:
+      - Data Allocate Resource
+  /api/allocate/{oid}:
+    get:
+      parameters:
+      - name: oid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: contextKey
+        in: query
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+      summary: Get Allocated Urls
+      tags:
+      - Object Key Allocation Resource
+  /api/classes/{cls}/invokes/{fb}:
+    post:
+      parameters:
+      - name: cls
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fb
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: _async
+        in: query
+        schema:
+          type: boolean
+      - name: _showAll
+        in: query
+        schema:
+          type: boolean
+      - name: _showMain
+        in: query
+        schema:
+          type: boolean
+      - name: _showOutput
+        in: query
+        schema:
+          type: boolean
+          default: true
+      - name: _showStat
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectNode"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvocationResponse"
+      summary: Invoke With Body
+      tags:
+      - Class Invocation Resource
+    get:
+      parameters:
+      - name: cls
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fb
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: _async
+        in: query
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvocationResponse"
+      summary: Invoke
+      tags:
+      - Class Invocation Resource
+  /api/classes/{cls}/objects/{objId}:
+    get:
+      parameters:
+      - name: cls
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GOObject"
+      summary: Get Obj
+      tags:
+      - Object Access Resource
+  /api/classes/{cls}/objects/{objId}/files/{file}:
+    get:
+      parameters:
+      - name: cls
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: file
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
+      summary: Get Object File
+      tags:
+      - Object Access Resource
+  /api/classes/{cls}/objects/{objId}/invokes/{fb}:
+    post:
+      parameters:
+      - name: cls
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fb
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: _async
+        in: query
+        schema:
+          type: boolean
+      - name: _showAll
+        in: query
+        schema:
+          type: boolean
+      - name: _showMain
+        in: query
+        schema:
+          type: boolean
+      - name: _showOutput
+        in: query
+        schema:
+          type: boolean
+          default: true
+      - name: _showStat
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectNode"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvocationResponse"
+      summary: Invoke With Body
+      tags:
+      - Object Access Resource
+    get:
+      parameters:
+      - name: cls
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fb
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: _async
+        in: query
+        schema:
+          type: boolean
+      - name: _showAll
+        in: query
+        schema:
+          type: boolean
+      - name: _showMain
+        in: query
+        schema:
+          type: boolean
+      - name: _showOutput
+        in: query
+        schema:
+          type: boolean
+          default: true
+      - name: _showStat
+        in: query
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvocationResponse"
+      summary: Invoke
+      tags:
+      - Object Access Resource
+info:
+  title: oprc-invoker API
+  version: 999-SNAPSHOT
+servers:
+- url: http://localhost:8080
+  description: Auto generated value
+- url: http://0.0.0.0:8080
+  description: Auto generated value

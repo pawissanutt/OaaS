@@ -1,9 +1,6 @@
 package org.hpcclab.oaas.crm.filter;
 
-import io.fabric8.knative.serving.v1.RevisionSpec;
-import io.fabric8.knative.serving.v1.Service;
 import io.fabric8.kubernetes.api.model.*;
-import io.fabric8.kubernetes.api.model.apps.Deployment;
 
 import java.util.List;
 import java.util.Map;
@@ -37,25 +34,7 @@ public class PodAffinityInjectingFilter implements CrFilter<List<HasMetadata>> {
 
   @Override
   public List<HasMetadata> applyOnCreate(List<HasMetadata> hasMetadataList) {
-    for (var resource : hasMetadataList) {
-      if (resource instanceof Deployment deployment) {
-        PodSpec spec = deployment.getSpec()
-          .getTemplate()
-          .getSpec();
-        var affinity = spec.getAffinity();
-        if (affinity == null) affinity = new Affinity();
-        var newAffinity = injectAffinity(affinity);
-        spec.setAffinity(newAffinity);
-      } else if (resource instanceof Service service) {
-        RevisionSpec spec = service.getSpec()
-          .getTemplate()
-          .getSpec();
-        Affinity affinity = spec.getAffinity();
-        if (affinity == null) affinity = new Affinity();
-        var newAffinity = injectAffinity(affinity);
-        spec.setAffinity(newAffinity);
-      }
-    }
+    NodeAffinityInjectingFilter.convertAffinity(hasMetadataList, this::injectAffinity);
     return hasMetadataList;
   }
 

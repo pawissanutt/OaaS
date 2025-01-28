@@ -8,7 +8,6 @@ import org.hpcclab.oaas.invocation.LocationAwareInvocationForwarder;
 import org.hpcclab.oaas.invocation.service.VertxInvocationRoutes;
 import org.hpcclab.oaas.invocation.service.VertxPackageRoutes;
 import org.hpcclab.oaas.mapper.ProtoMapperImpl;
-import org.hpcclab.oaas.model.cls.OClass;
 import org.hpcclab.oaas.model.pkg.OPackage;
 import org.hpcclab.oaas.repository.ClassResolver;
 import org.hpcclab.oaas.repository.PackageDeployer;
@@ -48,7 +47,7 @@ public class ServerRouteProducer {
         }
 
         @Override
-        public void detach(OClass cls) {
+        public void detach(String clsKey) {
 
         }
 

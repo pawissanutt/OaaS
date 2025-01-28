@@ -8,6 +8,7 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * @author Pawissanutt
@@ -33,6 +34,12 @@ public class NodeAffinityInjectingFilter implements CrFilter<List<HasMetadata>> 
 
   @Override
   public List<HasMetadata> applyOnCreate(List<HasMetadata> hasMetadataList) {
+    convertAffinity(hasMetadataList, this::injectAffinity);
+    return hasMetadataList;
+  }
+
+  public static void convertAffinity(List<HasMetadata> hasMetadataList,
+                              UnaryOperator<Affinity> mapper) {
     for (var resource : hasMetadataList) {
       if (resource instanceof Deployment deployment) {
         PodSpec spec = deployment.getSpec()
@@ -40,7 +47,7 @@ public class NodeAffinityInjectingFilter implements CrFilter<List<HasMetadata>> 
           .getSpec();
         var affinity = spec.getAffinity();
         if (affinity == null) affinity = new Affinity();
-        var newAffinity = injectAffinity(affinity);
+        var newAffinity = mapper.apply(affinity);
         spec.setAffinity(newAffinity);
       } else if (resource instanceof Service service) {
         RevisionSpec spec = service.getSpec()
@@ -48,11 +55,10 @@ public class NodeAffinityInjectingFilter implements CrFilter<List<HasMetadata>> 
           .getSpec();
         Affinity affinity = spec.getAffinity();
         if (affinity == null) affinity = new Affinity();
-        var newAffinity = injectAffinity(affinity);
+        var newAffinity = mapper.apply(affinity);
         spec.setAffinity(newAffinity);
       }
     }
-    return hasMetadataList;
   }
 
   private Affinity injectAffinity(Affinity affinity) {

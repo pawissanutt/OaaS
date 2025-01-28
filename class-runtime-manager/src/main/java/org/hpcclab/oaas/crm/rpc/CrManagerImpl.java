@@ -12,16 +12,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @GrpcService
-public class CrManagerRpc implements CrManager {
-  private static final Logger logger = LoggerFactory.getLogger(CrManagerRpc.class);
+public class CrManagerImpl implements CrManager {
+  private static final Logger logger = LoggerFactory.getLogger(CrManagerImpl.class);
   EnvironmentManager environmentManager;
   OperationExecutor operationExecutor;
   CrControllerManager controllerManager;
 
   @Inject
-  public CrManagerRpc(EnvironmentManager environmentManager,
-                      OperationExecutor operationExecutor,
-                      CrControllerManager controllerManager) {
+  public CrManagerImpl(EnvironmentManager environmentManager,
+                       OperationExecutor operationExecutor,
+                       CrControllerManager controllerManager) {
     this.environmentManager = environmentManager;
     this.operationExecutor = operationExecutor;
     this.controllerManager = controllerManager;

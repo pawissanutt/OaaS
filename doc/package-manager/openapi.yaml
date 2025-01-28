@@ -1,273 +1,54 @@
 ---
-openapi: 3.0.3
-info:
-  title: oprc-package-manager API
-  version: 999-SNAPSHOT
-servers:
-- url: http://localhost:8080
-  description: Auto generated value
-- url: http://0.0.0.0:8080
-  description: Auto generated value
-paths:
-  /api/class-runtimes:
-    get:
-      tags:
-      - Cr Resource
-      description: List Orbit
-      parameters:
-      - name: limit
-        in: query
-        schema:
-          format: int32
-          type: integer
-      - name: offset
-        in: query
-        schema:
-          format: int32
-          type: integer
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PaginationOClassRuntime"
-  /api/class-runtimes/{id}:
-    delete:
-      tags:
-      - Cr Resource
-      description: Delete
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "204":
-          description: No Content
-  /api/classes:
-    get:
-      tags:
-      - Class Resource
-      description: List
-      parameters:
-      - name: desc
-        in: query
-        schema:
-          default: false
-          type: boolean
-      - name: limit
-        in: query
-        schema:
-          format: int32
-          type: integer
-      - name: offset
-        in: query
-        schema:
-          format: int64
-          type: integer
-      - name: sort
-        in: query
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PaginationOClass_Public"
-  /api/classes/{clsKey}:
-    get:
-      tags:
-      - Class Resource
-      description: Get
-      parameters:
-      - name: clsKey
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OClass_Public"
-    delete:
-      tags:
-      - Class Resource
-      description: Delete
-      parameters:
-      - name: clsKey
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OClass_Public"
-  /api/deployments:
-    get:
-      tags:
-      - Deployment Resource
-      description: List
-      parameters:
-      - name: limit
-        in: query
-        schema:
-          format: int32
-          type: integer
-      - name: offset
-        in: query
-        schema:
-          format: int32
-          type: integer
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PaginationOClassDeployment"
-  /api/deployments/{id}:
-    delete:
-      tags:
-      - Deployment Resource
-      description: Delete
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: string
-      responses:
-        "204":
-          description: No Content
-  /api/functions:
-    get:
-      tags:
-      - Function Resource
-      description: List
-      parameters:
-      - name: desc
-        in: query
-        schema:
-          default: false
-          type: boolean
-      - name: limit
-        in: query
-        schema:
-          format: int32
-          type: integer
-      - name: offset
-        in: query
-        schema:
-          format: int64
-          type: integer
-      - name: sort
-        in: query
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PaginationOFunction_Public"
-  /api/functions/{funcKey}:
-    get:
-      tags:
-      - Function Resource
-      description: Get
-      parameters:
-      - name: funcKey
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OFunction_Public"
-  /api/packages:
-    post:
-      tags:
-      - Package Resource
-      description: Create
-      requestBody:
-        content:
-          text/x-yaml:
-            schema:
-              type: string
-          application/json:
-            schema:
-              $ref: "#/components/schemas/OPackage"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OPackage_Public"
+openapi: 3.1.0
 components:
   schemas:
     ConsistencyModel:
+      type: string
       enum:
       - NONE
       - EVENTUAL
       - SEQUENTIAL
       - LINEARIZATION
-      type: string
     ConsistencyModel_Public:
+      type: string
       enum:
       - NONE
       - EVENTUAL
       - SEQUENTIAL
       - LINEARIZATION
-      type: string
     CrState:
       type: object
       properties:
         jsonDump:
           type: string
     DeploymentCondition:
+      type: string
       enum:
       - PENDING
       - DEPLOYING
       - RUNNING
       - DOWN
       - DELETED
-      type: string
     DeploymentCondition_Public:
+      type: string
       enum:
       - PENDING
       - DEPLOYING
       - RUNNING
       - DOWN
       - DELETED
-      type: string
     FunctionAccessModifier:
+      type: string
       enum:
       - PUBLIC
       - INTERNAL
       - PRIVATE
-      type: string
     FunctionAccessModifier_Public:
+      type: string
       enum:
       - PUBLIC
       - INTERNAL
       - PRIVATE
-      type: string
     FunctionBinding:
       type: object
       properties:
@@ -326,31 +107,31 @@ components:
         url:
           type: string
     FunctionState:
+      type: string
       enum:
       - ENABLED
       - DISABLED
       - REMOVING
-      type: string
     FunctionState_Public:
+      type: string
       enum:
       - ENABLED
       - DISABLED
       - REMOVING
-      type: string
     FunctionType:
+      type: string
       enum:
       - TASK
       - BUILTIN
       - MACRO
       - CHAIN
-      type: string
     FunctionType_Public:
+      type: string
       enum:
       - TASK
       - BUILTIN
       - MACRO
       - CHAIN
-      type: string
     JsonNode:
       type: object
       properties:
@@ -399,6 +180,7 @@ components:
         binary:
           type: boolean
     JsonNodeType:
+      type: string
       enum:
       - ARRAY
       - BINARY
@@ -409,8 +191,8 @@ components:
       - OBJECT
       - POJO
       - STRING
-      type: string
     JsonNodeType_Public:
+      type: string
       enum:
       - ARRAY
       - BINARY
@@ -421,7 +203,6 @@ components:
       - OBJECT
       - POJO
       - STRING
-      type: string
     JsonNode_Public:
       type: object
       properties:
@@ -473,8 +254,8 @@ components:
       type: object
       properties:
         bytes:
-          format: binary
           type: string
+          format: binary
         objectNode:
           $ref: "#/components/schemas/JsonNode"
         node:
@@ -487,8 +268,8 @@ components:
       type: object
       properties:
         bytes:
-          format: binary
           type: string
+          format: binary
         objectNode:
           $ref: "#/components/schemas/JsonNode_Public"
         node:
@@ -503,11 +284,11 @@ components:
         image:
           type: string
         minScale:
-          format: int32
           type: integer
+          format: int32
         maxScale:
-          format: int32
           type: integer
+          format: int32
         requestsCpu:
           type: string
         requestsMemory:
@@ -519,8 +300,8 @@ components:
         apiPath:
           type: string
         port:
-          format: int32
           type: integer
+          format: int32
         pullPolicy:
           type: string
     KDeploymentProvision_Public:
@@ -529,11 +310,11 @@ components:
         image:
           type: string
         minScale:
-          format: int32
           type: integer
+          format: int32
         maxScale:
-          format: int32
           type: integer
+          format: int32
         requestsCpu:
           type: string
         requestsMemory:
@@ -545,24 +326,24 @@ components:
         apiPath:
           type: string
         port:
-          format: int32
           type: integer
+          format: int32
         pullPolicy:
           type: string
     KeyAccessModifier:
+      type: string
       enum:
       - PUBLIC
       - DEPENDENT
       - INTERNAL
       - PRIVATE
-      type: string
     KeyAccessModifier_Public:
+      type: string
       enum:
       - PUBLIC
       - DEPENDENT
       - INTERNAL
       - PRIVATE
-      type: string
     KeySpecification:
       type: object
       properties:
@@ -583,17 +364,17 @@ components:
         image:
           type: string
         minScale:
-          format: int32
           type: integer
+          format: int32
         maxScale:
-          format: int32
           type: integer
+          format: int32
         concurrency:
-          format: int32
           type: integer
+          format: int32
         targetConcurrency:
-          format: int32
           type: integer
+          format: int32
         scaleDownDelay:
           type: string
         requestsCpu:
@@ -607,25 +388,25 @@ components:
         apiPath:
           type: string
         port:
-          format: int32
           type: integer
+          format: int32
     KnativeProvision_Public:
       type: object
       properties:
         image:
           type: string
         minScale:
-          format: int32
           type: integer
+          format: int32
         maxScale:
-          format: int32
           type: integer
+          format: int32
         concurrency:
-          format: int32
           type: integer
+          format: int32
         targetConcurrency:
-          format: int32
           type: integer
+          format: int32
         scaleDownDelay:
           type: string
         requestsCpu:
@@ -639,22 +420,54 @@ components:
         apiPath:
           type: string
         port:
-          format: int32
           type: integer
+          format: int32
     Locality:
+      type: string
       enum:
       - HOST
       - CLUSTER
       - REGION
       - NONE
-      type: string
     Locality_Public:
+      type: string
       enum:
       - HOST
       - CLUSTER
       - REGION
       - NONE
-      type: string
+    MemberGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        env:
+          type: string
+        disabledFn:
+          type: array
+          items:
+            type: string
+        standbyFn:
+          type: array
+          items:
+            type: string
+    MemberGroup_Public:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        env:
+          type: string
+        disabledFn:
+          type: array
+          items:
+            type: string
+        standbyFn:
+          type: array
+          items:
+            type: string
     OClass:
       type: object
       properties:
@@ -704,8 +517,8 @@ components:
       type: object
       properties:
         partitions:
-          format: int32
           type: integer
+          format: int32
         structStore:
           type: string
         unstructStore:
@@ -722,8 +535,8 @@ components:
       type: object
       properties:
         partitions:
-          format: int32
           type: integer
+          format: int32
         structStore:
           type: string
         unstructStore:
@@ -742,56 +555,76 @@ components:
         _key:
           type: string
         partitionCount:
-          format: int32
           type: integer
+          format: int32
         replicaCount:
-          format: int32
           type: integer
+          format: int32
         targetEnvs:
           type: array
           items:
             type: string
-        partitions:
+        members:
           type: array
           items:
-            $ref: "#/components/schemas/PartitionDeployment"
+            $ref: "#/components/schemas/MemberGroup"
+        type:
+          $ref: "#/components/schemas/ReplicationType"
+        assignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShardAssignment"
+        options:
+          type: object
+          additionalProperties:
+            type: string
     OClassDeploymentStatus:
       type: object
       properties:
         crId:
-          format: int64
           type: integer
+          format: int64
     OClassDeploymentStatus_Public:
       type: object
       properties:
         crId:
-          format: int64
           type: integer
+          format: int64
     OClassDeployment_Public:
       type: object
       properties:
         _key:
           type: string
         partitionCount:
-          format: int32
           type: integer
+          format: int32
         replicaCount:
-          format: int32
           type: integer
+          format: int32
         targetEnvs:
           type: array
           items:
             type: string
-        partitions:
+        members:
           type: array
           items:
-            $ref: "#/components/schemas/PartitionDeployment_Public"
+            $ref: "#/components/schemas/MemberGroup_Public"
+        type:
+          $ref: "#/components/schemas/ReplicationType_Public"
+        assignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShardAssignment_Public"
+        options:
+          type: object
+          additionalProperties:
+            type: string
     OClassRuntime:
       type: object
       properties:
         id:
-          format: int64
           type: integer
+          format: int64
         template:
           type: string
         attachedCls:
@@ -813,8 +646,8 @@ components:
         deleted:
           type: boolean
         stabilizationTime:
-          format: int64
           type: integer
+          format: int64
         _key:
           type: string
     OClass_Public:
@@ -861,9 +694,6 @@ components:
         resolved:
           $ref: "#/components/schemas/ResolvedMember_Public"
     OFunction:
-      required:
-      - type
-      - outputCls
       type: object
       properties:
         _key:
@@ -877,8 +707,8 @@ components:
         type:
           $ref: "#/components/schemas/FunctionType"
         outputCls:
-          pattern: \S
           type: string
+          pattern: \S
         macro:
           $ref: "#/components/schemas/Spec"
         provision:
@@ -899,6 +729,9 @@ components:
           $ref: "#/components/schemas/OFunctionConfig"
         immutable:
           type: boolean
+      required:
+      - type
+      - outputCls
     OFunctionConfig:
       type: object
       properties:
@@ -945,8 +778,8 @@ components:
         errorMsg:
           type: string
         ts:
-          format: int64
           type: integer
+          format: int64
     OFunctionDeploymentStatus_Public:
       type: object
       properties:
@@ -957,12 +790,9 @@ components:
         errorMsg:
           type: string
         ts:
-          format: int64
           type: integer
+          format: int64
     OFunction_Public:
-      required:
-      - type
-      - outputCls
       type: object
       properties:
         _key:
@@ -976,8 +806,8 @@ components:
         type:
           $ref: "#/components/schemas/FunctionType_Public"
         outputCls:
-          pattern: \S
           type: string
+          pattern: \S
         macro:
           $ref: "#/components/schemas/Spec_Public"
         provision:
@@ -998,16 +828,19 @@ components:
           $ref: "#/components/schemas/OFunctionConfig_Public"
         immutable:
           type: boolean
+      required:
+      - type
+      - outputCls
     OObjectType:
+      type: string
       enum:
       - SIMPLE
       - COMPOUND
-      type: string
     OObjectType_Public:
+      type: string
       enum:
       - SIMPLE
       - COMPOUND
-      type: string
     OPackage:
       type: object
       properties:
@@ -1063,29 +896,29 @@ components:
       items:
         $ref: "#/components/schemas/JsonNode_Public"
     OffloadingMode:
+      type: string
       enum:
       - JSON
       - PROTOBUF
       - GRPC
-      type: string
     OffloadingMode_Public:
+      type: string
       enum:
       - JSON
       - PROTOBUF
       - GRPC
-      type: string
     PaginationOClassDeployment:
       type: object
       properties:
         total:
-          format: int64
           type: integer
+          format: int64
         offset:
-          format: int64
           type: integer
+          format: int64
         itemCount:
-          format: int64
           type: integer
+          format: int64
         items:
           type: array
           items:
@@ -1094,14 +927,14 @@ components:
       type: object
       properties:
         total:
-          format: int64
           type: integer
+          format: int64
         offset:
-          format: int64
           type: integer
+          format: int64
         itemCount:
-          format: int64
           type: integer
+          format: int64
         items:
           type: array
           items:
@@ -1110,14 +943,14 @@ components:
       type: object
       properties:
         total:
-          format: int64
           type: integer
+          format: int64
         offset:
-          format: int64
           type: integer
+          format: int64
         itemCount:
-          format: int64
           type: integer
+          format: int64
         items:
           type: array
           items:
@@ -1126,38 +959,18 @@ components:
       type: object
       properties:
         total:
-          format: int64
           type: integer
+          format: int64
         offset:
-          format: int64
           type: integer
+          format: int64
         itemCount:
-          format: int64
           type: integer
+          format: int64
         items:
           type: array
           items:
             $ref: "#/components/schemas/OFunction_Public"
-    PartitionDeployment:
-      type: object
-      properties:
-        partitionId:
-          format: int32
-          type: integer
-        replicas:
-          type: array
-          items:
-            $ref: "#/components/schemas/ReplicaDeployment"
-    PartitionDeployment_Public:
-      type: object
-      properties:
-        partitionId:
-          format: int32
-          type: integer
-        replicas:
-          type: array
-          items:
-            $ref: "#/components/schemas/ReplicaDeployment_Public"
     PartitionRouting:
       type: object
       properties:
@@ -1183,8 +996,8 @@ components:
       type: object
       properties:
         budget:
-          format: int32
           type: integer
+          format: int32
         consistency:
           $ref: "#/components/schemas/ConsistencyModel"
         geographical:
@@ -1195,8 +1008,8 @@ components:
       type: object
       properties:
         budget:
-          format: int32
           type: integer
+          format: int32
         consistency:
           $ref: "#/components/schemas/ConsistencyModel_Public"
         geographical:
@@ -1207,24 +1020,24 @@ components:
       type: object
       properties:
         throughput:
-          format: int32
           type: integer
+          format: int32
         locality:
           $ref: "#/components/schemas/Locality"
         availability:
-          format: double
           type: number
+          format: double
     QosRequirement_Public:
       type: object
       properties:
         throughput:
-          format: int32
           type: integer
+          format: int32
         locality:
           $ref: "#/components/schemas/Locality_Public"
         availability:
-          format: double
           type: number
+          format: double
     ReferenceSpecification:
       type: object
       properties:
@@ -1243,28 +1056,18 @@ components:
           type: string
         access:
           $ref: "#/components/schemas/KeyAccessModifier_Public"
-    ReplicaDeployment:
-      type: object
-      properties:
-        replicaId:
-          format: int32
-          type: integer
-        env:
-          type: string
-        crId:
-          format: int64
-          type: integer
-    ReplicaDeployment_Public:
-      type: object
-      properties:
-        replicaId:
-          format: int32
-          type: integer
-        env:
-          type: string
-        crId:
-          format: int64
-          type: integer
+    ReplicationType:
+      type: string
+      enum:
+      - RAFT
+      - MST
+      - NONE
+    ReplicationType_Public:
+      type: string
+      enum:
+      - RAFT
+      - MST
+      - NONE
     ResolvedMember:
       type: object
       properties:
@@ -1281,8 +1084,8 @@ components:
           additionalProperties:
             $ref: "#/components/schemas/ReferenceSpecification"
         identities:
-          uniqueItems: true
           type: array
+          uniqueItems: true
           items:
             type: string
         flag:
@@ -1303,10 +1106,42 @@ components:
           additionalProperties:
             $ref: "#/components/schemas/ReferenceSpecification_Public"
         identities:
-          uniqueItems: true
           type: array
+          uniqueItems: true
           items:
             type: string
+    ShardAssignment:
+      type: object
+      properties:
+        primary:
+          type: integer
+          format: int64
+        replica:
+          type: array
+          items:
+            type: integer
+            format: int64
+        shardIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    ShardAssignment_Public:
+      type: object
+      properties:
+        primary:
+          type: integer
+          format: int64
+        replica:
+          type: array
+          items:
+            type: integer
+            format: int64
+        shardIds:
+          type: array
+          items:
+            type: integer
+            format: int64
     Spec:
       type: object
       properties:
@@ -1348,15 +1183,15 @@ components:
         defaultProvider:
           type: string
     StateType:
+      type: string
       enum:
       - FILES
       - COLLECTION
-      type: string
     StateType_Public:
+      type: string
       enum:
       - FILES
       - COLLECTION
-      type: string
     Step:
       type: object
       properties:
@@ -1405,3 +1240,224 @@ components:
           type: string
         comment:
           type: string
+paths:
+  /api/class-runtimes:
+    get:
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginationOClassRuntime"
+      summary: List Orbit
+      tags:
+      - Cr Resource
+  /api/class-runtimes/{id}:
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+      summary: Delete
+      tags:
+      - Cr Resource
+  /api/classes:
+    get:
+      parameters:
+      - name: desc
+        in: query
+        schema:
+          type: boolean
+          default: false
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginationOClass_Public"
+      summary: List
+      tags:
+      - Class Resource
+  /api/classes/{clsKey}:
+    get:
+      parameters:
+      - name: clsKey
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OClass_Public"
+      summary: Get
+      tags:
+      - Class Resource
+    delete:
+      parameters:
+      - name: clsKey
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OClass_Public"
+      summary: Delete
+      tags:
+      - Class Resource
+  /api/deployments:
+    get:
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginationOClassDeployment"
+      summary: List
+      tags:
+      - Deployment Resource
+  /api/deployments/{id}:
+    delete:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "204":
+          description: No Content
+      summary: Delete
+      tags:
+      - Deployment Resource
+  /api/functions:
+    get:
+      parameters:
+      - name: desc
+        in: query
+        schema:
+          type: boolean
+          default: false
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginationOFunction_Public"
+      summary: List
+      tags:
+      - Function Resource
+  /api/functions/{funcKey}:
+    get:
+      parameters:
+      - name: funcKey
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OFunction_Public"
+      summary: Get
+      tags:
+      - Function Resource
+  /api/packages:
+    post:
+      requestBody:
+        content:
+          text/x-yaml:
+            schema:
+              type: string
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OPackage"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OPackage_Public"
+      summary: Create
+      tags:
+      - Package Resource
+info:
+  title: oprc-package-manager API
+  version: 999-SNAPSHOT
+servers:
+- url: http://localhost:8088
+  description: Auto generated value
+- url: http://0.0.0.0:8088
+  description: Auto generated value

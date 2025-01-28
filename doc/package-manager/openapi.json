@@ -1,332 +1,14 @@
 {
-  "openapi" : "3.0.3",
-  "info" : {
-    "title" : "oprc-package-manager API",
-    "version" : "999-SNAPSHOT"
-  },
-  "servers" : [ {
-    "url" : "http://localhost:8080",
-    "description" : "Auto generated value"
-  }, {
-    "url" : "http://0.0.0.0:8080",
-    "description" : "Auto generated value"
-  } ],
-  "paths" : {
-    "/api/class-runtimes" : {
-      "get" : {
-        "tags" : [ "Cr Resource" ],
-        "description" : "List Orbit",
-        "parameters" : [ {
-          "name" : "limit",
-          "in" : "query",
-          "schema" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        }, {
-          "name" : "offset",
-          "in" : "query",
-          "schema" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaginationOClassRuntime"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/class-runtimes/{id}" : {
-      "delete" : {
-        "tags" : [ "Cr Resource" ],
-        "description" : "Delete",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "No Content"
-          }
-        }
-      }
-    },
-    "/api/classes" : {
-      "get" : {
-        "tags" : [ "Class Resource" ],
-        "description" : "List",
-        "parameters" : [ {
-          "name" : "desc",
-          "in" : "query",
-          "schema" : {
-            "default" : false,
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "limit",
-          "in" : "query",
-          "schema" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        }, {
-          "name" : "offset",
-          "in" : "query",
-          "schema" : {
-            "format" : "int64",
-            "type" : "integer"
-          }
-        }, {
-          "name" : "sort",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaginationOClass_Public"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/classes/{clsKey}" : {
-      "get" : {
-        "tags" : [ "Class Resource" ],
-        "description" : "Get",
-        "parameters" : [ {
-          "name" : "clsKey",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/OClass_Public"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete" : {
-        "tags" : [ "Class Resource" ],
-        "description" : "Delete",
-        "parameters" : [ {
-          "name" : "clsKey",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/OClass_Public"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/deployments" : {
-      "get" : {
-        "tags" : [ "Deployment Resource" ],
-        "description" : "List",
-        "parameters" : [ {
-          "name" : "limit",
-          "in" : "query",
-          "schema" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        }, {
-          "name" : "offset",
-          "in" : "query",
-          "schema" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaginationOClassDeployment"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/deployments/{id}" : {
-      "delete" : {
-        "tags" : [ "Deployment Resource" ],
-        "description" : "Delete",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "string"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "204" : {
-            "description" : "No Content"
-          }
-        }
-      }
-    },
-    "/api/functions" : {
-      "get" : {
-        "tags" : [ "Function Resource" ],
-        "description" : "List",
-        "parameters" : [ {
-          "name" : "desc",
-          "in" : "query",
-          "schema" : {
-            "default" : false,
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "limit",
-          "in" : "query",
-          "schema" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        }, {
-          "name" : "offset",
-          "in" : "query",
-          "schema" : {
-            "format" : "int64",
-            "type" : "integer"
-          }
-        }, {
-          "name" : "sort",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaginationOFunction_Public"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/functions/{funcKey}" : {
-      "get" : {
-        "tags" : [ "Function Resource" ],
-        "description" : "Get",
-        "parameters" : [ {
-          "name" : "funcKey",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/OFunction_Public"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/packages" : {
-      "post" : {
-        "tags" : [ "Package Resource" ],
-        "description" : "Create",
-        "requestBody" : {
-          "content" : {
-            "text/x-yaml" : {
-              "schema" : {
-                "type" : "string"
-              }
-            },
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/OPackage"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/OPackage_Public"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
+  "openapi" : "3.1.0",
   "components" : {
     "schemas" : {
       "ConsistencyModel" : {
-        "enum" : [ "NONE", "EVENTUAL", "SEQUENTIAL", "LINEARIZATION" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "NONE", "EVENTUAL", "SEQUENTIAL", "LINEARIZATION" ]
       },
       "ConsistencyModel_Public" : {
-        "enum" : [ "NONE", "EVENTUAL", "SEQUENTIAL", "LINEARIZATION" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "NONE", "EVENTUAL", "SEQUENTIAL", "LINEARIZATION" ]
       },
       "CrState" : {
         "type" : "object",
@@ -337,20 +19,20 @@
         }
       },
       "DeploymentCondition" : {
-        "enum" : [ "PENDING", "DEPLOYING", "RUNNING", "DOWN", "DELETED" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "PENDING", "DEPLOYING", "RUNNING", "DOWN", "DELETED" ]
       },
       "DeploymentCondition_Public" : {
-        "enum" : [ "PENDING", "DEPLOYING", "RUNNING", "DOWN", "DELETED" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "PENDING", "DEPLOYING", "RUNNING", "DOWN", "DELETED" ]
       },
       "FunctionAccessModifier" : {
-        "enum" : [ "PUBLIC", "INTERNAL", "PRIVATE" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "PUBLIC", "INTERNAL", "PRIVATE" ]
       },
       "FunctionAccessModifier_Public" : {
-        "enum" : [ "PUBLIC", "INTERNAL", "PRIVATE" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "PUBLIC", "INTERNAL", "PRIVATE" ]
       },
       "FunctionBinding" : {
         "type" : "object",
@@ -439,20 +121,20 @@
         }
       },
       "FunctionState" : {
-        "enum" : [ "ENABLED", "DISABLED", "REMOVING" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "ENABLED", "DISABLED", "REMOVING" ]
       },
       "FunctionState_Public" : {
-        "enum" : [ "ENABLED", "DISABLED", "REMOVING" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "ENABLED", "DISABLED", "REMOVING" ]
       },
       "FunctionType" : {
-        "enum" : [ "TASK", "BUILTIN", "MACRO", "CHAIN" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "TASK", "BUILTIN", "MACRO", "CHAIN" ]
       },
       "FunctionType_Public" : {
-        "enum" : [ "TASK", "BUILTIN", "MACRO", "CHAIN" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "TASK", "BUILTIN", "MACRO", "CHAIN" ]
       },
       "JsonNode" : {
         "type" : "object",
@@ -526,12 +208,12 @@
         }
       },
       "JsonNodeType" : {
-        "enum" : [ "ARRAY", "BINARY", "BOOLEAN", "MISSING", "NULL", "NUMBER", "OBJECT", "POJO", "STRING" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "ARRAY", "BINARY", "BOOLEAN", "MISSING", "NULL", "NUMBER", "OBJECT", "POJO", "STRING" ]
       },
       "JsonNodeType_Public" : {
-        "enum" : [ "ARRAY", "BINARY", "BOOLEAN", "MISSING", "NULL", "NUMBER", "OBJECT", "POJO", "STRING" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "ARRAY", "BINARY", "BOOLEAN", "MISSING", "NULL", "NUMBER", "OBJECT", "POJO", "STRING" ]
       },
       "JsonNode_Public" : {
         "type" : "object",
@@ -608,8 +290,8 @@
         "type" : "object",
         "properties" : {
           "bytes" : {
-            "format" : "binary",
-            "type" : "string"
+            "type" : "string",
+            "format" : "binary"
           },
           "objectNode" : {
             "$ref" : "#/components/schemas/JsonNode"
@@ -629,8 +311,8 @@
         "type" : "object",
         "properties" : {
           "bytes" : {
-            "format" : "binary",
-            "type" : "string"
+            "type" : "string",
+            "format" : "binary"
           },
           "objectNode" : {
             "$ref" : "#/components/schemas/JsonNode_Public"
@@ -653,12 +335,12 @@
             "type" : "string"
           },
           "minScale" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "maxScale" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "requestsCpu" : {
             "type" : "string"
@@ -676,8 +358,8 @@
             "type" : "string"
           },
           "port" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "pullPolicy" : {
             "type" : "string"
@@ -691,12 +373,12 @@
             "type" : "string"
           },
           "minScale" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "maxScale" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "requestsCpu" : {
             "type" : "string"
@@ -714,8 +396,8 @@
             "type" : "string"
           },
           "port" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "pullPolicy" : {
             "type" : "string"
@@ -723,12 +405,12 @@
         }
       },
       "KeyAccessModifier" : {
-        "enum" : [ "PUBLIC", "DEPENDENT", "INTERNAL", "PRIVATE" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "PUBLIC", "DEPENDENT", "INTERNAL", "PRIVATE" ]
       },
       "KeyAccessModifier_Public" : {
-        "enum" : [ "PUBLIC", "DEPENDENT", "INTERNAL", "PRIVATE" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "PUBLIC", "DEPENDENT", "INTERNAL", "PRIVATE" ]
       },
       "KeySpecification" : {
         "type" : "object",
@@ -759,20 +441,20 @@
             "type" : "string"
           },
           "minScale" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "maxScale" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "concurrency" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "targetConcurrency" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "scaleDownDelay" : {
             "type" : "string"
@@ -793,8 +475,8 @@
             "type" : "string"
           },
           "port" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       },
@@ -805,20 +487,20 @@
             "type" : "string"
           },
           "minScale" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "maxScale" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "concurrency" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "targetConcurrency" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "scaleDownDelay" : {
             "type" : "string"
@@ -839,18 +521,66 @@
             "type" : "string"
           },
           "port" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       },
       "Locality" : {
-        "enum" : [ "HOST", "CLUSTER", "REGION", "NONE" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "HOST", "CLUSTER", "REGION", "NONE" ]
       },
       "Locality_Public" : {
-        "enum" : [ "HOST", "CLUSTER", "REGION", "NONE" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "HOST", "CLUSTER", "REGION", "NONE" ]
+      },
+      "MemberGroup" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "env" : {
+            "type" : "string"
+          },
+          "disabledFn" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "standbyFn" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "MemberGroup_Public" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "env" : {
+            "type" : "string"
+          },
+          "disabledFn" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "standbyFn" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
       },
       "OClass" : {
         "type" : "object",
@@ -924,8 +654,8 @@
         "type" : "object",
         "properties" : {
           "partitions" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "structStore" : {
             "type" : "string"
@@ -951,8 +681,8 @@
         "type" : "object",
         "properties" : {
           "partitions" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "structStore" : {
             "type" : "string"
@@ -981,12 +711,12 @@
             "type" : "string"
           },
           "partitionCount" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "replicaCount" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "targetEnvs" : {
             "type" : "array",
@@ -994,10 +724,25 @@
               "type" : "string"
             }
           },
-          "partitions" : {
+          "members" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/PartitionDeployment"
+              "$ref" : "#/components/schemas/MemberGroup"
+            }
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/ReplicationType"
+          },
+          "assignments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ShardAssignment"
+            }
+          },
+          "options" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
             }
           }
         }
@@ -1006,8 +751,8 @@
         "type" : "object",
         "properties" : {
           "crId" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -1015,8 +760,8 @@
         "type" : "object",
         "properties" : {
           "crId" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -1027,12 +772,12 @@
             "type" : "string"
           },
           "partitionCount" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "replicaCount" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "targetEnvs" : {
             "type" : "array",
@@ -1040,10 +785,25 @@
               "type" : "string"
             }
           },
-          "partitions" : {
+          "members" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/PartitionDeployment_Public"
+              "$ref" : "#/components/schemas/MemberGroup_Public"
+            }
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/ReplicationType_Public"
+          },
+          "assignments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ShardAssignment_Public"
+            }
+          },
+          "options" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
             }
           }
         }
@@ -1052,8 +812,8 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "template" : {
             "type" : "string"
@@ -1086,8 +846,8 @@
             "type" : "boolean"
           },
           "stabilizationTime" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "_key" : {
             "type" : "string"
@@ -1160,7 +920,6 @@
         }
       },
       "OFunction" : {
-        "required" : [ "type", "outputCls" ],
         "type" : "object",
         "properties" : {
           "_key" : {
@@ -1179,8 +938,8 @@
             "$ref" : "#/components/schemas/FunctionType"
           },
           "outputCls" : {
-            "pattern" : "\\S",
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "\\S"
           },
           "macro" : {
             "$ref" : "#/components/schemas/Spec"
@@ -1212,7 +971,8 @@
           "immutable" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "type", "outputCls" ]
       },
       "OFunctionConfig" : {
         "type" : "object",
@@ -1281,8 +1041,8 @@
             "type" : "string"
           },
           "ts" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -1299,13 +1059,12 @@
             "type" : "string"
           },
           "ts" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
       "OFunction_Public" : {
-        "required" : [ "type", "outputCls" ],
         "type" : "object",
         "properties" : {
           "_key" : {
@@ -1324,8 +1083,8 @@
             "$ref" : "#/components/schemas/FunctionType_Public"
           },
           "outputCls" : {
-            "pattern" : "\\S",
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "\\S"
           },
           "macro" : {
             "$ref" : "#/components/schemas/Spec_Public"
@@ -1357,15 +1116,16 @@
           "immutable" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "type", "outputCls" ]
       },
       "OObjectType" : {
-        "enum" : [ "SIMPLE", "COMPOUND" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "SIMPLE", "COMPOUND" ]
       },
       "OObjectType_Public" : {
-        "enum" : [ "SIMPLE", "COMPOUND" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "SIMPLE", "COMPOUND" ]
       },
       "OPackage" : {
         "type" : "object",
@@ -1450,27 +1210,27 @@
         }
       },
       "OffloadingMode" : {
-        "enum" : [ "JSON", "PROTOBUF", "GRPC" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "JSON", "PROTOBUF", "GRPC" ]
       },
       "OffloadingMode_Public" : {
-        "enum" : [ "JSON", "PROTOBUF", "GRPC" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "JSON", "PROTOBUF", "GRPC" ]
       },
       "PaginationOClassDeployment" : {
         "type" : "object",
         "properties" : {
           "total" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "offset" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "itemCount" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "items" : {
             "type" : "array",
@@ -1484,16 +1244,16 @@
         "type" : "object",
         "properties" : {
           "total" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "offset" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "itemCount" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "items" : {
             "type" : "array",
@@ -1507,16 +1267,16 @@
         "type" : "object",
         "properties" : {
           "total" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "offset" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "itemCount" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "items" : {
             "type" : "array",
@@ -1530,51 +1290,21 @@
         "type" : "object",
         "properties" : {
           "total" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "offset" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "itemCount" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           },
           "items" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/OFunction_Public"
-            }
-          }
-        }
-      },
-      "PartitionDeployment" : {
-        "type" : "object",
-        "properties" : {
-          "partitionId" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "replicas" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ReplicaDeployment"
-            }
-          }
-        }
-      },
-      "PartitionDeployment_Public" : {
-        "type" : "object",
-        "properties" : {
-          "partitionId" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "replicas" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ReplicaDeployment_Public"
             }
           }
         }
@@ -1616,8 +1346,8 @@
         "type" : "object",
         "properties" : {
           "budget" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "consistency" : {
             "$ref" : "#/components/schemas/ConsistencyModel"
@@ -1634,8 +1364,8 @@
         "type" : "object",
         "properties" : {
           "budget" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "consistency" : {
             "$ref" : "#/components/schemas/ConsistencyModel_Public"
@@ -1652,15 +1382,15 @@
         "type" : "object",
         "properties" : {
           "throughput" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "locality" : {
             "$ref" : "#/components/schemas/Locality"
           },
           "availability" : {
-            "format" : "double",
-            "type" : "number"
+            "type" : "number",
+            "format" : "double"
           }
         }
       },
@@ -1668,15 +1398,15 @@
         "type" : "object",
         "properties" : {
           "throughput" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "locality" : {
             "$ref" : "#/components/schemas/Locality_Public"
           },
           "availability" : {
-            "format" : "double",
-            "type" : "number"
+            "type" : "number",
+            "format" : "double"
           }
         }
       },
@@ -1708,37 +1438,13 @@
           }
         }
       },
-      "ReplicaDeployment" : {
-        "type" : "object",
-        "properties" : {
-          "replicaId" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "env" : {
-            "type" : "string"
-          },
-          "crId" : {
-            "format" : "int64",
-            "type" : "integer"
-          }
-        }
+      "ReplicationType" : {
+        "type" : "string",
+        "enum" : [ "RAFT", "MST", "NONE" ]
       },
-      "ReplicaDeployment_Public" : {
-        "type" : "object",
-        "properties" : {
-          "replicaId" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "env" : {
-            "type" : "string"
-          },
-          "crId" : {
-            "format" : "int64",
-            "type" : "integer"
-          }
-        }
+      "ReplicationType_Public" : {
+        "type" : "string",
+        "enum" : [ "RAFT", "MST", "NONE" ]
       },
       "ResolvedMember" : {
         "type" : "object",
@@ -1762,8 +1468,8 @@
             }
           },
           "identities" : {
-            "uniqueItems" : true,
             "type" : "array",
+            "uniqueItems" : true,
             "items" : {
               "type" : "string"
             }
@@ -1795,10 +1501,56 @@
             }
           },
           "identities" : {
-            "uniqueItems" : true,
             "type" : "array",
+            "uniqueItems" : true,
             "items" : {
               "type" : "string"
+            }
+          }
+        }
+      },
+      "ShardAssignment" : {
+        "type" : "object",
+        "properties" : {
+          "primary" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "replica" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "shardIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      },
+      "ShardAssignment_Public" : {
+        "type" : "object",
+        "properties" : {
+          "primary" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "replica" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "shardIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
             }
           }
         }
@@ -1866,12 +1618,12 @@
         }
       },
       "StateType" : {
-        "enum" : [ "FILES", "COLLECTION" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "FILES", "COLLECTION" ]
       },
       "StateType_Public" : {
-        "enum" : [ "FILES", "COLLECTION" ],
-        "type" : "string"
+        "type" : "string",
+        "enum" : [ "FILES", "COLLECTION" ]
       },
       "Step" : {
         "type" : "object",
@@ -1948,5 +1700,325 @@
         }
       }
     }
-  }
+  },
+  "paths" : {
+    "/api/class-runtimes" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaginationOClassRuntime"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "List Orbit",
+        "tags" : [ "Cr Resource" ]
+      }
+    },
+    "/api/class-runtimes/{id}" : {
+      "delete" : {
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Delete",
+        "tags" : [ "Cr Resource" ]
+      }
+    },
+    "/api/classes" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "desc",
+          "in" : "query",
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaginationOClass_Public"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "List",
+        "tags" : [ "Class Resource" ]
+      }
+    },
+    "/api/classes/{clsKey}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "clsKey",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OClass_Public"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get",
+        "tags" : [ "Class Resource" ]
+      },
+      "delete" : {
+        "parameters" : [ {
+          "name" : "clsKey",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OClass_Public"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Delete",
+        "tags" : [ "Class Resource" ]
+      }
+    },
+    "/api/deployments" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaginationOClassDeployment"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "List",
+        "tags" : [ "Deployment Resource" ]
+      }
+    },
+    "/api/deployments/{id}" : {
+      "delete" : {
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Delete",
+        "tags" : [ "Deployment Resource" ]
+      }
+    },
+    "/api/functions" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "desc",
+          "in" : "query",
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaginationOFunction_Public"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "List",
+        "tags" : [ "Function Resource" ]
+      }
+    },
+    "/api/functions/{funcKey}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "funcKey",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OFunction_Public"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get",
+        "tags" : [ "Function Resource" ]
+      }
+    },
+    "/api/packages" : {
+      "post" : {
+        "requestBody" : {
+          "content" : {
+            "text/x-yaml" : {
+              "schema" : {
+                "type" : "string"
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OPackage"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OPackage_Public"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Create",
+        "tags" : [ "Package Resource" ]
+      }
+    }
+  },
+  "info" : {
+    "title" : "oprc-package-manager API",
+    "version" : "999-SNAPSHOT"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8088",
+    "description" : "Auto generated value"
+  }, {
+    "url" : "http://0.0.0.0:8088",
+    "description" : "Auto generated value"
+  } ]
 }

@@ -17,6 +17,7 @@ import java.util.List;
  * @author Pawissanutt
  */
 @GrpcService
+@Deprecated
 public class RoutingServiceImpl implements RoutingService {
 
   CrStateManager crStateManager;

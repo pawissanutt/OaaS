@@ -212,7 +212,7 @@ public class VertxPackageRoutes implements VertxRouteService {
       return null;
     }
     if (cls.getStatus()!=null && cls.getStatus().getCrId() > 0) {
-      packageDeployer.detach(cls);
+      packageDeployer.detach(cls.getKey());
     }
     classRepo.remove(clsKey);
     return cls;

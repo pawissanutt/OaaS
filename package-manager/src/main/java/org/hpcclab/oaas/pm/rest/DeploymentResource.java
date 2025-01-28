@@ -34,6 +34,6 @@ public class DeploymentResource {
   @DELETE
   @RunOnVirtualThread
   public void delete(String key) {
-    deploymentManager.destroy(key);
+    deploymentManager.detach(key);
   }
 }

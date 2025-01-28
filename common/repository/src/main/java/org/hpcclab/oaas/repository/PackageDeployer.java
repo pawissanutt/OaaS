@@ -1,6 +1,5 @@
 package org.hpcclab.oaas.repository;
 
-import org.hpcclab.oaas.model.cls.OClass;
 import org.hpcclab.oaas.model.pkg.OPackage;
 
 /**
@@ -8,5 +7,5 @@ import org.hpcclab.oaas.model.pkg.OPackage;
  */
 public interface PackageDeployer {
   void deploy(OPackage pkg);
-  void detach(OClass cls);
+  void detach(String clsKey);
 }

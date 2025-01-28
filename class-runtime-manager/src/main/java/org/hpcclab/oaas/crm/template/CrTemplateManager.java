@@ -2,7 +2,6 @@ package org.hpcclab.oaas.crm.template;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -42,8 +41,7 @@ public class CrTemplateManager {
   ImmutableMap<String, CrTemplate> templateMap = Maps.immutable.empty();
 
   @Inject
-  public CrTemplateManager(KubernetesClient kubernetesClient,
-                           CrmConfig crmConfig,
+  public CrTemplateManager(CrmConfig crmConfig,
                            ConditionProcessor conditionProcessor,
                            EnvironmentManager environmentManager, CrTemplateFactory crTemplateFactory) {
     this.crmConfig = crmConfig;

@@ -96,7 +96,7 @@ public abstract class AbstractQoSOptimizer implements QosOptimizer {
     return new CrAdjustmentPlan(
       coreInstance,
       fnInstance,
-      CrDataSpec.DEFAULT,
+      currentPlan.dataSpec(),
       !coreInstance.isEmpty() || !fnInstance.isEmpty()
     );
   }
@@ -115,20 +115,21 @@ public abstract class AbstractQoSOptimizer implements QosOptimizer {
     var up = environment.availability().uptimePercentage();
     double targetAvail = unit.getCls().getRequirements().getAvailability();
     var qos = unit.getCls().getRequirements();
-    int minInstance;
-    int minAvail;
-    CrDataSpec dataSpec;
-    if (targetAvail <= 0) {
-      dataSpec = new CrDataSpec(2);
-      minInstance = 1;
-      minAvail = 1;
-    } else {
-      var replica = Math.log(1 - targetAvail) / Math.log(1 - up);
-      minInstance = (int) Math.max(1, Math.ceil(replica));
-      var replicaN = Math.max(2, minInstance);
-      dataSpec = new CrDataSpec(replicaN);
-      minAvail = minInstance;
-    }
+    int minInstance = 1;
+    int minAvail = 1;
+    CrDataSpec dataSpec = new CrDataSpec(unit.getDist());
+//    if (targetAvail <= 0) {
+//      dataSpec = new CrDataSpec(unit.getDist());
+//      minInstance = 1;
+//      minAvail = 1;
+//    }
+//    else {
+//      var replica = Math.log(1 - targetAvail) / Math.log(1 - up);
+//      minInstance = (int) Math.max(1, Math.ceil(replica));
+//      var replicaN = Math.max(2, minInstance);
+//      dataSpec = new CrDataSpec(replicaN);
+//      minAvail = minInstance;
+//    }
 
     Map<String, CrInstanceSpec> instances = Maps.mutable.empty();
     for (var entry : crtConfig.services().entrySet()) {

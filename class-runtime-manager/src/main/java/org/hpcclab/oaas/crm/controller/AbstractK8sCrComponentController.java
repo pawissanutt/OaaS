@@ -262,6 +262,9 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
     return hpa;
   }
 
+  public K8SCrController getParentController() {
+    return parentController;
+  }
   @Override
   public long getStableTime() {
     return stableTime;
@@ -270,6 +273,10 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
   @Override
   public void addFilter(CrFilter<List<HasMetadata>> newFilter) {
     this.filters.add(newFilter);
+  }
+
+  public String getPrefix() {
+    return prefix;
   }
 }
 

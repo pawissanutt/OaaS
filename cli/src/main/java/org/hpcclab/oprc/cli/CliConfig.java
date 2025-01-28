@@ -17,4 +17,5 @@ public interface CliConfig {
   String localPackageFile();
   @WithDefault(".oprc/local/")
   String localStatePath();
+
 }
