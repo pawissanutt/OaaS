@@ -78,7 +78,7 @@ public class RepoProducer {
     DatastoreConfRegistry registry = DatastoreConfRegistry.getDefault();
     var fac = new RepoFactory(registry.getConfMap().get("PKG"));
     var crRepo = fac.createGenericRepo(OClassRuntime.class, OClassRuntime::getKey, "cr");
-    crRepo.createIfNotExist();
+//    crRepo.createIfNotExist();
     return crRepo;
   }
 
@@ -88,7 +88,7 @@ public class RepoProducer {
     DatastoreConfRegistry registry = DatastoreConfRegistry.getDefault();
     var fac = new RepoFactory(registry.getConfMap().get("PKG"));
     var hashRepo = fac.createGenericRepo(CrHash.class, CrHash::getKey, "crHash");
-    hashRepo.createIfNotExist();
+//    hashRepo.createIfNotExist();
     return hashRepo;
   }
 
@@ -99,7 +99,7 @@ public class RepoProducer {
     var fac = new RepoFactory(registry.getConfMap().get("PKG"));
     var repo = fac.createGenericRepo(OClassDeployment.class,
       OClassDeployment::getKey, "deployment");
-    repo.createIfNotExist();
+//    repo.createIfNotExist();
     return repo;
   }
 }

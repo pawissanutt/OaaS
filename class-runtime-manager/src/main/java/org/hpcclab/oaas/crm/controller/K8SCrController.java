@@ -1,9 +1,11 @@
 package org.hpcclab.oaas.crm.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.tsid.Tsid;
+import com.hubspot.jackson.datatype.protobuf.ProtobufModule;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.vertx.core.json.Json;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.factory.Maps;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
@@ -40,13 +42,12 @@ public class K8SCrController implements CrController {
   final Map<String, ProtoOFunction> attachedFn = Maps.mutable.empty();
   final Map<String, FnCrComponentController<HasMetadata>> fnControllers = Maps.mutable.empty();
   final FnCrControllerFactory<HasMetadata> factory;
-  final String namespace;
+  public final String namespace;
   final Map<String, FuncRouting> routing = Maps.mutable.empty();
   CrDeploymentPlan currentPlan;
   boolean deleted = false;
   boolean initialized = false;
-
-
+  ObjectMapper objectMapper;
 
   public K8SCrController(CrTemplate template,
                          KubernetesClient client,
@@ -67,6 +68,9 @@ public class K8SCrController implements CrController {
     for (CrComponentController<HasMetadata> componentController : componentControllers.values()) {
       componentController.init(this);
     }
+    objectMapper = new ObjectMapper();
+
+    objectMapper.registerModule(new ProtobufModule());
   }
 
   public K8SCrController(CrTemplate template,
@@ -93,7 +97,11 @@ public class K8SCrController implements CrController {
     }
     var jsonDump = protoCr.getState().getJsonDump();
     if (!jsonDump.isEmpty()) {
-      currentPlan = Json.decodeValue(jsonDump, CrDeploymentPlan.class);
+      try {
+        currentPlan = objectMapper.readValue(jsonDump, CrDeploymentPlan.class);
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
     }
     deleted = protoCr.getDeleted();
     initialized = true;
@@ -141,10 +149,10 @@ public class K8SCrController implements CrController {
       });
 
     for (var componentController : componentControllers.values()) {
-      resourceList.addAll(componentController.createDeployOperation(plan));
+      resourceList.addAll(componentController.createDeployOperation(plan, unit));
     }
     for (ProtoOFunction fn : unit.getFnListList()) {
-      var fnResourcePlan = deployFunction(plan, fn);
+      var fnResourcePlan = deployFunction(plan, unit, fn);
       resourceList.addAll(fnResourcePlan.resources());
       crOperation.getFnUpdates().addAll(fnResourcePlan.fnUpdates());
     }
@@ -168,7 +176,7 @@ public class K8SCrController implements CrController {
       var oldFunc = attachedFn.get(f.getKey());
       if (oldFunc!=null && oldFunc.equals(f))
         continue;
-      FnResourcePlan fnResourcePlan = deployFunction(plan, f);
+      FnResourcePlan fnResourcePlan = deployFunction(plan, unit, f);
       resources.addAll(fnResourcePlan.resources());
       crOperation.getFnUpdates().addAll(fnResourcePlan.fnUpdates());
     }
@@ -238,11 +246,12 @@ public class K8SCrController implements CrController {
   }
 
   protected FnResourcePlan deployFunction(CrDeploymentPlan newPlan,
+                                          DeploymentUnit unit,
                                           ProtoOFunction function) throws CrDeployException {
     FnCrComponentController<HasMetadata> fnController = factory.create(function);
     fnController.init(this);
     fnControllers.put(function.getKey(), fnController);
-    List<HasMetadata> resources = fnController.createDeployOperation(newPlan);
+    List<HasMetadata> resources = fnController.createDeployOperation(newPlan, unit);
     var optional = fnController.buildStatusUpdate();
     if (optional.isPresent()) {
       var update = optional.get();
@@ -263,7 +272,12 @@ public class K8SCrController implements CrController {
 
   @Override
   public ProtoCr dump() {
-    var str = Json.encode(currentPlan);
+    String str;
+    try {
+      str = objectMapper.writeValueAsString(currentPlan);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
     PartitionRouting partitionRouting = PartitionRouting.newBuilder()
       .putAllFunctions(routing)
       .build();

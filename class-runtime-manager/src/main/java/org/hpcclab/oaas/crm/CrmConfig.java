@@ -3,6 +3,7 @@ package org.hpcclab.oaas.crm;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 
+import java.util.List;
 import java.util.Optional;
 
 @ConfigMapping(prefix = "oprc.crm", namingStrategy = ConfigMapping.NamingStrategy.VERBATIM)
@@ -11,6 +12,8 @@ public interface CrmConfig {
   boolean exposeKnative();
   @WithDefault("false")
   boolean useKnativeLb();
+
+  Optional<String> kubeContext();
 
   String pmHost();
 
@@ -48,4 +51,5 @@ public interface CrmConfig {
   boolean loadTemplateOnStart();
   @WithDefault("oaas")
   String namespace();
+  List<String> managedEnv();
 }

@@ -13,10 +13,7 @@ import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
 import org.hpcclab.oaas.crm.optimize.CrInstanceSpec;
-import org.hpcclab.oaas.proto.OFunctionStatusUpdate;
-import org.hpcclab.oaas.proto.ProtoDeploymentCondition;
-import org.hpcclab.oaas.proto.ProtoOFunction;
-import org.hpcclab.oaas.proto.ProtoOFunctionDeploymentStatus;
+import org.hpcclab.oaas.proto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +53,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
   }
 
   @Override
-  protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan) {
+  protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit) {
     logger.debug("deploy function {} with Knative", function.getKey());
     var instanceSpec = plan.fnInstances()
       .get(function.getKey());
@@ -85,7 +82,6 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
       ContainerPortBuilder port = new ContainerPortBuilder()
         .withProtocol("TCP")
         .withContainerPort(knConf.getPort());
-      logger.debug("knconf {}", knConf);
       if (function.getConfig().getHttp2())
         port = port.withName("h2c");
       containerBuilder.withPorts(port.build()
@@ -98,6 +94,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
     var serviceBuilder = new ServiceBuilder()
       .withNewMetadata()
       .withName(fnName)
+      .withNamespace(namespace)
       .withLabels(labels)
       .endMetadata();
     serviceBuilder.withNewSpec()
@@ -142,6 +139,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
       CR_FN_KEY, function.getKey()
     );
     var services = knativeClient.services()
+      .inNamespace(namespace)
       .withLabels(labels)
       .list()
       .getItems();

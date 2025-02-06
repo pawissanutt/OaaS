@@ -36,7 +36,8 @@ public class CrControllerManager {
     @GrpcClient("package-manager") CrStateServiceBlockingStub crStateService,
     @GrpcClient("package-manager") DeploymentStatusUpdaterBlockingStub deploymentStatusUpdater,
     CrTemplateManager templateManager,
-    EnvironmentManager environmentManager, Vertx vertx) {
+    EnvironmentManager environmentManager,
+    Vertx vertx) {
 
     this.crStateUpdater = crStateUpdater;
     this.crStateService = crStateService;
@@ -47,7 +48,8 @@ public class CrControllerManager {
   }
 
   public void loadAllToLocal() {
-    var crs = crStateService.list(PaginateQuery.newBuilder().setLimit(1000).build());
+    var crs = crStateService.selectFromEnv(EnvSelector.newBuilder().addAllEnv(environmentManager.getEnvironment().managedEnvs())
+      .build());
     var env = environmentManager.getEnvironmentConfig();
     while (crs.hasNext()) {
       var protoCr = crs.next();
@@ -77,13 +79,13 @@ public class CrControllerManager {
   }
 
   public CrController getOrLoad(ProtoCr protoCr, OprcEnvironment env) {
-    var orbit = controllerMap.get(protoCr.getId());
-    if (orbit==null) {
+    var cr = controllerMap.get(protoCr.getId());
+    if (cr==null) {
       if (protoCr.getId()==0) return null;
-      orbit = templateManager.load(env.config(), protoCr);
-      controllerMap.put(protoCr.getId(), orbit);
+      cr = templateManager.load(env.config(), protoCr);
+      controllerMap.put(protoCr.getId(), cr);
     }
-    return orbit;
+    return cr;
   }
 
   public CrController create(OprcEnvironment env,

@@ -5,7 +5,7 @@ package org.hpcclab.oaas.model.qos;
  */
 public enum ConsistencyModel {
   NONE,
-  EVENTUAL,
-  SEQUENTIAL,
-  LINEARIZATION
+  READ_YOUR_WRITE,
+  BOUNDED_STALENESS,
+  STRONG
 }

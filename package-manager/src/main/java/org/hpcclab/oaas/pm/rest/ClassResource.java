@@ -12,6 +12,7 @@ import org.hpcclab.oaas.model.Views;
 import org.hpcclab.oaas.model.cls.OClass;
 import org.hpcclab.oaas.pm.service.CrStateManager;
 import org.hpcclab.oaas.repository.ClassRepository;
+import org.hpcclab.oaas.repository.PackageDeployer;
 import org.jboss.resteasy.reactive.RestQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,9 @@ public class ClassResource {
   ClassRepository classRepo;
   @Inject
   CrStateManager crStateManager;
+
+  @Inject
+  PackageDeployer packageDeployer;
 
   @GET
   @JsonView(Views.Public.class)
@@ -58,9 +62,10 @@ public class ClassResource {
     if (cls==null) {
       throw new NotFoundException();
     }
-    if (cls.getStatus()!=null && cls.getStatus().getCrId() > 0) {
-      crStateManager.detach(cls.getKey());
-    }
+    packageDeployer.detach(clsKey);
+//    if (cls.getStatus()!=null && cls.getStatus().getCrId() > 0) {
+//      crStateManager.detach(cls.getKey());
+//    }
     classRepo.remove(clsKey);
     return cls;
   }

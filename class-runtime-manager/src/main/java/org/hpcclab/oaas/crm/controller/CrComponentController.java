@@ -2,6 +2,7 @@ package org.hpcclab.oaas.crm.controller;
 
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
+import org.hpcclab.oaas.proto.DeploymentUnit;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public interface CrComponentController<T> extends Filterable<List<T>> {
   void init(CrController parentController);
-  List<T> createDeployOperation(CrDeploymentPlan instanceSpec);
+  List<T> createDeployOperation(CrDeploymentPlan instanceSpec, DeploymentUnit unit);
   List<T> createAdjustOperation(CrAdjustmentPlan instanceSpec);
   List<T> createDeleteOperation();
   void updateStableTime();

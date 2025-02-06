@@ -18,7 +18,7 @@ message ProtoCr {
   bool deleted = 7;
   int64 stabilizationTime = 8;
   PartitionRouting routing = 9;
-  string  env = 10;
+  string env = 10;
 }
 
 message ProtoCrState{

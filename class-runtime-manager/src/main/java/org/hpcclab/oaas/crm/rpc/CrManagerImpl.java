@@ -76,6 +76,7 @@ public class CrManagerImpl implements CrManager {
     try {
       var env = environmentManager.getEnvironment();
       var controller = controllerManager.getOrLoad(orbit, env);
+      if (controller == null) return Uni.createFrom().item(OprcResponse.newBuilder().setSuccess(true).build());
       var operation = controller.createDestroyOperation();
       operation.apply();
       controllerManager.deleteFromLocal(controller);

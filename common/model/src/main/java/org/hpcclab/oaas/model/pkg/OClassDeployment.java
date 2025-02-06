@@ -14,6 +14,7 @@ import java.util.Map;
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class OClassDeployment {
+  @JsonAlias("key")
   @JsonProperty("_key")
   String key;
   int partitionCount;
@@ -21,15 +22,9 @@ public class OClassDeployment {
   @JsonSetter(nulls = Nulls.AS_EMPTY)
   List<String> targetEnvs = List.of();
   List<MemberGroup> members = List.of();
-  ReplicationType type = ReplicationType.NONE;
-  List<ShardAssignment> assignments;
+  String shardType = "basic";
+  List<ShardAssignment> assignments = List.of();
   Map<String, String> options = Map.of();
-
-  public enum ReplicationType {
-    RAFT, MST,
-    @JsonEnumDefaultValue
-    NONE
-  }
 
   @Data
   @Accessors(chain = true)

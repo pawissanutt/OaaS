@@ -8,6 +8,19 @@ import org.hpcclab.oaas.proto.DataDistribution;
  */
 @Builder(toBuilder = true)
 public record CrDataSpec(DataDistribution dist) {
+
+//  @JsonProperty
+//  String getDistRaw() throws InvalidProtocolBufferException {
+//    return JsonFormat.printer().print(dist);
+//  }
+//  @JsonCreator
+//  static CrDataSpec fromRaw(String distRaw) throws InvalidProtocolBufferException {
+//    DataDistribution.Builder builder = DataDistribution.newBuilder();
+//    JsonFormat.parser().merge(distRaw, builder);
+//    return new CrDataSpec(builder.build());
+//  }
+
+
   public static final CrDataSpec DEFAULT = new CrDataSpec(
     DataDistribution.newBuilder().build());
 }

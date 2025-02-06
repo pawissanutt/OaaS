@@ -63,7 +63,6 @@ message PartitionDistribution{
   map<string, string> options = 5;
   repeated string disabled_fns = 6;
   repeated string standby_fns = 7;
-
 }
 
 

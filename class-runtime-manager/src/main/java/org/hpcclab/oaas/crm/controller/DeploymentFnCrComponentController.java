@@ -9,10 +9,7 @@ import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
 import org.hpcclab.oaas.crm.optimize.CrInstanceSpec;
-import org.hpcclab.oaas.proto.OFunctionStatusUpdate;
-import org.hpcclab.oaas.proto.ProtoDeploymentCondition;
-import org.hpcclab.oaas.proto.ProtoOFunction;
-import org.hpcclab.oaas.proto.ProtoOFunctionDeploymentStatus;
+import org.hpcclab.oaas.proto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +51,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
   }
 
   @Override
-  protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan) {
+  protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit) {
     logger.debug("deploy function {} with Deployment", function.getKey());
     var instanceSpec = plan.fnInstances()
       .get(function.getKey());
@@ -86,7 +83,8 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     var fnName = createName(function.getKey());
     var deploymentBuilder = new DeploymentBuilder()
       .withNewMetadata()
-      .withName(fnName)
+      .withName(fnName+ "-00001")
+      .withNamespace(namespace)
       .withLabels(labels)
       .endMetadata();
     deploymentBuilder
@@ -108,6 +106,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     var svc = new ServiceBuilder()
       .withNewMetadata()
       .withName(fnName)
+      .withNamespace(namespace)
       .withLabels(labels)
       .endMetadata()
       .withNewSpec()
@@ -219,32 +218,36 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     List<HasMetadata> resources = Lists.mutable.empty();
     var labels = Map.of(
       CR_LABEL_KEY, parentController.getTsidString(),
+      CR_COMPONENT_LABEL_KEY, NAME_FUNCTION,
       CR_FN_KEY, function.getKey()
     );
-    var fnDeployment = createName(function.getKey());
     var deployments = kubernetesClient.apps()
       .deployments()
-      .withName(fnDeployment)
-      .get();
+      .inNamespace(namespace)
+      .withLabels(labels)
+      .list()
+      .getItems();
     if (deployments != null)
-      resources.add(deployments);
+      resources.addAll(deployments);
     var services = kubernetesClient.services()
-      .withName(fnDeployment)
-      .get();
+      .withLabels(labels)
+      .list().getItems();
     if (services != null)
-      resources.add(services);
+      resources.addAll(services);
     if (enableHpa) {
       var hpa = kubernetesClient.autoscaling().v2().horizontalPodAutoscalers()
-        .withName(fnDeployment).get();
+        .withLabels(labels)
+        .list().getItems();
+//        .withName(fnDeployment).get();
       if (hpa != null)
-        resources.add(hpa);
+        resources.addAll(hpa);
     }
     return resources;
   }
 
   private String createName(String key) {
     return prefix + "fn-" + key
-      .replaceAll("[._]", "-") + "-00001";
+      .replaceAll("[._]", "-") ;
   }
 
   @Override

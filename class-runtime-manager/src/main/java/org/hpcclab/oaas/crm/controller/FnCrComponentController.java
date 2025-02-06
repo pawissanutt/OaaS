@@ -3,10 +3,7 @@ package org.hpcclab.oaas.crm.controller;
 import org.hpcclab.oaas.crm.filter.CrFilter;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
-import org.hpcclab.oaas.proto.OFunctionStatusUpdate;
-import org.hpcclab.oaas.proto.ProtoDeploymentCondition;
-import org.hpcclab.oaas.proto.ProtoOFunction;
-import org.hpcclab.oaas.proto.ProtoOFunctionDeploymentStatus;
+import org.hpcclab.oaas.proto.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +22,7 @@ public interface FnCrComponentController<T>  extends CrComponentController<T>{
     }
 
     @Override
-    public List<T> createDeployOperation(CrDeploymentPlan instanceSpec) {
+    public List<T> createDeployOperation(CrDeploymentPlan instanceSpec, DeploymentUnit unit) {
       return List.of();
     }
 
@@ -72,7 +69,7 @@ public interface FnCrComponentController<T>  extends CrComponentController<T>{
     }
 
     @Override
-    public List<T> createDeployOperation(CrDeploymentPlan instanceSpec) {
+    public List<T> createDeployOperation(CrDeploymentPlan instanceSpec, DeploymentUnit unit) {
       return List.of();
     }
 

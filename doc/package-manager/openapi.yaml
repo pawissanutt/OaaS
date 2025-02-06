@@ -6,16 +6,16 @@ components:
       type: string
       enum:
       - NONE
-      - EVENTUAL
-      - SEQUENTIAL
-      - LINEARIZATION
+      - READ_YOUR_WRITE
+      - BOUNDED_STALENESS
+      - STRONG
     ConsistencyModel_Public:
       type: string
       enum:
       - NONE
-      - EVENTUAL
-      - SEQUENTIAL
-      - LINEARIZATION
+      - READ_YOUR_WRITE
+      - BOUNDED_STALENESS
+      - STRONG
     CrState:
       type: object
       properties:
@@ -568,8 +568,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/MemberGroup"
-        type:
-          $ref: "#/components/schemas/ReplicationType"
+        shardType:
+          type: string
         assignments:
           type: array
           items:
@@ -609,8 +609,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/MemberGroup_Public"
-        type:
-          $ref: "#/components/schemas/ReplicationType_Public"
+        shardType:
+          type: string
         assignments:
           type: array
           items:
@@ -1000,8 +1000,9 @@ components:
           format: int32
         consistency:
           $ref: "#/components/schemas/ConsistencyModel"
-        geographical:
-          type: string
+        delayTolerance:
+          type: integer
+          format: int32
         ephemeral:
           type: boolean
     QosConstraint_Public:
@@ -1012,8 +1013,9 @@ components:
           format: int32
         consistency:
           $ref: "#/components/schemas/ConsistencyModel_Public"
-        geographical:
-          type: string
+        delayTolerance:
+          type: integer
+          format: int32
         ephemeral:
           type: boolean
     QosRequirement:
@@ -1056,18 +1058,6 @@ components:
           type: string
         access:
           $ref: "#/components/schemas/KeyAccessModifier_Public"
-    ReplicationType:
-      type: string
-      enum:
-      - RAFT
-      - MST
-      - NONE
-    ReplicationType_Public:
-      type: string
-      enum:
-      - RAFT
-      - MST
-      - NONE
     ResolvedMember:
       type: object
       properties:

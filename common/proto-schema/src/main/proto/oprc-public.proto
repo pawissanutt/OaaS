@@ -29,5 +29,10 @@ service FunctionService {
 
 service CrStateService{
   rpc list(PaginateQuery) returns (stream ProtoCr) {};
+  rpc select_from_env(EnvSelector) returns (stream ProtoCr) {};
   rpc get(SingleKeyQuery) returns (ProtoCr) {};
+}
+
+message EnvSelector {
+  repeated string env = 1;
 }

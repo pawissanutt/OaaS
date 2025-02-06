@@ -28,10 +28,14 @@
       kafka: "oaas-kafka-bootstrap:9092"
       pmHost: localhost
       pmPort: 8088
+    crm:
+      monitorDisable: true
+      managedEnv: cloud,edge-1,edge-2
 "%test":
   oprc:
     crm:
       loadTemplateOnStart: false
+      managedEnv: default
 
 oprc:
   crm:

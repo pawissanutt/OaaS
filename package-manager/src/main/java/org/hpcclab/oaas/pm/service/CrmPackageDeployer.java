@@ -1,6 +1,5 @@
 package org.hpcclab.oaas.pm.service;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.collections.api.factory.Lists;
 import org.hpcclab.oaas.mapper.ProtoMapper;
 import org.hpcclab.oaas.model.cls.OClass;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * @author Pawissanutt
  */
-@ApplicationScoped
+
 @Deprecated
 public class CrmPackageDeployer implements PackageDeployer {
   private static final Logger logger = LoggerFactory.getLogger( CrmPackageDeployer.class );

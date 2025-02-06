@@ -25,6 +25,7 @@ public class EnvironmentManager {
   @Inject
   public EnvironmentManager(KubernetesClient client,
                             CrmConfig conf) {
+    logger.info("Managing Envs: {}", conf.managedEnv());
     this.client = client;
     var configProvider = ConfigProvider.getConfig();
     var kafka = configProvider
@@ -47,6 +48,7 @@ public class EnvironmentManager {
       .feasibleCheckDisable(conf.feasibleCheckDisable())
       .build();
     environment = OprcEnvironment.builder()
+      .managedEnvs(conf.managedEnv())
       .config(envConf)
       .availability(
         new OprcEnvironment.AvailabilityInfo(conf.uptimePercentage())

@@ -7,9 +7,12 @@ import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import org.hpcclab.oaas.pm.service.CrStateManager;
 import org.hpcclab.oaas.proto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @GrpcService
 public class CrStateServiceImpl implements InternalCrStateService, CrStateService {
+  private static final Logger logger = LoggerFactory.getLogger( CrStateServiceImpl.class );
   CrStateManager stateManager;
   @Inject
   public CrStateServiceImpl(CrStateManager stateManager) {
@@ -25,6 +28,12 @@ public class CrStateServiceImpl implements InternalCrStateService, CrStateServic
   @Override
   public Multi<ProtoCr> list(PaginateQuery request) {
     return stateManager.listCr(request);
+  }
+
+  @Override
+  public Multi<ProtoCr> selectFromEnv(EnvSelector request) {
+    return stateManager.selectFromEnv(request)
+      .onFailure().invoke(e -> logger.error("selectFromEnv", e));
   }
 
   @Override

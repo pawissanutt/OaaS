@@ -8,6 +8,7 @@ import org.hpcclab.oaas.crm.CrtMappingConfig;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
+import org.hpcclab.oaas.proto.DeploymentUnit;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class SaK8sCrComponentController extends AbstractK8sCrComponentController
   }
 
 
-  public List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan) {
+  public List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit) {
     var instanceSpec = plan.coreInstances().get(STORAGE_ADAPTER);
     if (instanceSpec == null || instanceSpec.disable()) return List.of();
     var labels = Map.of(

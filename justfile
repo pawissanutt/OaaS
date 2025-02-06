@@ -2,13 +2,14 @@ mvn := "mvnd"
 shell := "bash"
 #mvn := "./mvnw"
 export CI_REGISTRY_IMAGE := "ghcr.io/hpcclab/oaas"
-
+set export
 
 run-pm :
   ./mvnw -pl package-manager quarkus:dev
 
-run-crm :
-  ./mvnw -pl class-runtime-manager quarkus:dev
+run-crm QUARKUS_HTTP_PORT="8091" OPRC_CRM_KUBECONTEXT="" OPRC_CRM_MANAGEDENV="cloud-1":
+  ./mvnw -Doprc.crm.exposeKnative=true -pl class-runtime-manager quarkus:dev
+
 
 build options="":
   {{mvn}}  package {{options}} -1

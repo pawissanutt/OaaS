@@ -78,15 +78,20 @@ templates:
     condition: { }
     services:
       odgm:
-        image: ghcr.io/pawissanutt/oaas/odgm
+#        image: ghcr.io/pawissanutt/oaas/odgm
+        image: harbor.129.114.109.85.nip.io/oaas/odgm
         # imagePullPolicy: IfNotPresent
         stabilizationWindow: 120000
         maxScaleStep: 2
-        env: { }
+        env:
+          ODGM_LOG: "info,zenoh::net::routing=info"
+          OPRC_ZENOH_BUFFER_SIZE: "16777216"
+          ODGM_MAX_SESSIONS: 4
+          OPRC_ZENOH_PEERS: "tcp/router:17447"
         requestCpu: '1'
         requestMemory: 1Gi
-        limitCpu: '2'
-        limitMemory: 2Gi
+        limitCpu: '8'
+#        limitMemory: 8Gi
         maxReplicas: 20
         extensions:
           - name: odgm

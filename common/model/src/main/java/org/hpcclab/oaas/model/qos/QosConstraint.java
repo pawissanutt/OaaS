@@ -10,6 +10,6 @@ import lombok.Builder;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record QosConstraint(int budget,
                             ConsistencyModel consistency,
-                            String geographical,
+                            int delayTolerance,
                             boolean ephemeral) {
 }

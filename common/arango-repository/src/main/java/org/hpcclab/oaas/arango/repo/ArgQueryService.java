@@ -109,7 +109,8 @@ public class ArgQueryService<V> implements QueryService<String, V> {
   public <T> Uni<List<T>> queryAsync(String queryString, Class<T> resultCls, Map<String, Object> params) {
     return createUni(() -> repository.getAsyncCollection()
       .db()
-      .query(queryString, resultCls, params, queryOptions()).thenApply(BaseArangoCursor::getResult)
+      .query(queryString, resultCls, params, queryOptions())
+      .thenApply(BaseArangoCursor::getResult)
     );
   }
 

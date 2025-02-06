@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -116,6 +117,20 @@ public class CrStateManager {
       .map(doc -> protoMapper.toProto(doc));
   }
 
+  public Multi<ProtoCr> selectFromEnv(EnvSelector request) {
+    var query = """
+      FOR doc IN @@col
+         FILTER doc.env IN @env
+        RETURN doc
+      """;
+    Map<String, Object> param = Map.of("@col", crRepo.getCollection().name(),"env", request.getEnvList());
+    return crRepo.getQueryService()
+      .queryAsync(query, param)
+      .toMulti()
+      .flatMap(p -> Multi.createFrom().iterable(p))
+      .map(doc -> protoMapper.toProto(doc));
+  }
+
   public Multi<ProtoCrHash> listHash(PaginateQuery request) {
     return hashRepo.getQueryService()
       .paginationAsync(request.getOffset(), request.getLimit())
@@ -160,6 +175,11 @@ public class CrStateManager {
     var crm = envRegistry.getCrmStub(env);
     String key = OClassRuntime.toKey(crId);
     var cr = crRepo.get(key);
+    if (cr==null) {
+      return OprcResponse.newBuilder()
+        .setSuccess(false)
+        .build();
+    }
     var protoCr = protoMapper.toProto(cr);
     var resp = crm.destroy(protoCr);
     if (resp.getSuccess()) {

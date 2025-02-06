@@ -1,15 +1,15 @@
 package org.hpcclab.oaas.arango.repo;
 
-import com.arangodb.*;
+import com.arangodb.ArangoCollection;
+import com.arangodb.ArangoCollectionAsync;
+import com.arangodb.ArangoDBException;
 import com.arangodb.entity.DocumentDeleteEntity;
 import com.arangodb.model.*;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.mutiny.core.Vertx;
 import org.eclipse.collections.impl.block.factory.Functions;
 import org.hpcclab.oaas.arango.ArgDataAccessException;
-import org.hpcclab.oaas.arango.MutinyUtils;
 import org.hpcclab.oaas.repository.AsyncEntityRepository;
 import org.hpcclab.oaas.repository.EntityRepository;
 import org.slf4j.Logger;
@@ -22,7 +22,6 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import static org.hpcclab.oaas.arango.MutinyUtils.createUni;
-import static org.hpcclab.oaas.arango.repo.ArgQueryService.queryOptions;
 
 public abstract class AbstractArgRepository<V>
   implements EntityRepository<String, V>, AsyncEntityRepository<String, V> {
@@ -212,11 +211,15 @@ public abstract class AbstractArgRepository<V>
 
 
   public void createIfNotExist() {
-    if (!getCollection().db().exists()) {
-      getCollection().db().create();
-    }
+//    if (!getCollection().db().exists()) {
+//      getCollection().db().create();
+//    }
     if (!getCollection().exists()) {
-      getCollection().create();
+      try {
+        getAsyncCollection().create().get();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 }

@@ -4,6 +4,7 @@ import io.fabric8.kubernetes.api.model.Quantity;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 @Builder(toBuilder = true)
@@ -12,7 +13,8 @@ public record OprcEnvironment(
   EnvResource total,
   EnvResource usable,
   EnvResource request,
-  AvailabilityInfo availability
+  AvailabilityInfo availability,
+  List<String> managedEnvs
 ) {
   @Builder(toBuilder = true)
   public record Config(String namespace,

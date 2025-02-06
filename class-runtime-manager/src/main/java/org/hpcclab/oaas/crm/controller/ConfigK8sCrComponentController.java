@@ -10,6 +10,7 @@ import org.hpcclab.oaas.crm.filter.ConfigmapInjectingFilter;
 import org.hpcclab.oaas.crm.filter.SecretInjectingFilter;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
+import org.hpcclab.oaas.proto.DeploymentUnit;
 import org.hpcclab.oaas.repository.store.DatastoreConfRegistry;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class ConfigK8sCrComponentController extends AbstractK8sCrComponentContro
   }
 
   @Override
-  public List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan) {
+  public List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit) {
     var labels = Map.of(
       CR_LABEL_KEY, parentController.getTsidString()
     );

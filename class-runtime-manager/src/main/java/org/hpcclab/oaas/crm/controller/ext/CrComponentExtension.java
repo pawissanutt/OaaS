@@ -4,6 +4,7 @@ import io.fabric8.kubernetes.api.model.HasMetadata;
 import org.hpcclab.oaas.crm.controller.AbstractK8sCrComponentController;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
+import org.hpcclab.oaas.proto.DeploymentUnit;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public interface CrComponentExtension {
   default void applyOnCreate(List<HasMetadata> item,
                                   CrDeploymentPlan plan,
-                                          AbstractK8sCrComponentController controller) {
+                                          DeploymentUnit unit) {
   }
 
   default void applyOnAdjust(List<HasMetadata> item, CrAdjustmentPlan plan,
@@ -27,4 +28,9 @@ public interface CrComponentExtension {
   default String name() {
     return this.getClass().getSimpleName();
   }
+
+  void applyOnCreate(List<HasMetadata> item,
+                     CrDeploymentPlan plan,
+                     DeploymentUnit unit,
+                     AbstractK8sCrComponentController controller);
 }

@@ -11,6 +11,9 @@ import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
 import org.hpcclab.oaas.crm.optimize.CrInstanceSpec;
+import org.hpcclab.oaas.proto.DeploymentUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,7 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
   final String serviceName;
 
   final List<CrComponentExtension> extensions;
+  private static final Logger logger = LoggerFactory.getLogger( GenericK8sCrComponentController.class );
 
   public GenericK8sCrComponentController(CrtMappingConfig.CrComponentConfig svcConfig,
                                          OprcEnvironment.Config envConfig,
@@ -33,7 +37,7 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
   }
 
   @Override
-  protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan) {
+  protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit) {
     var instanceSpec = plan.coreInstances().get(serviceName);
     if (instanceSpec==null || instanceSpec.disable()) return List.of();
     var labels = Map.of(
@@ -53,7 +57,7 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
       resources.add(hpa);
     }
     for (CrComponentExtension extension : extensions) {
-      extension.applyOnCreate(resources, plan, this);
+      extension.applyOnCreate(resources, plan,unit, this);
     }
     return resources;
   }
@@ -145,17 +149,22 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
       CR_LABEL_KEY, parentController.getTsidString(),
       CR_COMPONENT_LABEL_KEY, serviceName
     );
-    var depList = kubernetesClient.apps().deployments()
+    var depList = kubernetesClient.apps()
+      .deployments()
+      .inNamespace(namespace)
       .withLabels(labels)
       .list()
       .getItems();
+    logger.debug("remove {}", depList.stream().map(HasMetadata::getMetadata).map(ObjectMeta::getName).toList());
     toDeleteResource.addAll(depList);
     var svcList = kubernetesClient.services()
+      .inNamespace(namespace)
       .withLabels(labels)
       .list()
       .getItems();
     toDeleteResource.addAll(svcList);
     var hpa = kubernetesClient.autoscaling().v2().horizontalPodAutoscalers()
+      .inNamespace(namespace)
       .withLabels(labels)
       .list().getItems();
     toDeleteResource.addAll(hpa);

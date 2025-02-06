@@ -11,6 +11,7 @@ import org.hpcclab.oaas.crm.CrtMappingConfig;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
+import org.hpcclab.oaas.proto.DeploymentUnit;
 import org.hpcclab.oaas.proto.PartitionDistribution;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class InvokerK8sCrComponentController extends AbstractK8sCrComponentContr
   }
 
   @Override
-  public List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan) {
+  public List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit) {
     var instanceSpec = plan.coreInstances().get(INVOKER);
     var dataSpec = plan.dataSpec();
     if (instanceSpec.disable()) return List.of();

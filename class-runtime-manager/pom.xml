@@ -97,6 +97,11 @@
       <version>1.78.1</version>
     </dependency>
     <dependency>
+      <groupId>com.hubspot.jackson</groupId>
+      <artifactId>jackson-datatype-protobuf</artifactId>
+      <version>0.9.17</version>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>${org.projectlombok.version}</version>

@@ -10,6 +10,7 @@ import org.hpcclab.oaas.crm.filter.CrFilter;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
 import org.hpcclab.oaas.crm.optimize.CrInstanceSpec;
+import org.hpcclab.oaas.proto.DeploymentUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,15 +53,15 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
 
 
   @Override
-  public List<HasMetadata> createDeployOperation(CrDeploymentPlan plan) {
-    List<HasMetadata> hasMetadata = doCreateDeployOperation(plan);
+  public List<HasMetadata> createDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit) {
+    List<HasMetadata> hasMetadata = doCreateDeployOperation(plan, unit);
     for (CrFilter<List<HasMetadata>> filter : filters) {
       hasMetadata = filter.applyOnCreate(hasMetadata);
     }
     return hasMetadata;
   }
 
-  protected abstract List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan);
+  protected abstract List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit);
 
   @Override
   public List<HasMetadata> createAdjustOperation(CrAdjustmentPlan plan) {

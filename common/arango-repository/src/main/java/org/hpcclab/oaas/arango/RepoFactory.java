@@ -1,9 +1,7 @@
 package org.hpcclab.oaas.arango;
 
 import com.arangodb.*;
-import com.arangodb.http.HttpProtocolConfig;
 import com.arangodb.serde.jackson.JacksonSerde;
-import io.vertx.core.Vertx;
 import org.hpcclab.oaas.arango.repo.ArgClsRepository;
 import org.hpcclab.oaas.arango.repo.ArgFunctionRepository;
 import org.hpcclab.oaas.arango.repo.GenericArgRepository;
@@ -29,7 +27,7 @@ public class RepoFactory {
 //      .acquireHostList(true)
       .protocol(Protocol.HTTP2_VPACK)
       .serde(JacksonSerde.of(ContentType.VPACK))
-      .protocolConfig(HttpProtocolConfig.builder().vertx(Vertx.currentContext().owner()).build())
+//      .protocolConfig(HttpProtocolConfig.builder().vertx(Vertx.currentContext().owner()).build())
       .build();
   }
 
@@ -68,6 +66,7 @@ public class RepoFactory {
     var database = arangoDatabase(db);
     var databaseAsync = arangoDatabase(db.async());
     var colName = conf.options().getOrDefault(COLLECTION, defaultCollection);
+    createIfNotExist(database, colName);
     return new GenericArgRepository<>(
       cls,
       keyExtractor,

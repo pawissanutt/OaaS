@@ -33,16 +33,16 @@ message ProtoQosRequirement{
 message ProtoConstraint{
   int32 budget = 1;
   ProtoConsistencyModel consistency = 2;
-  optional string geographical = 3;
+  uint32 delayTolerance = 3;
   bool ephemeral = 4;
 }
 
 enum ProtoConsistencyModel {
   PROTO_CONSISTENCY_MODEL_UNSPECIFIED = 0;
   PROTO_CONSISTENCY_MODEL_NONE = 1;
-  PROTO_CONSISTENCY_MODEL_EVENTUAL = 2;
-  PROTO_CONSISTENCY_MODEL_SEQUENTIAL = 3;
-  PROTO_CONSISTENCY_MODEL_LINEARIZATION = 4;
+  PROTO_CONSISTENCY_MODEL_READ_YOUR_WRITE = 2;
+  PROTO_CONSISTENCY_MODEL_BOUNDED_STALENESS = 3;
+  PROTO_CONSISTENCY_MODEL_STRONG = 4;
 }
 
 enum ProtoLocality{
