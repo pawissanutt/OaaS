@@ -6,28 +6,53 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-@Builder(toBuilder = true)
-public record OprcEnvironment(
-  Config config,
-  EnvResource total,
-  EnvResource usable,
-  EnvResource request,
-  AvailabilityInfo availability,
-  List<String> managedEnvs
-) {
+public class OprcEnvironment{
+  Map<String, EnvConfig> managedEnvs;
+
+  public OprcEnvironment(List<EnvConfig> managedEnvs) {
+    this.managedEnvs = new ConcurrentHashMap<>();
+    for (EnvConfig env : managedEnvs) {
+      this.managedEnvs.put(env.name, env);
+    }
+  }
+
+  public Map<String, EnvConfig> getManagedEnvs() {
+    return managedEnvs;
+  }
+
+  public EnvConfig findEnvConfig(String name) {
+    return managedEnvs.get(name);
+  }
+
+  public EnvConfig findEnvConfig(int id) {
+    return managedEnvs.values().stream()
+      .filter(envRef -> envRef.id == id)
+      .findFirst()
+      .orElse(null);
+  }
+
   @Builder(toBuilder = true)
-  public record Config(String namespace,
-                       String kafkaBootstrap,
-                       String classManagerHost,
-                       String classManagerPort,
-                       String fnTopic,
-                       String clsTopic,
-                       String crHashTopic,
-                       boolean exposeKnative,
-                       boolean useKnativeLb,
-                       boolean feasibleCheckDisable,
-                       String logLevel) {
+  public record EnvConfig(String name,
+                          int id,
+                          String kubeContext,
+                          String namespace,
+                          String kafkaBootstrap,
+                          String classManagerHost,
+                          String classManagerPort,
+                          String fnTopic,
+                          String clsTopic,
+                          String crHashTopic,
+                          boolean exposeKnative,
+                          boolean useKnativeLb,
+                          boolean feasibleCheckDisable,
+                          EnvResource total,
+                          EnvResource usable,
+                          EnvResource request,
+                          AvailabilityInfo availability,
+                          Map<String, String> fnEnv,
+                          String logLevel) {
   }
 
   public record EnvResource(double cpu,

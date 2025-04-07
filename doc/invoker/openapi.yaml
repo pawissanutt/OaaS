@@ -197,6 +197,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DataAllocateResponse"
+        "400":
+          description: Bad Request
       summary: Allocate Post
       tags:
       - Data Allocate Resource
@@ -229,6 +231,8 @@ paths:
                 type: object
                 additionalProperties:
                   type: string
+        "400":
+          description: Bad Request
       summary: Allocate Post
       tags:
       - Data Allocate Resource
@@ -335,6 +339,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/InvocationResponse"
+        "400":
+          description: Bad Request
       summary: Invoke With Body
       tags:
       - Class Invocation Resource
@@ -466,6 +472,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/InvocationResponse"
+        "400":
+          description: Bad Request
       summary: Invoke With Body
       tags:
       - Object Access Resource

@@ -5,14 +5,16 @@ import com.google.protobuf.ByteString;
 import io.fabric8.kubernetes.api.model.*;
 import io.vertx.core.json.JsonObject;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
+import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrInstanceSpec;
+import org.hpcclab.oaas.proto.DeploymentUnit;
 import org.hpcclab.oaas.proto.KnativeProvisionOrBuilder;
+import org.hpcclab.oaas.proto.PartitionDistribution;
 import org.hpcclab.oaas.proto.ProtoOFunction;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Pawissanutt
@@ -125,6 +127,40 @@ public class K8sResourceUtil {
     return entries.stream()
       .map(e -> new EnvVar(e.getKey().toUpperCase(), e.getValue().toString(), null))
       .toList();
+  }
+
+  public static List<EnvVar> createEnvFromDeployment(DeploymentUnit unit) {
+    var list = new ArrayList<EnvVar>();
+    var nodeId = unit.getDist().getNodeId();
+    var iterator = unit.getDist().getCollectionsMap().entrySet().iterator();
+    if (iterator.hasNext()) {
+      var entry = iterator.next();
+      String key = entry.getKey();
+      PartitionDistribution value = entry.getValue();
+      var partitions = new ArrayList<Integer>();
+      for (int i = 0; i < value.getAssignmentCount(); i++) {
+        if (value.getAssignment(i).getReplicaList().contains(nodeId)) {
+          partitions.add(i);
+        }
+      }
+      var p = partitions.stream().map(Objects::toString).collect(Collectors.joining(","));
+      list.add(new EnvVar("OPRC_CLASS", key, null));
+      list.add(new EnvVar("OPRC_PARTITIONS", p, null));
+    }
+    return list;
+  }
+
+
+  public static List<EnvVar> createEnvFromEnvConfig(OprcEnvironment.EnvConfig envConfig) {
+    var list = new ArrayList<EnvVar>();
+    list.add(new EnvVar("OPRC_ENV", envConfig.name(), null));
+    list.add(new EnvVar("OPRC_ENV_ID", String.valueOf(envConfig.id()), null));
+    if (envConfig.fnEnv() != null) {
+      for (var entry : envConfig.fnEnv().entrySet()) {
+        list.add(new EnvVar(entry.getKey(), entry.getValue(), null));
+      }
+    }
+    return list;
   }
 
   public static List<EnvVar> makeEnv(Map<String, String> env) {

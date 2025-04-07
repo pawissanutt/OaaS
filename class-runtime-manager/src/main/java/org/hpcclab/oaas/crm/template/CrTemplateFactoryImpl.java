@@ -1,9 +1,9 @@
 package org.hpcclab.oaas.crm.template;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.hpcclab.oaas.crm.CrmConfig;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
+import org.hpcclab.oaas.crm.env.EnvironmentManager;
 import org.hpcclab.oaas.crm.optimize.CpuBasedQoSOptimizer;
 import org.hpcclab.oaas.crm.optimize.QosOptimizer;
 import org.hpcclab.oaas.model.exception.StdOaasException;
@@ -15,11 +15,11 @@ import org.hpcclab.oaas.model.exception.StdOaasException;
 public class CrTemplateFactoryImpl implements CrTemplateFactory {
   public static final String DEFAULT = "default";
 
-  final KubernetesClient kubernetesClient;
+  final EnvironmentManager environmentManager;
   final CrmConfig crmConfig;
 
-  public CrTemplateFactoryImpl(KubernetesClient kubernetesClient, CrmConfig crmConfig) {
-    this.kubernetesClient = kubernetesClient;
+  public CrTemplateFactoryImpl(EnvironmentManager environmentManager, CrmConfig crmConfig) {
+    this.environmentManager = environmentManager;
     this.crmConfig = crmConfig;
   }
 
@@ -30,7 +30,7 @@ public class CrTemplateFactoryImpl implements CrTemplateFactory {
       config.type().equalsIgnoreCase("default")) {
       return new V1CrTemplate(
         name,
-        kubernetesClient,
+        environmentManager,
         this::selectOptimizer,
         config,
         crmConfig
@@ -39,7 +39,7 @@ public class CrTemplateFactoryImpl implements CrTemplateFactory {
     else if (config.type().equalsIgnoreCase("v2alpha")) {
       return new V2AlphaCrTemplate(
         name,
-        kubernetesClient,
+        environmentManager,
         this::selectOptimizer,
         config,
         crmConfig

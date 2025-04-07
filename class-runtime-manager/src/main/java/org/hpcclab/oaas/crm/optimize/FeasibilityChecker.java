@@ -5,10 +5,10 @@ import org.hpcclab.oaas.crm.controller.CrOperation;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 
 public interface FeasibilityChecker {
-  boolean deploymentCheck(OprcEnvironment env,
+  boolean deploymentCheck(OprcEnvironment.EnvConfig env,
                           CrController controller,
                           CrOperation operation);
-  boolean runtimeCheck(OprcEnvironment env,
+  boolean runtimeCheck(OprcEnvironment.EnvConfig env,
                        CrController orbit,
                        CrOperation operation);
 }

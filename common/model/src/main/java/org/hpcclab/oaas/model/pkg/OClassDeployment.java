@@ -32,6 +32,8 @@ public class OClassDeployment {
   public static class MemberGroup {
     long id;
     String env;
+    int maxShards=-1;
+    boolean allPartitions = false;
     List<String> disabledFn = List.of();
     List<String> standbyFn = List.of();
   }
@@ -41,7 +43,7 @@ public class OClassDeployment {
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   public static class ShardAssignment {
     long primary = -1L;
-    List<Long> replica;
+    List<Long> owners;
     List<Long> shardIds;
   }
 

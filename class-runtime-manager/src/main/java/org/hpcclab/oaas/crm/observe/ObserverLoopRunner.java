@@ -67,8 +67,7 @@ public class ObserverLoopRunner {
           .adjust(controller, entry.getValue());
         if (plan.needAction()) {
           var operation = controller.createAdjustmentOperation(plan);
-          var env = environmentManager.getEnvironment();
-          operationExecutor.applyOrThrow(controller, operation, env);
+          operationExecutor.applyOrThrow(controller, operation);
           controllerManager.saveToRemote(controller);
         }
       }

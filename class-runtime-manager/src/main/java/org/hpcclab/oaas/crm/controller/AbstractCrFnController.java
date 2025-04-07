@@ -33,7 +33,7 @@ public abstract class AbstractCrFnController implements CrFnController<HasMetada
     if (parentController instanceof K8SCrController k8SCrController) {
       this.kubernetesClient = k8SCrController.kubernetesClient;
       this.prefix = k8SCrController.prefix;
-      this.namespace = k8SCrController.namespace;
+      this.namespace = k8SCrController.getEnvConfig().namespace();
     } else
       throw new IllegalArgumentException("Parent cr controller is not a K8SCrController");
   }

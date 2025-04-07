@@ -1,9 +1,9 @@
 package org.hpcclab.oaas.crm.template;
 
 import com.github.f4b6a3.tsid.TsidFactory;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.hpcclab.oaas.crm.CrmConfig;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
+import org.hpcclab.oaas.crm.env.EnvironmentManager;
 import org.hpcclab.oaas.crm.optimize.QosOptimizer;
 
 import java.util.Objects;
@@ -11,22 +11,21 @@ import java.util.function.Function;
 
 public abstract class AbstractCrTemplate implements CrTemplate {
   protected final TsidFactory tsidFactory;
-  protected final KubernetesClient k8sClient;
   protected final CrtMappingConfig.CrtConfig config;
   protected final QosOptimizer qosOptimizer;
   protected final String name;
   protected final CrmConfig crmConfig;
+  protected final EnvironmentManager environmentManager;
 
   protected AbstractCrTemplate(String name,
-                               KubernetesClient k8sClient,
+                               EnvironmentManager environmentManager,
                                CrtMappingConfig.CrtConfig config,
                                Function<CrtMappingConfig.CrtConfig, QosOptimizer> optimizerBuilder,
                                CrmConfig crmConfig) {
 
     this.name = name;
     this.crmConfig = crmConfig;
-    Objects.requireNonNull(k8sClient);
-    this.k8sClient = k8sClient;
+    this.environmentManager = environmentManager;
     Objects.requireNonNull(config);
     this.config = validate(config);
     Objects.requireNonNull(optimizerBuilder);

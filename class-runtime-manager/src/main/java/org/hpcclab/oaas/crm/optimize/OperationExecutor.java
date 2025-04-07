@@ -6,7 +6,6 @@ import jakarta.inject.Inject;
 import org.hpcclab.oaas.crm.CrControllerManager;
 import org.hpcclab.oaas.crm.controller.CrController;
 import org.hpcclab.oaas.crm.controller.CrOperation;
-import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.exception.CrDeployException;
 import org.hpcclab.oaas.proto.CrOperationResponse;
 import org.slf4j.Logger;
@@ -27,9 +26,10 @@ public class OperationExecutor {
   }
 
   public Uni<CrOperationResponse> applyOrRollback(CrController crController,
-                                                  CrOperation operation,
-                                                  OprcEnvironment env) {
-    var feasible = feasibilityChecker.deploymentCheck(env, crController, operation);
+                                                  CrOperation operation) {
+    var feasible = feasibilityChecker.deploymentCheck(crController.getEnvConfig(),
+      crController,
+      operation);
     if (!feasible)
       return Uni.createFrom().failure(new CrDeployException("Not feasible"));
     try {
@@ -54,9 +54,8 @@ public class OperationExecutor {
   }
 
   public void applyOrThrow(CrController crController,
-                           CrOperation operation,
-                           OprcEnvironment env) {
-    var feasible = feasibilityChecker.deploymentCheck(env, crController, operation);
+                           CrOperation operation) {
+    var feasible = feasibilityChecker.deploymentCheck(crController.getEnvConfig(), crController, operation);
     if (!feasible)
       throw new CrDeployException("Not feasible");
     try {

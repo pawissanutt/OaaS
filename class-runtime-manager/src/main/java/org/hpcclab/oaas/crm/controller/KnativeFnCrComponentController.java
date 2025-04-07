@@ -36,7 +36,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
   KnativeClient knativeClient;
 
   protected KnativeFnCrComponentController(CrtMappingConfig.FnConfig fnConfig,
-                                           OprcEnvironment.Config envConfig,
+                                           OprcEnvironment.EnvConfig envConfig,
                                            ProtoOFunction function) {
     super(null, envConfig);
     this.fnConfig = fnConfig;
@@ -53,7 +53,8 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
   }
 
   @Override
-  protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan, DeploymentUnit unit) {
+  protected List<HasMetadata> doCreateDeployOperation(CrDeploymentPlan plan,
+                                                      DeploymentUnit unit) {
     logger.debug("deploy function {} with Knative", function.getKey());
     var instanceSpec = plan.fnInstances()
       .get(function.getKey());
@@ -65,6 +66,8 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
       CR_COMPONENT_LABEL_KEY, NAME_FUNCTION,
       CR_FN_KEY, function.getKey()
     );
+    labels.put(
+      CR_ENV_ID_KEY, String.valueOf(envConfig.id()));
 
     if (!envConfig.exposeKnative()) {
       labels.put("networking.knative.dev/visibility", "cluster-local");
@@ -76,6 +79,8 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
       .withName("fn")
       .withImage(knConf.getImage())
       .addAllToEnv(K8sResourceUtil.extractEnv(function))
+      .addAllToEnv(K8sResourceUtil.createEnvFromDeployment(unit))
+      .addAllToEnv(K8sResourceUtil.createEnvFromEnvConfig(envConfig))
       .withResources(makeResourceRequirements(instanceSpec));
 
     if (knConf.getPort() > 0) {
@@ -94,7 +99,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
     var serviceBuilder = new ServiceBuilder()
       .withNewMetadata()
       .withName(fnName)
-      .withNamespace(namespace)
+      .withNamespace(envConfig.namespace())
       .withLabels(labels)
       .endMetadata();
     serviceBuilder.withNewSpec()
@@ -119,7 +124,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
   protected List<HasMetadata> doCreateAdjustOperation(CrAdjustmentPlan plan) {
     CrInstanceSpec spec = plan.fnInstances().get(function.getKey());
     var svc = knativeClient.services()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withName(createName(function.getKey()))
       .get();
     if (svc==null) return List.of();
@@ -139,7 +144,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
       CR_FN_KEY, function.getKey()
     );
     var services = knativeClient.services()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withLabels(labels)
       .list()
       .getItems();

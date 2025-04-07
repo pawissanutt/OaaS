@@ -23,7 +23,7 @@ import static org.hpcclab.oaas.crm.controller.K8SCrController.CR_LABEL_KEY;
 @Deprecated
 public class SaK8sCrComponentController extends AbstractK8sCrComponentController {
   public SaK8sCrComponentController(CrtMappingConfig.CrComponentConfig svcConfig,
-                                    OprcEnvironment.Config envConfig) {
+                                    OprcEnvironment.EnvConfig envConfig) {
     super(svcConfig, envConfig);
   }
 
@@ -71,7 +71,7 @@ public class SaK8sCrComponentController extends AbstractK8sCrComponentController
       return hpa==null ? List.of():List.of(hpa);
     } else {
       Deployment deployment = kubernetesClient.apps().deployments()
-        .inNamespace(namespace)
+        .inNamespace(envConfig.namespace())
         .withName(name)
         .get();
       deployment.getSpec()

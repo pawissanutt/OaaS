@@ -7,7 +7,7 @@ set export
 run-pm :
   ./mvnw -pl package-manager quarkus:dev
 
-run-crm QUARKUS_HTTP_PORT="8091" OPRC_CRM_KUBECONTEXT="" OPRC_CRM_MANAGEDENV="cloud-1":
+run-crm QUARKUS_HTTP_PORT="8091":
   ./mvnw -Doprc.crm.exposeKnative=true -pl class-runtime-manager quarkus:dev
 
 

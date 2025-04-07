@@ -1,6 +1,7 @@
 package org.hpcclab.oaas.crm.controller;
 
 import com.github.f4b6a3.tsid.Tsid;
+import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
 import org.hpcclab.oaas.crm.optimize.CrDeploymentPlan;
 import org.hpcclab.oaas.crm.template.CrTemplate;
@@ -27,7 +28,7 @@ public interface CrController {
   ProtoCr dump();
   boolean isInitialized();
   boolean isDeleted();
-
+  OprcEnvironment.EnvConfig getEnvConfig();
   Optional<OFunctionStatusUpdate> updateFunctionStatus(String fnKey,
                                                       ProtoOFunctionDeploymentStatus status);
 }

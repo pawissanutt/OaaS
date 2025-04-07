@@ -273,6 +273,9 @@
                 }
               }
             }
+          },
+          "400" : {
+            "description" : "Bad Request"
           }
         },
         "summary" : "Allocate Post",
@@ -321,6 +324,9 @@
                 }
               }
             }
+          },
+          "400" : {
+            "description" : "Bad Request"
           }
         },
         "summary" : "Allocate Post",
@@ -477,6 +483,9 @@
                 }
               }
             }
+          },
+          "400" : {
+            "description" : "Bad Request"
           }
         },
         "summary" : "Invoke With Body",
@@ -665,6 +674,9 @@
                 }
               }
             }
+          },
+          "400" : {
+            "description" : "Bad Request"
           }
         },
         "summary" : "Invoke With Body",

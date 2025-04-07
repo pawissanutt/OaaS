@@ -90,8 +90,8 @@ templates:
           OPRC_ZENOH_PEERS: "tcp/router:17447"
         requestCpu: '1'
         requestMemory: 1Gi
-        limitCpu: '8'
-#        limitMemory: 8Gi
+        limitCpu: '4'
+        # limitMemory: 8Gi
         maxReplicas: 20
         extensions:
           - name: odgm
@@ -110,4 +110,4 @@ templates:
       objectiveMissThreshold: 0.75
       idleFilterThreshold: 0.6
       enableHpa: true
-    priority: 0
+    priority: 10

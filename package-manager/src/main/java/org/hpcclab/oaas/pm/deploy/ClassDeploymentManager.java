@@ -1,6 +1,7 @@
 package org.hpcclab.oaas.pm.deploy;
 
 import com.github.f4b6a3.tsid.TsidCreator;
+import io.smallrye.mutiny.tuples.Tuple2;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.collections.api.factory.Lists;
@@ -83,22 +84,39 @@ public class ClassDeploymentManager implements PackageDeployer {
       deployment.setMembers(members);
     }
     if (deployment.getAssignments().isEmpty()) {
-      var members = deployment.getMembers().stream().map(OClassDeployment.MemberGroup::getId).toList();
+      var completeMembers = deployment.getMembers().stream()
+        .filter(OClassDeployment.MemberGroup::isAllPartitions)
+        .map(OClassDeployment.MemberGroup::getId)
+        .toList();
+      var members = deployment.getMembers().stream()
+        .filter(m -> !m.isAllPartitions())
+        .map(m ->
+          Tuple2.of(m.getId(), m.getMaxShards() < 0? Integer.MAX_VALUE:m.getMaxShards()))
+        .collect(Collectors.toCollection(LinkedList::new));
       var assignments = new ArrayList<OClassDeployment.ShardAssignment>();
-      var memberIndex = 0;
       for (int i = 0; i < partitionCount; i++) {
         var assignment = new OClassDeployment.ShardAssignment();
-        var replicas = new ArrayList<Long>();
+        var owners = new ArrayList<>(completeMembers);
         var shardIds = new ArrayList<Long>();
-        for (int j = 0; j < replicaCount; j++) {
+        for (int j = owners.size(); j < replicaCount; j++) {
+          var m = members.removeFirst();
+          while (m.getItem2() == 0 && !members.isEmpty()) {
+            m = members.removeFirst();
+          }
+          if (m.getItem2() == 0) {
+            throw StdOaasException.format("not enough members to assign shards");
+          }
+          owners.add(m.getItem1());
+          if (m.getItem2()> 0) {
+            members.add(Tuple2.of(m.getItem1(), m.getItem2() - 1));
+          }
+        }
+        for (int j = 0; j < owners.size(); j++) {
           shardIds.add(generateId());
-          replicas.add(members.get(memberIndex % members.size()));
-          memberIndex++;
         }
         assignment.setPrimary(shardIds.getFirst());
-        assignment.setReplica(replicas);
+        assignment.setOwners(owners);
         assignment.setShardIds(shardIds);
-
         assignments.add(assignment);
       }
       deployment.setAssignments(assignments);
@@ -154,6 +172,7 @@ public class ClassDeploymentManager implements PackageDeployer {
   }
 
 
+
   DeploymentUnit createDeploymentUnit(OClassDeployment deploy,
                                       OClass cls,
                                       OPackage pkg,
@@ -186,7 +205,9 @@ public class ClassDeploymentManager implements PackageDeployer {
       .build();
   }
 
-  DataDistribution.Builder toDist(OClassDeployment deploy, OClass cls, OClassDeployment.MemberGroup member) {
+  DataDistribution.Builder toDist(OClassDeployment deploy,
+                                  OClass cls,
+                                  OClassDeployment.MemberGroup member) {
     var dist = DataDistribution.newBuilder();
     var members = deploy.getMembers()
       .stream()
@@ -196,7 +217,7 @@ public class ClassDeploymentManager implements PackageDeployer {
     List<ShardAssignment> shardAssignments = deploy.getAssignments().stream()
       .map(assignment -> {
         var shard = ShardAssignment.newBuilder()
-          .addAllReplica(assignment.getReplica())
+          .addAllReplica(assignment.getOwners())
           .addAllShardIds(assignment.getShardIds());
         if (assignment.getPrimary() > 0) {
           shard.setPrimary(assignment.getPrimary());
@@ -245,12 +266,13 @@ public class ClassDeploymentManager implements PackageDeployer {
     if (consistency==ConsistencyModel.BOUNDED_STALENESS || consistency==ConsistencyModel.READ_YOUR_WRITE) {
       int delayTolerance = cls.getConstraints().delayTolerance();
       if (delayTolerance > 0) {
-        int syncInterval = delayTolerance - 500;
+        int syncInterval = delayTolerance - 800;
         options.put("mst_sync_interval", String.valueOf(syncInterval));
       } else {
         options.put("mst_sync_interval", "5000");
       }
     }
+    logger.debug("generate extra options: {}", options);
     return options;
   }
 }

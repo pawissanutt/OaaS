@@ -14,8 +14,6 @@
         environments:
         - name: default
           crmUrl: http://localhost:8091
-          localGatewayUrl: http://localhost:10000
-          globalGatewayUrl: http://localhost:10000
 
 "%dev":
   quarkus:
@@ -32,11 +30,17 @@
           defaultEnv: cloud-1
           environments:
           - name: cloud-1
+            id: 1
             crmUrl: http://localhost:8091
           - name: cloud-2
+            id: 2
             crmUrl: http://localhost:8091
           - name: edge-1
-            crmUrl: http://localhost:18091
+            id: 3
+            crmUrl: http://localhost:8091
+          - name: edge-2
+            id: 4
+            crmUrl: http://localhost:8091
   kafka:
     bootstrap:
       servers: localhost:31000

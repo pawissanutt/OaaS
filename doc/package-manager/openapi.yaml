@@ -444,6 +444,11 @@ components:
           format: int64
         env:
           type: string
+        maxShards:
+          type: integer
+          format: int32
+        allPartitions:
+          type: boolean
         disabledFn:
           type: array
           items:
@@ -460,6 +465,11 @@ components:
           format: int64
         env:
           type: string
+        maxShards:
+          type: integer
+          format: int32
+        allPartitions:
+          type: boolean
         disabledFn:
           type: array
           items:
@@ -1106,7 +1116,7 @@ components:
         primary:
           type: integer
           format: int64
-        replica:
+        owners:
           type: array
           items:
             type: integer
@@ -1122,7 +1132,7 @@ components:
         primary:
           type: integer
           format: int64
-        replica:
+        owners:
           type: array
           items:
             type: integer

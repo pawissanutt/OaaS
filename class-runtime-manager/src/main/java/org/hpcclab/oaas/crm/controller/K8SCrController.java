@@ -26,23 +26,22 @@ public class K8SCrController implements CrController {
   public static final String CR_LABEL_KEY = "cr-id";
   public static final String CR_COMPONENT_LABEL_KEY = "cr-part";
   public static final String CR_FN_KEY = "cr-fn";
+  public static final String CR_ENV_ID_KEY = "cr-env-id";
   public static final String CR_TEMP_TYPE_KEY = "cr-template-type";
   public static final String NAME_SECRET = "secret";
   public static final String NAME_FUNCTION = "function";
   public static final String NAME_CONFIGMAP = "cm";
   private static final Logger logger = LoggerFactory.getLogger(K8SCrController.class);
   final long id;
-  final String env;
   final String prefix;
   final CrTemplate template;
   final KubernetesClient kubernetesClient;
-  final OprcEnvironment.Config envConfig;
+  final OprcEnvironment.EnvConfig envConfig;
   final Map<String, CrComponentController<HasMetadata>> componentControllers;
   final Map<String, ProtoOClass> attachedCls = Maps.mutable.empty();
   final Map<String, ProtoOFunction> attachedFn = Maps.mutable.empty();
   final Map<String, FnCrComponentController<HasMetadata>> fnControllers = Maps.mutable.empty();
   final FnCrControllerFactory<HasMetadata> factory;
-  public final String namespace;
   final Map<String, FuncRouting> routing = Maps.mutable.empty();
   CrDeploymentPlan currentPlan;
   boolean deleted = false;
@@ -53,15 +52,12 @@ public class K8SCrController implements CrController {
                          KubernetesClient client,
                          Map<String, CrComponentController<HasMetadata>> componentControllers,
                          FnCrControllerFactory<HasMetadata> factory,
-                         OprcEnvironment.Config envConfig,
-                         Tsid tsid,
-                         String env) {
+                         OprcEnvironment.EnvConfig envConfig,
+                         Tsid tsid) {
     this.template = template;
     this.kubernetesClient = client;
     this.envConfig = envConfig;
-    this.namespace = envConfig.namespace();
     this.id = tsid.toLong();
-    this.env = env;
     this.prefix = "cr-" + tsid.toLowerCase() + "-";
     this.factory = factory;
     this.componentControllers = componentControllers;
@@ -77,14 +73,13 @@ public class K8SCrController implements CrController {
                          KubernetesClient client,
                          Map<String, CrComponentController<HasMetadata>> componentControllers,
                          FnCrControllerFactory<HasMetadata> factory,
-                         OprcEnvironment.Config envConfig,
+                         OprcEnvironment.EnvConfig envConfig,
                          ProtoCr protoCr) {
     this(template, client,
       componentControllers,
       factory,
       envConfig,
-      Tsid.from(protoCr.getId()),
-      protoCr.getEnv()
+      Tsid.from(protoCr.getId())
     );
     for (ProtoOClass protoOClass : protoCr.getAttachedClsList()) {
       attachedCls.put(protoOClass.getKey(), protoOClass);
@@ -283,9 +278,9 @@ public class K8SCrController implements CrController {
       .build();
     return ProtoCr.newBuilder()
       .setId(id)
-      .setEnv(env)
+      .setEnv(envConfig.name())
       .setTemplate(template.name())
-      .setNamespace(namespace)
+      .setNamespace(envConfig.namespace())
       .addAllAttachedCls(attachedCls.values())
       .addAllAttachedFn(attachedFn.values())
       .setState(ProtoCrState.newBuilder().setJsonDump(str).build())
@@ -340,5 +335,10 @@ public class K8SCrController implements CrController {
           });
       }
     }
+  }
+
+  @Override
+  public OprcEnvironment.EnvConfig getEnvConfig() {
+    return envConfig;
   }
 }

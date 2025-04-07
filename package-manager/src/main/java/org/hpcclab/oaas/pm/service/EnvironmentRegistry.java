@@ -92,9 +92,9 @@ public class EnvironmentRegistry {
   }
 
   public record Environment(String name,
+                            int id,
                             String crmUrl,
-                            String localGatewayUrl,
-                            String globalGatewayUrl) {
+                            Map<String, String> options) {
 
   }
 }

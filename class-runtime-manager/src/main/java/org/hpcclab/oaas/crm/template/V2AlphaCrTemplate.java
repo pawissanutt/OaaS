@@ -1,9 +1,7 @@
 package org.hpcclab.oaas.crm.template;
 
 import com.github.f4b6a3.tsid.Tsid;
-import io.fabric8.knative.client.DefaultKnativeClient;
 import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.eclipse.collections.api.factory.Maps;
 import org.eclipse.collections.api.map.MutableMap;
 import org.hpcclab.oaas.crm.CrControllerManager;
@@ -15,7 +13,6 @@ import org.hpcclab.oaas.crm.controller.ext.OdgmExtension;
 import org.hpcclab.oaas.crm.env.EnvironmentManager;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.filter.K8sFilterFactory;
-import org.hpcclab.oaas.crm.observe.FnEventObserver;
 import org.hpcclab.oaas.crm.optimize.QosOptimizer;
 import org.hpcclab.oaas.proto.DeploymentUnit;
 import org.hpcclab.oaas.proto.ProtoCr;
@@ -29,24 +26,24 @@ import static org.hpcclab.oaas.crm.CrComponent.CONFIG;
 public class V2AlphaCrTemplate extends AbstractCrTemplate {
   final K8sFilterFactory filterFactory;
 
-
   public V2AlphaCrTemplate(String name,
-                           KubernetesClient k8sClient,
+                           EnvironmentManager environmentManager,
                            Function<CrtConfig, QosOptimizer> optimizerBuilder,
                            CrtConfig config,
                            CrmConfig crmConfig) {
-    super(name, k8sClient, config, optimizerBuilder, crmConfig);
+    super(name, environmentManager, config, optimizerBuilder, crmConfig);
     filterFactory = new K8sFilterFactory();
   }
 
   @Override
-  public void init(CrControllerManager crControllerManager, EnvironmentManager environmentManager) {
-    FnEventObserver fnEventObserver = FnEventObserver.getOrCreate(
-      type(),
-      new DefaultKnativeClient(k8sClient),
-      crControllerManager,
-      environmentManager
-    );
+  public void init(CrControllerManager crControllerManager,
+                   EnvironmentManager environmentManager) {
+    //    FnEventObserver fnEventObserver = FnEventObserver.getOrCreate(
+//      type(),
+//      new DefaultKnativeClient(k8sClient),
+//      crControllerManager,
+//      environmentManager
+//    );
 //    fnEventObserver.start(Map.of(K8SCrController.CR_TEMP_TYPE_KEY, type()));
   }
 
@@ -56,7 +53,7 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
   }
 
   @Override
-  public CrController create(OprcEnvironment.Config envConf, DeploymentUnit deploymentUnit) {
+  public CrController create(OprcEnvironment.EnvConfig envConf, DeploymentUnit deploymentUnit) {
     Map<String, CrComponentController<HasMetadata>> componentControllers =
       createComponentControllers(envConf);
     var factory = new UnifyFnCrControllerFactory(config.functions(), envConf);
@@ -69,23 +66,22 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
     }
     return new K8SCrController(
       this,
-      k8sClient,
+      environmentManager.getK8sClient(envConf.name()),
       componentControllers,
       factory,
       envConf,
-      id,
-      deploymentUnit.getEnv()
+      id
     );
   }
 
   @Override
-  public CrController load(OprcEnvironment.Config envConf, ProtoCr cr) {
+  public CrController load(OprcEnvironment.EnvConfig envConf, ProtoCr cr) {
     Map<String, CrComponentController<HasMetadata>> componentControllers = createComponentControllers(envConf);
     var fnCrControllerFactory = new UnifyFnCrControllerFactory(config.functions(), envConf);
     filterFactory.injectFilter(config.functions().filters(), fnCrControllerFactory);
     return new K8SCrController(
       this,
-      k8sClient,
+      environmentManager.getK8sClient(envConf.name()),
       componentControllers,
       fnCrControllerFactory,
       envConf,
@@ -93,7 +89,7 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
     );
   }
 
-  private Map<String, CrComponentController<HasMetadata>> createComponentControllers(OprcEnvironment.Config envConf) {
+  private Map<String, CrComponentController<HasMetadata>> createComponentControllers(OprcEnvironment.EnvConfig envConf) {
 
     var conf = new ConfigK8sCrComponentController(null, envConf);
     MutableMap<String, CrComponentController<HasMetadata>> map = Maps.mutable
@@ -106,7 +102,7 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
 
   private GenericK8sCrComponentController createGeneric3c(String name,
                                                           CrtMappingConfig.CrComponentConfig svcConfig,
-                                                          OprcEnvironment.Config envConf) {
+                                                          OprcEnvironment.EnvConfig envConf) {
     var controller = new GenericK8sCrComponentController(svcConfig, envConf, name);
     svcConfig.extensions().stream().filter(e -> Objects.equals(e.name(), "odgm"))
       .map(e -> new OdgmExtension())

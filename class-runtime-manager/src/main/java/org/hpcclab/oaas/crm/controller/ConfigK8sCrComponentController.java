@@ -23,7 +23,7 @@ import static org.hpcclab.oaas.crm.controller.K8SCrController.*;
  */
 public class ConfigK8sCrComponentController extends AbstractK8sCrComponentController {
   public ConfigK8sCrComponentController(CrtMappingConfig.CrComponentConfig svcConfig,
-                                        OprcEnvironment.Config envConfig) {
+                                        OprcEnvironment.EnvConfig envConfig) {
     super(svcConfig, envConfig);
   }
 
@@ -49,7 +49,7 @@ public class ConfigK8sCrComponentController extends AbstractK8sCrComponentContro
     var sec = new SecretBuilder()
       .withNewMetadata()
       .withName(prefix + NAME_SECRET)
-      .withNamespace(namespace)
+      .withNamespace(envConfig.namespace())
       .withLabels(labels)
       .endMetadata()
       .withStringData(datastoreMap)
@@ -59,7 +59,7 @@ public class ConfigK8sCrComponentController extends AbstractK8sCrComponentContro
     var confMapData = Map.of(
       "OPRC_INVOKER_KAFKA", parentController.envConfig.kafkaBootstrap(),
       "OPRC_INVOKER_SA_URL", "http://%sstorage-adapter.%s.svc.cluster.local"
-        .formatted(prefix, namespace),
+        .formatted(prefix, envConfig.namespace()),
       "OPRC_CRID", parentController.getTsidString(),
       "OPRC_INVOKER_PMHOST", envConfig.classManagerHost(),
       "OPRC_INVOKER_PMPORT", envConfig.classManagerPort(),
@@ -70,7 +70,7 @@ public class ConfigK8sCrComponentController extends AbstractK8sCrComponentContro
     var confMap = new ConfigMapBuilder()
       .withNewMetadata()
       .withName(prefix + NAME_CONFIGMAP)
-      .withNamespace(namespace)
+      .withNamespace(envConfig.namespace())
       .withLabels(labels)
       .endMetadata()
       .withData(confMapData)
@@ -88,11 +88,11 @@ public class ConfigK8sCrComponentController extends AbstractK8sCrComponentContro
   public List<HasMetadata> doCreateDeleteOperation() {
     List<HasMetadata> toDeleteResource = Lists.mutable.empty();
     var confMap = kubernetesClient.configMaps()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withName(prefix + NAME_CONFIGMAP).get();
     if (confMap!=null) toDeleteResource.add(confMap);
     var sec = kubernetesClient.secrets()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withName(prefix + NAME_SECRET).get();
     if (sec!=null) toDeleteResource.add(sec);
     return toDeleteResource;

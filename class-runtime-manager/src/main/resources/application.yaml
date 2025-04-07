@@ -30,7 +30,35 @@
       pmPort: 8088
     crm:
       monitorDisable: true
-      managedEnv: cloud,edge-1,edge-2
+      managedEnv: |
+        - id: 1
+          name: cloud-1
+          kubeContext: cc
+          availability:
+            uptimePercentage: 0.99
+          fnEnv:
+            OPRC_ZENOH_PEERS: "tcp/router:17447"
+        - id: 2
+          name: cloud-2
+          kubeContext: cc
+          availability:
+            uptimePercentage: 0.99
+          fnEnv:
+            OPRC_ZENOH_PEERS: "tcp/router:17447"
+        - id: 3
+          name: edge-1
+          kubeContext: cc2
+          availability:
+            uptimePercentage: 0.99
+          fnEnv:
+            OPRC_ZENOH_PEERS: "tcp/router:17447"
+        - id: 4
+          name: edge-2
+          kubeContext: cc2
+          availability:
+            uptimePercentage: 0.99
+          fnEnv:
+            OPRC_ZENOH_PEERS: "tcp/router:17447"
 "%test":
   oprc:
     crm:
@@ -71,10 +99,6 @@ quarkus:
     image: ${ci.registry.image:oaas}/${oprc.name}${tag:}
   console:
     color: true
-  kafka:
-    devservices:
-      enabled: false
-
   grpc:
     clients:
       package-manager:

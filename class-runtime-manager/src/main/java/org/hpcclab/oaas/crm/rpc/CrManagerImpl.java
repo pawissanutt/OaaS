@@ -32,6 +32,7 @@ public class CrManagerImpl implements CrManager {
   public Uni<CrOperationResponse> deploy(DeploymentUnit deploymentUnit) {
     try {
       long crId = deploymentUnit.getCrId();
+      environmentManager.refresh(deploymentUnit.getEnv());
       var env = environmentManager.getEnvironment();
       if (crId > 0) {
         var controller = controllerManager.getOrLoad(crId, env);
@@ -39,7 +40,7 @@ public class CrManagerImpl implements CrManager {
           var plan = controller.getTemplate().getQosOptimizer()
             .resolve(deploymentUnit, env);
           var operation = controller.createUpdateOperation(plan, deploymentUnit);
-          return operationExecutor.applyOrRollback(controller, operation, env);
+          return operationExecutor.applyOrRollback(controller, operation);
         }
       }
       var controller = controllerManager.create(env, deploymentUnit);
@@ -47,7 +48,7 @@ public class CrManagerImpl implements CrManager {
         .resolve(deploymentUnit, env);
       var operation = controller.createDeployOperation(plan, deploymentUnit);
       logger.info("deploy CR({}) for cls({})", controller.getTsidString(), deploymentUnit.getCls().getKey());
-      return operationExecutor.applyOrRollback(controller, operation, env);
+      return operationExecutor.applyOrRollback(controller, operation);
     } catch (Exception e) {
       logger.error("CR deploying error", e);
       return Uni.createFrom().failure(e);
@@ -63,7 +64,7 @@ public class CrManagerImpl implements CrManager {
       var plan = orbitStructure.getTemplate().getQosOptimizer()
         .resolve(request.getUnit(), env);
       var operation = orbitStructure.createUpdateOperation(plan, request.getUnit());
-      return operationExecutor.applyOrRollback(orbitStructure, operation, env);
+      return operationExecutor.applyOrRollback(orbitStructure, operation);
     } catch (Exception e) {
       logger.error("CR deploying error", e);
       return Uni.createFrom().failure(e);
@@ -94,7 +95,7 @@ public class CrManagerImpl implements CrManager {
       var env = environmentManager.getEnvironment();
       var crController = controllerManager.getOrLoad(request.getOrbit(), env);
       var operation = crController.createDetachOperation(request.getCls());
-      return operationExecutor.applyOrRollback(crController, operation, env)
+      return operationExecutor.applyOrRollback(crController, operation)
         .onFailure()
         .invoke(e -> logger.error("CR detaching error", e));
     } catch (Exception e) {

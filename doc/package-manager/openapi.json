@@ -544,6 +544,13 @@
           "env" : {
             "type" : "string"
           },
+          "maxShards" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "allPartitions" : {
+            "type" : "boolean"
+          },
           "disabledFn" : {
             "type" : "array",
             "items" : {
@@ -567,6 +574,13 @@
           },
           "env" : {
             "type" : "string"
+          },
+          "maxShards" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "allPartitions" : {
+            "type" : "boolean"
           },
           "disabledFn" : {
             "type" : "array",
@@ -1510,7 +1524,7 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "replica" : {
+          "owners" : {
             "type" : "array",
             "items" : {
               "type" : "integer",
@@ -1533,7 +1547,7 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "replica" : {
+          "owners" : {
             "type" : "array",
             "items" : {
               "type" : "integer",

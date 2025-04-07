@@ -41,10 +41,11 @@ message DetachCrRequest{
 
 message DeploymentUnit{
   ProtoOClass cls = 1;
-  repeated ProtoOFunction fnList = 2;
+  repeated ProtoOFunction fn_list = 2;
   int64 crId = 3;
   string env = 4;
-  DataDistribution dist = 5;
+  int32 env_id = 5;
+  DataDistribution dist = 6;
 }
 
 message DataDistribution{

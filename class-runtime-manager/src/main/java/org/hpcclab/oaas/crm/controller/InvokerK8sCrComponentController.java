@@ -27,7 +27,7 @@ import static org.hpcclab.oaas.crm.controller.K8SCrController.CR_LABEL_KEY;
 public class InvokerK8sCrComponentController extends AbstractK8sCrComponentController {
 
   public InvokerK8sCrComponentController(CrtMappingConfig.CrComponentConfig svcConfig,
-                                         OprcEnvironment.Config envConf) {
+                                         OprcEnvironment.EnvConfig envConf) {
     super(svcConfig, envConf);
   }
 
@@ -63,8 +63,8 @@ public class InvokerK8sCrComponentController extends AbstractK8sCrComponentContr
     var container = deployment.getSpec().getTemplate().getSpec()
       .getContainers().getFirst();
     addEnv(container, "ISPN_DNS_PING",
-      invokerSvcPing.getMetadata().getName() + "." + namespace + ".svc.cluster.local");
-    addEnv(container, "KUBERNETES_NAMESPACE", namespace);
+      invokerSvcPing.getMetadata().getName() + "." + envConfig.namespace() + ".svc.cluster.local");
+    addEnv(container, "KUBERNETES_NAMESPACE", envConfig.namespace());
     var replica = dataSpec.dist().getCollectionsMap()
         .values().stream().findFirst()
         .map(PartitionDistribution::getReplicaCount)
@@ -93,7 +93,7 @@ public class InvokerK8sCrComponentController extends AbstractK8sCrComponentContr
       return hpa==null ? List.of():List.of(hpa);
     } else {
       Deployment deployment = kubernetesClient.apps().deployments()
-        .inNamespace(namespace)
+        .inNamespace(envConfig.namespace())
         .withName(name)
         .get();
       deployment.getSpec()

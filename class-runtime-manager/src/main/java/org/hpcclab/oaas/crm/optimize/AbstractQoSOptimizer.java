@@ -112,7 +112,8 @@ public abstract class AbstractQoSOptimizer implements QosOptimizer {
 
   @Override
   public CrDeploymentPlan resolve(DeploymentUnit unit, OprcEnvironment environment) {
-    var up = environment.availability().uptimePercentage();
+    var envConfig = environment.findEnvConfig(unit.getEnv());
+    var up = envConfig.availability().uptimePercentage();
     double targetAvail = unit.getCls().getRequirements().getAvailability();
     var qos = unit.getCls().getRequirements();
     int minInstance = 1;

@@ -12,17 +12,13 @@ import java.util.List;
  * @author Pawissanutt
  */
 public interface CrComponentExtension {
-  default void applyOnCreate(List<HasMetadata> item,
-                                  CrDeploymentPlan plan,
-                                          DeploymentUnit unit) {
-  }
 
   default void applyOnAdjust(List<HasMetadata> item, CrAdjustmentPlan plan,
-                                          AbstractK8sCrComponentController controller) {
+                             AbstractK8sCrComponentController controller) {
   }
 
   default void applyOnDelete(List<HasMetadata> item,
-                                          AbstractK8sCrComponentController controller) {
+                             AbstractK8sCrComponentController controller) {
   }
 
   default String name() {

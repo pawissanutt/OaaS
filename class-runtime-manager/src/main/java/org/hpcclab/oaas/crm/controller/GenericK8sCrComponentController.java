@@ -29,7 +29,7 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
   private static final Logger logger = LoggerFactory.getLogger( GenericK8sCrComponentController.class );
 
   public GenericK8sCrComponentController(CrtMappingConfig.CrComponentConfig svcConfig,
-                                         OprcEnvironment.Config envConfig,
+                                         OprcEnvironment.EnvConfig envConfig,
                                          String name) {
     super(svcConfig, envConfig);
     this.serviceName = name;
@@ -64,7 +64,7 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
 
   Service createSvc(String name, Map<String, String> labels) {
     ServiceBuilder serviceBuilder = new ServiceBuilder().withNewMetadata()
-      .withNamespace(this.namespace)
+      .withNamespace(this.envConfig.namespace())
       .withName(name)
       .withLabels(labels)
       .endMetadata();
@@ -85,7 +85,7 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
                               String name, Map<String, String> labels) {
     var builder = new DeploymentBuilder();
     builder.withNewMetadata()
-      .withNamespace(this.namespace)
+      .withNamespace(this.envConfig.namespace())
       .withName(name)
       .withLabels(labels)
       .endMetadata();
@@ -128,7 +128,7 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
       return resources;
     } else {
       Deployment deployment = kubernetesClient.apps().deployments()
-        .inNamespace(namespace)
+        .inNamespace(envConfig.namespace())
         .withName(name)
         .get();
       deployment.getSpec()
@@ -151,20 +151,20 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
     );
     var depList = kubernetesClient.apps()
       .deployments()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withLabels(labels)
       .list()
       .getItems();
     logger.debug("remove {}", depList.stream().map(HasMetadata::getMetadata).map(ObjectMeta::getName).toList());
     toDeleteResource.addAll(depList);
     var svcList = kubernetesClient.services()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withLabels(labels)
       .list()
       .getItems();
     toDeleteResource.addAll(svcList);
     var hpa = kubernetesClient.autoscaling().v2().horizontalPodAutoscalers()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withLabels(labels)
       .list().getItems();
     toDeleteResource.addAll(hpa);

@@ -48,11 +48,14 @@ public class CrControllerManager {
   }
 
   public void loadAllToLocal() {
-    var crs = crStateService.selectFromEnv(EnvSelector.newBuilder().addAllEnv(environmentManager.getEnvironment().managedEnvs())
+    var crs = crStateService.selectFromEnv(EnvSelector.newBuilder()
+      .addAllEnv(environmentManager.getEnvironment()
+        .getManagedEnvs().keySet()
+        .stream().toList())
       .build());
-    var env = environmentManager.getEnvironmentConfig();
     while (crs.hasNext()) {
       var protoCr = crs.next();
+      var env = environmentManager.getEnvironment().findEnvConfig(protoCr.getEnv());
       var controller = templateManager.load(env, protoCr);
       controllerMap.put(controller.getId(), controller);
       if (logger.isInfoEnabled())
@@ -72,7 +75,7 @@ public class CrControllerManager {
     if (controller==null) {
       var protoCr = crStateService.get(SingleKeyQuery.newBuilder().setKey(Tsid.from(id).toLowerCase()).build());
       if (protoCr.getId()==0) return null;
-      controller = templateManager.load(env.config(), protoCr);
+      controller = templateManager.load(env.findEnvConfig(protoCr.getEnv()), protoCr);
       controllerMap.put(id, controller);
     }
     return controller;
@@ -82,7 +85,8 @@ public class CrControllerManager {
     var cr = controllerMap.get(protoCr.getId());
     if (cr==null) {
       if (protoCr.getId()==0) return null;
-      cr = templateManager.load(env.config(), protoCr);
+      cr = templateManager.load(
+        env.findEnvConfig(protoCr.getEnv()), protoCr);
       controllerMap.put(protoCr.getId(), cr);
     }
     return cr;
@@ -93,7 +97,8 @@ public class CrControllerManager {
     var template = templateManager.selectTemplate(deploymentUnit);
     logger.info("select template '{}' for class '{}'",
       template.name(), deploymentUnit.getCls().getKey());
-    var controller = template.create(env.config(), deploymentUnit);
+    var controller = template.create(
+      env.findEnvConfig(deploymentUnit.getEnv()), deploymentUnit);
     saveToLocal(controller);
     return controller;
   }

@@ -96,7 +96,7 @@ public class OdgmExtension implements CrComponentExtension {
                               ProtoOClass cls,
                               K8SCrController controller,
                               PartitionDistribution dist) {
-    var namespace = controller.namespace;
+    var namespace = controller.getEnvConfig().namespace();
     var builder = InvocationRoute.newBuilder();
     for (var fb : cls.getFunctionsList()) {
       if (dist.getDisabledFnsList().contains(fb.getName())) {

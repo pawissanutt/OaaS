@@ -17,11 +17,11 @@ import java.util.List;
 public class UnifyFnCrControllerFactory implements FnCrControllerFactory<HasMetadata> {
 
   final CrtMappingConfig.FnConfig fnConfig;
-  final OprcEnvironment.Config envConfig;
+  final OprcEnvironment.EnvConfig envConfig;
   List<CrFilter<List<HasMetadata>>> filters = new ArrayList<>();
 
   public UnifyFnCrControllerFactory(CrtMappingConfig.FnConfig fnConfig,
-                                    OprcEnvironment.Config envConfig) {
+                                    OprcEnvironment.EnvConfig envConfig) {
     this.fnConfig = fnConfig;
     this.envConfig = envConfig;
   }

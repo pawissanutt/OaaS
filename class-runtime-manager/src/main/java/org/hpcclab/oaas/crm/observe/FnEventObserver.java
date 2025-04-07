@@ -1,8 +1,8 @@
 package org.hpcclab.oaas.crm.observe;
 
 import io.fabric8.knative.client.KnativeClient;
-import io.fabric8.knative.internal.pkg.apis.Condition;
-import io.fabric8.knative.internal.pkg.apis.duck.v1.Addressable;
+import io.fabric8.knative.duck.v1.Addressable;
+import io.fabric8.knative.pkg.apis.Condition;
 import io.fabric8.knative.serving.v1.Service;
 import io.fabric8.knative.serving.v1.ServiceStatus;
 import io.fabric8.kubernetes.client.Watch;
@@ -121,13 +121,15 @@ public class FnEventObserver {
         .get(K8SCrController.CR_LABEL_KEY);
       var fnKey = svc.getMetadata().getLabels()
         .get(K8SCrController.CR_FN_KEY);
+      var envId = svc.getMetadata().getLabels()
+        .get(K8SCrController.CR_ENV_ID_KEY);
       logger.info("updateToUp [{}, {}]", crId, fnKey);
       if (crId==null)
         return;
       if (fnKey==null)
         return;
 
-      OprcEnvironment.Config environmentConfig = environmentManager.getEnvironmentConfig();
+      OprcEnvironment.EnvConfig environmentConfig = environmentManager.getEnvironment().findEnvConfig(envId);
       var url = environmentConfig.useKnativeLb() ?
         svc.getStatus().getUrl():
         svc.getStatus().getAddress().getUrl();
@@ -145,6 +147,9 @@ public class FnEventObserver {
         .get(K8SCrController.CR_LABEL_KEY);
       var fnKey = svc.getMetadata().getLabels()
         .get(K8SCrController.CR_FN_KEY);
+
+      var envId = svc.getMetadata().getLabels()
+        .get(K8SCrController.CR_ENV_ID_KEY);
       logger.info("updateToDown [{}, {}]", crId, fnKey);
       if (crId==null)
         return;
@@ -152,7 +157,7 @@ public class FnEventObserver {
         return;
 
 
-      OprcEnvironment.Config environmentConfig = environmentManager.getEnvironmentConfig();
+      OprcEnvironment.EnvConfig environmentConfig = environmentManager.getEnvironment().findEnvConfig(envId);
       Optional<ServiceStatus> svcStatus = Optional.of(svc.getStatus());
       Optional<String> urlOptional = environmentConfig.useKnativeLb() ?
         svcStatus.map(ServiceStatus::getUrl):

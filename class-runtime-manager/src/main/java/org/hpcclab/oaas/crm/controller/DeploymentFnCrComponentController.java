@@ -4,6 +4,7 @@ import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.autoscaling.v2.*;
 import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.factory.Maps;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
@@ -31,7 +32,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
   final boolean enableHpa;
 
   protected DeploymentFnCrComponentController(CrtMappingConfig.FnConfig fnConfig,
-                                              OprcEnvironment.Config envConfig,
+                                              OprcEnvironment.EnvConfig envConfig,
                                               ProtoOFunction function) {
     super(null, envConfig);
     this.fnConfig = fnConfig;
@@ -55,11 +56,16 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     logger.debug("deploy function {} with Deployment", function.getKey());
     var instanceSpec = plan.fnInstances()
       .get(function.getKey());
-    var labels = Map.of(
+
+    var labels = Maps.mutable.of(
       CR_LABEL_KEY, parentController.getTsidString(),
+      CR_TEMP_TYPE_KEY, parentController.template.type(),
       CR_COMPONENT_LABEL_KEY, NAME_FUNCTION,
       CR_FN_KEY, function.getKey()
     );
+    labels.put(
+      CR_ENV_ID_KEY, String.valueOf(envConfig.id()));
+
     var deployConf = function.getProvision()
       .getDeployment();
     deployConf.getImage();
@@ -71,6 +77,8 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
       .withName("fn")
       .withImage(deployConf.getImage())
       .addAllToEnv(K8sResourceUtil.extractEnv(function))
+      .addAllToEnv(K8sResourceUtil.createEnvFromDeployment(unit))
+      .addAllToEnv(K8sResourceUtil.createEnvFromEnvConfig(envConfig))
       .withPorts(new ContainerPortBuilder()
         .withName("http")
         .withProtocol("TCP")
@@ -84,7 +92,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     var deploymentBuilder = new DeploymentBuilder()
       .withNewMetadata()
       .withName(fnName+ "-00001")
-      .withNamespace(namespace)
+      .withNamespace(envConfig.namespace())
       .withLabels(labels)
       .endMetadata();
     deploymentBuilder
@@ -106,7 +114,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     var svc = new ServiceBuilder()
       .withNewMetadata()
       .withName(fnName)
-      .withNamespace(namespace)
+      .withNamespace(envConfig.namespace())
       .withLabels(labels)
       .endMetadata()
       .withNewSpec()
@@ -177,7 +185,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     return new HorizontalPodAutoscalerBuilder()
       .withNewMetadata()
       .withName(name)
-      .withNamespace(namespace)
+      .withNamespace(envConfig.namespace())
       .withLabels(labels)
       .endMetadata()
       .withNewSpec()
@@ -204,7 +212,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     } else {
       var deployment = kubernetesClient.apps()
         .deployments()
-        .inNamespace(namespace)
+        .inNamespace(envConfig.namespace())
         .withName(deployName)
         .get();
       deployment.getSpec()
@@ -223,7 +231,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
     );
     var deployments = kubernetesClient.apps()
       .deployments()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withLabels(labels)
       .list()
       .getItems();
@@ -253,7 +261,7 @@ public class DeploymentFnCrComponentController extends AbstractK8sCrComponentCon
   @Override
   public Optional<OFunctionStatusUpdate> buildStatusUpdate() {
     var statusBuilder = ProtoOFunctionDeploymentStatus.newBuilder()
-      .setInvocationUrl("http://" + createName(function.getKey()) + "." + namespace + ".svc.cluster.local")
+      .setInvocationUrl("http://" + createName(function.getKey()) + "." + envConfig.namespace() + ".svc.cluster.local")
       .setCondition(ProtoDeploymentCondition.PROTO_DEPLOYMENT_CONDITION_RUNNING)
       .setTs(System.currentTimeMillis());
     return Optional.of(OFunctionStatusUpdate.newBuilder()

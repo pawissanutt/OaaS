@@ -10,8 +10,8 @@ import org.hpcclab.oaas.proto.DeploymentUnit;
 import org.hpcclab.oaas.proto.ProtoCr;
 
 public interface CrTemplate {
-  CrController create(OprcEnvironment.Config env, DeploymentUnit deploymentUnit);
-  CrController load(OprcEnvironment.Config env, ProtoCr orbit);
+  CrController create(OprcEnvironment.EnvConfig env, DeploymentUnit deploymentUnit);
+  CrController load(OprcEnvironment.EnvConfig env, ProtoCr orbit);
   String name();
   String type();
   void init(CrControllerManager crControllerManager, EnvironmentManager environmentManager);

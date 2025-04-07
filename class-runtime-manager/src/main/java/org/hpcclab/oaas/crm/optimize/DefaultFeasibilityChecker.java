@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
 public class DefaultFeasibilityChecker implements FeasibilityChecker {
   private static final Logger logger = LoggerFactory.getLogger( DefaultFeasibilityChecker.class );
   @Override
-  public boolean deploymentCheck(OprcEnvironment env, CrController cr, CrOperation operation) {
+  public boolean deploymentCheck(OprcEnvironment.EnvConfig env, CrController cr, CrOperation operation) {
     return runtimeCheck(env, cr, operation);
   }
 
   @Override
-  public boolean runtimeCheck(OprcEnvironment env, CrController orbit, CrOperation operation) {
-    if (env.config().feasibleCheckDisable())
+  public boolean runtimeCheck(OprcEnvironment.EnvConfig env, CrController orbit, CrOperation operation) {
+    if (env.feasibleCheckDisable())
       return true;
     var estimate = operation.estimate();
     if (estimate.equals(OprcEnvironment.EnvResource.ZERO))

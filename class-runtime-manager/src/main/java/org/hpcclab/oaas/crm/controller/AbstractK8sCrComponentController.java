@@ -21,16 +21,15 @@ import java.util.Map;
  */
 public abstract class AbstractK8sCrComponentController implements CrComponentController<HasMetadata> {
   protected final CrtMappingConfig.CrComponentConfig svcConfig;
-  protected final OprcEnvironment.Config envConfig;
+  protected final OprcEnvironment.EnvConfig envConfig;
   protected K8SCrController parentController;
   protected KubernetesClient kubernetesClient;
   protected String prefix;
-  protected String namespace;
   long stableTime;
   List<CrFilter<List<HasMetadata>>> filters = new ArrayList<>();
 
   protected AbstractK8sCrComponentController(CrtMappingConfig.CrComponentConfig svcConfig,
-                                             OprcEnvironment.Config envConfig) {
+                                             OprcEnvironment.EnvConfig envConfig) {
     this.envConfig = envConfig;
     if (svcConfig==null) {
       this.svcConfig = CrtMappingConfig.CrComponentConfig.builder()
@@ -46,7 +45,6 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
       this.parentController = k8SCrController;
       this.kubernetesClient = k8SCrController.kubernetesClient;
       this.prefix = k8SCrController.prefix;
-      this.namespace = k8SCrController.namespace;
     } else
       throw new IllegalArgumentException("Parent cr controller is not a K8SCrController");
   }
@@ -130,7 +128,7 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
     var meta = o
       .getMetadata();
     meta.setName(name);
-    meta.setNamespace(parentController.namespace);
+    meta.setNamespace(parentController.envConfig.namespace());
   }
 
   protected void attachLabels(Service service,
@@ -232,7 +230,7 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
     return new HorizontalPodAutoscalerBuilder()
       .withNewMetadata()
       .withName(name)
-      .withNamespace(namespace)
+      .withNamespace(envConfig.namespace())
       .withLabels(labels)
       .endMetadata()
       .withNewSpec()
@@ -253,7 +251,7 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
                                             String name) {
     HorizontalPodAutoscaler hpa = kubernetesClient.autoscaling().v2()
       .horizontalPodAutoscalers()
-      .inNamespace(namespace)
+      .inNamespace(envConfig.namespace())
       .withName(name).get();
     if (hpa==null) return null;
     hpa.getSpec()
