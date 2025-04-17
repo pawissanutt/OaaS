@@ -132,152 +132,6 @@ components:
       - BUILTIN
       - MACRO
       - CHAIN
-    JsonNode:
-      type: object
-      properties:
-        empty:
-          type: boolean
-        valueNode:
-          type: boolean
-        containerNode:
-          type: boolean
-        missingNode:
-          type: boolean
-        array:
-          type: boolean
-        object:
-          type: boolean
-        nodeType:
-          $ref: "#/components/schemas/JsonNodeType"
-        pojo:
-          type: boolean
-        number:
-          type: boolean
-        integralNumber:
-          type: boolean
-        floatingPointNumber:
-          type: boolean
-        short:
-          type: boolean
-        int:
-          type: boolean
-        long:
-          type: boolean
-        float:
-          type: boolean
-        double:
-          type: boolean
-        bigDecimal:
-          type: boolean
-        bigInteger:
-          type: boolean
-        textual:
-          type: boolean
-        boolean:
-          type: boolean
-        "null":
-          type: boolean
-        binary:
-          type: boolean
-    JsonNodeType:
-      type: string
-      enum:
-      - ARRAY
-      - BINARY
-      - BOOLEAN
-      - MISSING
-      - "NULL"
-      - NUMBER
-      - OBJECT
-      - POJO
-      - STRING
-    JsonNodeType_Public:
-      type: string
-      enum:
-      - ARRAY
-      - BINARY
-      - BOOLEAN
-      - MISSING
-      - "NULL"
-      - NUMBER
-      - OBJECT
-      - POJO
-      - STRING
-    JsonNode_Public:
-      type: object
-      properties:
-        empty:
-          type: boolean
-        valueNode:
-          type: boolean
-        containerNode:
-          type: boolean
-        missingNode:
-          type: boolean
-        array:
-          type: boolean
-        object:
-          type: boolean
-        nodeType:
-          $ref: "#/components/schemas/JsonNodeType_Public"
-        pojo:
-          type: boolean
-        number:
-          type: boolean
-        integralNumber:
-          type: boolean
-        floatingPointNumber:
-          type: boolean
-        short:
-          type: boolean
-        int:
-          type: boolean
-        long:
-          type: boolean
-        float:
-          type: boolean
-        double:
-          type: boolean
-        bigDecimal:
-          type: boolean
-        bigInteger:
-          type: boolean
-        textual:
-          type: boolean
-        boolean:
-          type: boolean
-        "null":
-          type: boolean
-        binary:
-          type: boolean
-    JsonObjectBytes:
-      type: object
-      properties:
-        bytes:
-          type: string
-          format: binary
-        objectNode:
-          $ref: "#/components/schemas/JsonNode"
-        node:
-          $ref: "#/components/schemas/ObjectNode"
-        jsonNode:
-          $ref: "#/components/schemas/JsonNode"
-        raw:
-          type: string
-    JsonObjectBytes_Public:
-      type: object
-      properties:
-        bytes:
-          type: string
-          format: binary
-        objectNode:
-          $ref: "#/components/schemas/JsonNode_Public"
-        node:
-          $ref: "#/components/schemas/ObjectNode_Public"
-        jsonNode:
-          $ref: "#/components/schemas/JsonNode_Public"
-        raw:
-          type: string
     KDeploymentProvision:
       type: object
       properties:
@@ -457,7 +311,7 @@ components:
           type: array
           items:
             type: string
-        forcePackage:
+        forceTemplate:
           type: string
     MemberGroup_Public:
       type: object
@@ -480,7 +334,7 @@ components:
           type: array
           items:
             type: string
-        forcePackage:
+        forceTemplate:
           type: string
     OClass:
       type: object
@@ -493,8 +347,6 @@ components:
           type: string
         pkg:
           type: string
-        objectType:
-          $ref: "#/components/schemas/OObjectType"
         stateType:
           $ref: "#/components/schemas/StateType"
         functions:
@@ -517,8 +369,6 @@ components:
           type: boolean
         markForRemoval:
           type: boolean
-        config:
-          $ref: "#/components/schemas/OClassConfig"
         status:
           $ref: "#/components/schemas/OClassDeploymentStatus"
         requirements:
@@ -527,42 +377,6 @@ components:
           $ref: "#/components/schemas/QosConstraint"
         resolved:
           $ref: "#/components/schemas/ResolvedMember"
-    OClassConfig:
-      type: object
-      properties:
-        partitions:
-          type: integer
-          format: int32
-        structStore:
-          type: string
-        unstructStore:
-          type: string
-        logStore:
-          type: string
-        crTemplate:
-          type: string
-        replicated:
-          type: boolean
-        writeThrough:
-          type: boolean
-    OClassConfig_Public:
-      type: object
-      properties:
-        partitions:
-          type: integer
-          format: int32
-        structStore:
-          type: string
-        unstructStore:
-          type: string
-        logStore:
-          type: string
-        crTemplate:
-          type: string
-        replicated:
-          type: boolean
-        writeThrough:
-          type: boolean
     OClassDeployment:
       type: object
       properties:
@@ -673,8 +487,6 @@ components:
           type: string
         pkg:
           type: string
-        objectType:
-          $ref: "#/components/schemas/OObjectType_Public"
         stateType:
           $ref: "#/components/schemas/StateType_Public"
         functions:
@@ -697,8 +509,6 @@ components:
           type: boolean
         markForRemoval:
           type: boolean
-        config:
-          $ref: "#/components/schemas/OClassConfig_Public"
         status:
           $ref: "#/components/schemas/OClassDeploymentStatus_Public"
         requirements:
@@ -845,16 +655,6 @@ components:
       required:
       - type
       - outputCls
-    OObjectType:
-      type: string
-      enum:
-      - SIMPLE
-      - COMPOUND
-    OObjectType_Public:
-      type: string
-      enum:
-      - SIMPLE
-      - COMPOUND
     OPackage:
       type: object
       properties:
@@ -901,14 +701,6 @@ components:
             $ref: "#/components/schemas/OClassDeployment_Public"
         disabled:
           type: boolean
-    ObjectNode:
-      type: array
-      items:
-        $ref: "#/components/schemas/JsonNode"
-    ObjectNode_Public:
-      type: array
-      items:
-        $ref: "#/components/schemas/JsonNode_Public"
     OffloadingMode:
       type: string
       enum:
@@ -1153,8 +945,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Step"
-        bodyTemplate:
-          $ref: "#/components/schemas/JsonObjectBytes"
         output:
           type: string
     Spec_Public:
@@ -1164,8 +954,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Step_Public"
-        bodyTemplate:
-          $ref: "#/components/schemas/JsonObjectBytes_Public"
         output:
           type: string
     StateSpecification:
@@ -1207,8 +995,6 @@ components:
           type: string
         as:
           type: string
-        bodyTemplate:
-          $ref: "#/components/schemas/JsonObjectBytes"
         args:
           type: object
           additionalProperties:
@@ -1224,8 +1010,6 @@ components:
           type: string
         as:
           type: string
-        bodyTemplate:
-          $ref: "#/components/schemas/JsonObjectBytes_Public"
         args:
           type: object
           additionalProperties:
@@ -1461,7 +1245,7 @@ info:
   title: oprc-package-manager API
   version: 999-SNAPSHOT
 servers:
-- url: http://localhost:8088
+- url: http://localhost:8080
   description: Auto generated value
-- url: http://0.0.0.0:8088
+- url: http://0.0.0.0:8080
   description: Auto generated value

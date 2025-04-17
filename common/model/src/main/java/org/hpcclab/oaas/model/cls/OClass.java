@@ -14,7 +14,6 @@ import org.hpcclab.oaas.model.SelfValidatable;
 import org.hpcclab.oaas.model.Views;
 import org.hpcclab.oaas.model.exception.OaasValidationException;
 import org.hpcclab.oaas.model.function.FunctionBinding;
-import org.hpcclab.oaas.model.object.OObjectType;
 import org.hpcclab.oaas.model.qos.ConsistencyModel;
 import org.hpcclab.oaas.model.qos.QosConstraint;
 import org.hpcclab.oaas.model.qos.QosRequirement;
@@ -42,7 +41,6 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
   String rev;
   String name;
   String pkg;
-  OObjectType objectType;
   StateType stateType;
   List<FunctionBinding> functions = List.of();
   StateSpecification stateSpec;
@@ -51,7 +49,6 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
   String description;
   boolean disabled;
   boolean markForRemoval;
-  OClassConfig config;
   OClassDeploymentStatus status;
   @JsonAlias({"qos","requirement"})
   QosRequirement requirements;
@@ -65,7 +62,6 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
 
   public OClass(String name,
                 String pkg,
-                OObjectType objectType,
                 StateType stateType,
                 List<FunctionBinding> functions,
                 StateSpecification stateSpec,
@@ -74,14 +70,12 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
                 String description,
                 boolean disabled,
                 boolean markForRemoval,
-                OClassConfig config,
                 OClassDeploymentStatus status,
                 QosRequirement requirements,
                 QosConstraint constraints,
                 ResolvedMember resolved) {
     this.name = name;
     this.pkg = pkg;
-    this.objectType = objectType;
     this.stateType = stateType;
     this.functions = functions;
     this.stateSpec = stateSpec;
@@ -90,7 +84,6 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
     this.description = description;
     this.disabled = disabled;
     this.markForRemoval = markForRemoval;
-    this.config = config;
     this.status = status;
     this.requirements = requirements;
     this.constraints = constraints;
@@ -103,7 +96,6 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
       throw new OaasValidationException("Class's name can not be null");
     if (!name.matches("^[a-zA-Z0-9._-]*$"))
       throw new OaasValidationException("Class's name must be follow the pattern of '^[a-zA-Z0-9._-]*$'");
-    if (objectType==null) objectType = OObjectType.SIMPLE;
     if (stateType==null) stateType = StateType.FILES;
     if (stateSpec==null) stateSpec = new StateSpecification();
     stateSpec.validate();
@@ -111,14 +103,10 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
       stateSpec.setDefaultProvider("s3");
     }
     if (functions==null) functions = List.of();
-    if (config==null) {
-      config = new OClassConfig();
-    }
     if (constraints== null)
       constraints = QosConstraint.builder()
         .consistency(ConsistencyModel.NONE)
         .build();
-    config.validate();
   }
 
 
@@ -127,7 +115,6 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
     return new OClass(
       name,
       pkg,
-      objectType,
       stateType,
       List.copyOf(functions),
       stateSpec==null ? null:stateSpec.copy(),
@@ -136,7 +123,6 @@ public class OClass implements Copyable<OClass>, HasKey<String>, SelfValidatable
       description,
       markForRemoval,
       disabled,
-      config,
       status,
       requirements,
       constraints,

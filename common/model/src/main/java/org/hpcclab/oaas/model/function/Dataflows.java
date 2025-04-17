@@ -3,7 +3,6 @@ package org.hpcclab.oaas.model.function;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import org.hpcclab.oaas.model.object.JsonObjectBytes;
 
 import java.util.*;
 
@@ -16,7 +15,6 @@ public interface Dataflows {
   @Builder(toBuilder = true)
   record Spec (
     List<Dataflows.Step> steps,
-    JsonObjectBytes bodyTemplate,
     String output
   ){
     public Spec cleanNull() {
@@ -33,7 +31,6 @@ public interface Dataflows {
     String target,
     String targetCls,
     String as,
-    JsonObjectBytes bodyTemplate,
     Map<String,String> args
   ) {
 

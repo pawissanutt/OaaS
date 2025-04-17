@@ -9,8 +9,6 @@ import org.hpcclab.oaas.model.cr.OcrRouting;
 import org.hpcclab.oaas.model.function.OFunction;
 import org.hpcclab.oaas.model.function.OFunctionConfig;
 import org.hpcclab.oaas.model.function.OFunctionDeploymentStatus;
-import org.hpcclab.oaas.model.object.JsonBytes;
-import org.hpcclab.oaas.model.object.JsonObjectBytes;
 import org.hpcclab.oaas.model.pkg.OPackage;
 import org.hpcclab.oaas.model.proto.DSMap;
 import org.hpcclab.oaas.model.provision.ProvisionConfig;
@@ -82,24 +80,7 @@ public interface ProtoMapper {
     if (bytes == null) return ByteString.EMPTY;
     return ByteString.copyFrom(bytes);
   }
-  default JsonBytes toJsonBytes(ByteString bytes) {
-    if (bytes == null) return JsonBytes.EMPTY;
-    return new JsonBytes(bytes.toByteArray());
-  }
-  default ByteString fromJsonBytes(JsonBytes jsonBytes) {
-    if (jsonBytes == null) return ByteString.EMPTY;
-    return ByteString.copyFrom(jsonBytes.getBytes());
-  }
 
-  default JsonObjectBytes toJsonObjectBytes(ByteString bytes) {
-    if (bytes == null) return JsonObjectBytes.EMPTY;
-    return new JsonObjectBytes(bytes.toByteArray());
-  }
-
-  default ByteString fromJsonObjectBytes(JsonObjectBytes jsonBytes) {
-    if (jsonBytes == null) return ByteString.EMPTY;
-    return ByteString.copyFrom(jsonBytes.getBytes());
-  }
 
   default Map<String, Object> toJsonMap(ByteString bytes) {
     if (bytes == null) return Map.of();

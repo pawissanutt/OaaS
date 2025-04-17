@@ -15,9 +15,7 @@
   <modules>
     <module>model</module>
     <module>repository</module>
-    <module>common-storage</module>
     <module>arango-repository</module>
-    <module>test-util</module>
     <module>proto-schema</module>
   </modules>
 
