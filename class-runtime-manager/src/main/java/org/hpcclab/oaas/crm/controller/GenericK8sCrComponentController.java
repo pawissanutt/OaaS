@@ -15,7 +15,6 @@ import org.hpcclab.oaas.proto.DeploymentUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +24,6 @@ import static org.hpcclab.oaas.crm.controller.K8SCrController.CR_LABEL_KEY;
 public class GenericK8sCrComponentController extends AbstractK8sCrComponentController {
   final String serviceName;
 
-  final List<CrComponentExtension> extensions;
   private static final Logger logger = LoggerFactory.getLogger( GenericK8sCrComponentController.class );
 
   public GenericK8sCrComponentController(CrtMappingConfig.CrComponentConfig svcConfig,
@@ -33,7 +31,6 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
                                          String name) {
     super(svcConfig, envConfig);
     this.serviceName = name;
-    this.extensions = new ArrayList<>();
   }
 
   @Override
@@ -56,9 +53,9 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
       var hpa = createHpa(instanceSpec, labels, name, name);
       resources.add(hpa);
     }
-    for (CrComponentExtension extension : extensions) {
-      extension.applyOnCreate(resources, plan,unit, this);
-    }
+//    for (CrComponentExtension extension : extensions) {
+//      extension.applyOnCreate(resources, plan,unit, this);
+//    }
     return resources;
   }
 
@@ -101,12 +98,14 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
     Container container = containerBuilder.build();
     builder.withNewSpec()
       .withReplicas(instanceSpec.minInstance())
-      .withNewSelector().addToMatchLabels(labels).endSelector()
+      .withNewSelector()
+      .addToMatchLabels(labels).endSelector()
       .withNewTemplate()
       .withNewMetadata()
       .withLabels(labels)
       .endMetadata()
       .withNewSpec()
+      .withNodeSelector(envConfig.nodeSelector() == null ? Map.of():envConfig.nodeSelector())
       .withContainers(container)
       .endSpec()
       .endTemplate()
@@ -174,7 +173,4 @@ public class GenericK8sCrComponentController extends AbstractK8sCrComponentContr
     return toDeleteResource;
   }
 
-  public void addExtension(CrComponentExtension extension) {
-    this.extensions.add(extension);
-  }
 }

@@ -94,6 +94,7 @@ public class EnvironmentRegistry {
   public record Environment(String name,
                             int id,
                             String crmUrl,
+                            double availability,
                             Map<String, String> options) {
 
   }

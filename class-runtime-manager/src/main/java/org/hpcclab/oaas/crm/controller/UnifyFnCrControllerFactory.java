@@ -2,6 +2,7 @@ package org.hpcclab.oaas.crm.controller;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
+import org.hpcclab.oaas.crm.controller.ext.ZenohExtension;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.exception.CrDeployException;
 import org.hpcclab.oaas.crm.filter.CrFilter;
@@ -10,6 +11,7 @@ import org.hpcclab.oaas.proto.ProtoOFunction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Pawissanutt
@@ -35,17 +37,26 @@ public class UnifyFnCrControllerFactory implements FnCrControllerFactory<HasMeta
     if (!function.getProvision().getDeployment().getImage().isEmpty()) {
       var controller = new DeploymentFnCrComponentController(
         fnConfig, envConfig, function);
-      filters.forEach(controller::addFilter);
+      attach(controller);
       return controller;
     } else if (!function.getProvision().getKnative().getImage().isEmpty()) {
       var controller = new KnativeFnCrComponentController(
         fnConfig, envConfig, function);
-      filters.forEach(controller::addFilter);
+      attach(controller);
       return controller;
     } else if (!function.getConfig().getStaticUrl().isEmpty()) {
       return new FnCrComponentController.StaticUrl<>(function);
     }
     throw new CrDeployException("Can not find suitable functions controller for functions:\n" + function);
+  }
+
+  private void attach(AbstractK8sCrComponentController controller) {
+    filters.forEach(controller::addFilter);
+    for (var ext: fnConfig.extensions()) {
+      if (Objects.equals(ext.name(), "zenoh")) {
+        controller.addExtension(new ZenohExtension(ext.options()));
+      }
+    }
   }
 
   @Override

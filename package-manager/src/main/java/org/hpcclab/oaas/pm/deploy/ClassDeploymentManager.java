@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class ClassDeploymentManager implements PackageDeployer {
   private static final Logger logger = LoggerFactory.getLogger(ClassDeploymentManager.class);
+  private final String NO_ENV_ERROR = "no environment '%s' exists";
   @Inject
   GenericArgRepository<OClassDeployment> repo;
   @Inject
@@ -55,11 +56,68 @@ public class ClassDeploymentManager implements PackageDeployer {
     return repo;
   }
 
-  void reassign(OClassDeployment deployment) {
+  private int calculateMinReplica(OClassDeployment deployment,double availabilityTarget) {
+    if (availabilityTarget >= 1.0) {
+      throw new StdOaasException("availability target must be between 0 and 1");
+    }
+    double[] envAvailability;
+    if (deployment.getMembers() != null && !deployment.getMembers().isEmpty()) {
+      envAvailability = deployment.getMembers()
+        .stream()
+        .mapToDouble(member -> registry.getEnvConfig().environments()
+          .stream()
+          .filter(e -> e.name().equals(member.getEnv()))
+          .findFirst()
+          .orElseThrow(() -> StdOaasException.format(NO_ENV_ERROR, member.getEnv()))
+          .availability())
+        .sorted()
+        .toArray();
+    } else
+    if (deployment.getTargetEnvs() != null && !deployment.getTargetEnvs().isEmpty()) {
+      envAvailability = deployment.getTargetEnvs()
+        .stream()
+        .mapToDouble(env -> registry.getEnvConfig().environments()
+          .stream()
+          .filter(e -> e.name().equals(env))
+          .findFirst()
+          .orElseThrow(() -> StdOaasException.format(NO_ENV_ERROR, env))
+          .availability())
+        .sorted()
+        .toArray();
+    } else {
+      envAvailability = registry.getEnvConfig().environments()
+        .stream()
+        .mapToDouble(EnvironmentRegistry.Environment::availability)
+        .sorted()
+        .toArray();
+    }
+    var worstEnvList = new ArrayList<Double>();
+    for (int i = 0; i < envAvailability.length; i++) {
+      worstEnvList.add(envAvailability[i]);
+      if (ClusterAvailabilityCalculator.calculateClusterAvailability(worstEnvList) >= availabilityTarget) {
+        return i + 1;
+      }
+    }
+    throw new StdOaasException("Cannot find enough environments to meet the availability target");
+  }
+
+  void reassign(OClass cls, OClassDeployment deployment) {
+    validateTargetEnvs(deployment);
+    setPartitionAndReplicaCount(cls, deployment);
+    setMembers(deployment);
+    setAssignments(deployment);
+  }
+
+  void setPartitionAndReplicaCount(OClass cls, OClassDeployment deployment) {
     var partitionCount = Math.max(1, deployment.getPartitionCount());
     deployment.setPartitionCount(partitionCount);
-    var replicaCount = Math.max(1, deployment.getReplicaCount());
-    deployment.setReplicaCount(replicaCount);
+    if (deployment.getReplicaCount() < 1) {
+      var availabilityTarget = cls.getRequirements().availability();
+      deployment.setReplicaCount(calculateMinReplica(deployment, availabilityTarget));
+    }
+  }
+
+  void validateTargetEnvs(OClassDeployment deployment) {
     var possibleEnv = registry.getEnvConfig().environments()
       .stream()
       .map(EnvironmentRegistry.Environment::name)
@@ -69,10 +127,13 @@ public class ClassDeploymentManager implements PackageDeployer {
     } else {
       for (String env : deployment.getTargetEnvs()) {
         if (!possibleEnv.contains(env)) {
-          throw StdOaasException.format("no environment '%s' exists", env);
+          throw StdOaasException.format(NO_ENV_ERROR, env);
         }
       }
     }
+  }
+
+  void setMembers(OClassDeployment deployment) {
     if (deployment.getMembers().isEmpty()) {
       var envs = deployment.getTargetEnvs();
       var members = envs.stream()
@@ -82,7 +143,19 @@ public class ClassDeploymentManager implements PackageDeployer {
         )
         .toList();
       deployment.setMembers(members);
+    } else {
+      for (var m : deployment.getMembers()) {
+        if (m.getId() <= 0) {
+          m.setId(generateId());
+        }
+        if (m.getEnv() == null || m.getEnv().isEmpty()) {
+          throw StdOaasException.format("member must be defined with env");
+        }
+      }
     }
+  }
+
+  void setAssignments(OClassDeployment deployment) {
     if (deployment.getAssignments().isEmpty()) {
       var completeMembers = deployment.getMembers().stream()
         .filter(OClassDeployment.MemberGroup::isAllPartitions)
@@ -94,11 +167,11 @@ public class ClassDeploymentManager implements PackageDeployer {
           Tuple2.of(m.getId(), m.getMaxShards() < 0? Integer.MAX_VALUE:m.getMaxShards()))
         .collect(Collectors.toCollection(LinkedList::new));
       var assignments = new ArrayList<OClassDeployment.ShardAssignment>();
-      for (int i = 0; i < partitionCount; i++) {
+      for (int i = 0; i < deployment.getPartitionCount(); i++) {
         var assignment = new OClassDeployment.ShardAssignment();
         var owners = new ArrayList<>(completeMembers);
         var shardIds = new ArrayList<Long>();
-        for (int j = owners.size(); j < replicaCount; j++) {
+        for (int j = owners.size(); j < deployment.getReplicaCount(); j++) {
           var m = members.removeFirst();
           while (m.getItem2() == 0 && !members.isEmpty()) {
             m = members.removeFirst();
@@ -114,7 +187,7 @@ public class ClassDeploymentManager implements PackageDeployer {
         for (int j = 0; j < owners.size(); j++) {
           shardIds.add(generateId());
         }
-        assignment.setPrimary(shardIds.getFirst());
+        assignment.setPrimary(shardIds.get(i % shardIds.size()));
         assignment.setOwners(owners);
         assignment.setShardIds(shardIds);
         assignments.add(assignment);
@@ -138,7 +211,7 @@ public class ClassDeploymentManager implements PackageDeployer {
         .filter(c -> c.getKey().equals(deploy.getKey()))
         .findFirst();
       if (clsOp.isPresent()) {
-        reassign(deploy);
+        reassign(clsOp.get(), deploy);
         deployToEnvs(deploy, clsOp.get(), pkg);
       }
     }
@@ -202,6 +275,7 @@ public class ClassDeploymentManager implements PackageDeployer {
       .setCls(protoMapper.toProto(cls))
       .addAllFnList(protoFnList)
       .setDist(toDist(deploy, cls, member))
+      .setForceTemplate(member.getForceTemplate())
       .build();
   }
 
@@ -276,3 +350,4 @@ public class ClassDeploymentManager implements PackageDeployer {
     return options;
   }
 }
+

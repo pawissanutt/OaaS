@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.hubspot.jackson.datatype.protobuf.ProtobufJacksonConfig;
 import com.hubspot.jackson.datatype.protobuf.ProtobufModule;
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.hpcclab.oaas.crm.controller.AbstractK8sCrComponentController;
 import org.hpcclab.oaas.crm.controller.K8SCrController;
@@ -64,6 +62,15 @@ public class OdgmExtension implements CrComponentExtension {
           container.getEnv()
             .add(new EnvVar("ODGM_MEMBERS", members, null));
         }
+      } else if (hasMetadata instanceof Service svc) {
+        svc.getSpec()
+          .getPorts()
+          .add(new ServicePortBuilder()
+            .withPort(17447)
+            .withProtocol("TCP")
+            .withTargetPort(new IntOrString(17447))
+            .withName("zenoh")
+            .build());
       }
     }
 
@@ -108,7 +115,12 @@ public class OdgmExtension implements CrComponentExtension {
       logger.debug("function: {}, list: {}, standby: {}", name, dist.getStandbyFnsList(), standby);
       String fnSvc = fb.getFunction()
         .replaceAll("[._]", "-");
-      String url = "http://"+prefix + "fn-" + fnSvc + "." + namespace + ".svc.cluster.local";
+      String url;
+      if (dist.getOptionsMap().getOrDefault("knative_use_private", "false").equals("true")) {
+        url = "http://" + prefix + "fn-" + fnSvc + "-00001-private." + namespace + ".svc.cluster.local";
+      } else {
+        url = "http://" + prefix + "fn-" + fnSvc + "." + namespace + ".svc.cluster.local";
+      }
       builder.putFnRoutes(name, FuncInvokeRoute.newBuilder()
         .setUrl(url)
         .setStateless(fb.getNoMain())

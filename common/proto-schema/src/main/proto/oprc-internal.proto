@@ -46,6 +46,7 @@ message DeploymentUnit{
   string env = 4;
   int32 env_id = 5;
   DataDistribution dist = 6;
+  string force_template = 7;
 }
 
 message DataDistribution{

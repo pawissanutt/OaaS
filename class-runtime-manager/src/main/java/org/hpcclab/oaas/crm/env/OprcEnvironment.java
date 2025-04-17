@@ -51,7 +51,9 @@ public class OprcEnvironment{
                           EnvResource usable,
                           EnvResource request,
                           AvailabilityInfo availability,
+                          Map<String, String> options,
                           Map<String, String> fnEnv,
+                          Map<String, String> nodeSelector,
                           String logLevel) {
   }
 

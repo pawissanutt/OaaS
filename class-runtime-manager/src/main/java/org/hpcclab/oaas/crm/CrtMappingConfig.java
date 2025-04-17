@@ -79,12 +79,15 @@ public record CrtMappingConfig(
     double objectiveMissThreshold,
     double idleFilterThreshold,
     List<FilterConfig> filters,
+    List<ExtensionConfig> extensions,
+    Map<String, String> env,
     boolean enableHpa,
     int hpaAvgUtil,
     boolean disableDynamicAdjustment) implements ScalingConfig {
   }
 
-  public record ExtensionConfig(String name) {
+  public record ExtensionConfig(String name,
+                                Map<String, String> options) {
 
   }
 

@@ -81,6 +81,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
       .addAllToEnv(K8sResourceUtil.extractEnv(function))
       .addAllToEnv(K8sResourceUtil.createEnvFromDeployment(unit))
       .addAllToEnv(K8sResourceUtil.createEnvFromEnvConfig(envConfig))
+      .addAllToEnv(K8sResourceUtil.makeEnv(fnConfig.env()))
       .withResources(makeResourceRequirements(instanceSpec));
 
     if (knConf.getPort() > 0) {
@@ -109,6 +110,7 @@ public class KnativeFnCrComponentController extends AbstractK8sCrComponentContro
       .addToLabels(labels)
       .endMetadata()
       .withNewSpec()
+      .withNodeSelector(envConfig.nodeSelector() == null ? Map.of():envConfig.nodeSelector())
       .withTimeoutSeconds(600L)
       .withContainerConcurrency(knConf.getConcurrency() > 0 ?
         (long) knConf.getConcurrency():null)

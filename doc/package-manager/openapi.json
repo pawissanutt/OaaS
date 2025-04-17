@@ -562,6 +562,9 @@
             "items" : {
               "type" : "string"
             }
+          },
+          "forcePackage" : {
+            "type" : "string"
           }
         }
       },
@@ -593,6 +596,9 @@
             "items" : {
               "type" : "string"
             }
+          },
+          "forcePackage" : {
+            "type" : "string"
           }
         }
       },

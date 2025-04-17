@@ -10,6 +10,7 @@ import org.hpcclab.oaas.crm.CrtMappingConfig;
 import org.hpcclab.oaas.crm.CrtMappingConfig.CrtConfig;
 import org.hpcclab.oaas.crm.controller.*;
 import org.hpcclab.oaas.crm.controller.ext.OdgmExtension;
+import org.hpcclab.oaas.crm.controller.ext.ZenohExtension;
 import org.hpcclab.oaas.crm.env.EnvironmentManager;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.filter.K8sFilterFactory;
@@ -104,9 +105,14 @@ public class V2AlphaCrTemplate extends AbstractCrTemplate {
                                                           CrtMappingConfig.CrComponentConfig svcConfig,
                                                           OprcEnvironment.EnvConfig envConf) {
     var controller = new GenericK8sCrComponentController(svcConfig, envConf, name);
-    svcConfig.extensions().stream().filter(e -> Objects.equals(e.name(), "odgm"))
-      .map(e -> new OdgmExtension())
-      .forEach(controller::addExtension);
+    for (var ext: svcConfig.extensions()) {
+      if (Objects.equals(ext.name(), "odgm")) {
+        controller.addExtension(new OdgmExtension());
+      }
+      if (Objects.equals(ext.name(), "zenoh")) {
+        controller.addExtension(new ZenohExtension(ext.options()));
+      }
+    }
     filterFactory.injectFilter(svcConfig.filters(), controller);
     return controller;
   }

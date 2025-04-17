@@ -36,29 +36,75 @@
           kubeContext: cc
           availability:
             uptimePercentage: 0.99
-          fnEnv:
-            OPRC_ZENOH_PEERS: "tcp/router:17447"
         - id: 2
           name: cloud-2
           kubeContext: cc
           availability:
             uptimePercentage: 0.99
-          fnEnv:
-            OPRC_ZENOH_PEERS: "tcp/router:17447"
         - id: 3
+          name: edge-0
+          kubeContext: cc2
+          namespace: oaas-0
+          availability:
+            uptimePercentage: 0.99
+          nodeSelector:
+            kubernetes.io/hostname: k3d-k3s-default-agent-0
+        - id: 4
           name: edge-1
           kubeContext: cc2
+          namespace: oaas-1
           availability:
             uptimePercentage: 0.99
-          fnEnv:
-            OPRC_ZENOH_PEERS: "tcp/router:17447"
-        - id: 4
+          nodeSelector:
+            kubernetes.io/hostname: k3d-k3s-default-agent-1
+        - id: 5
           name: edge-2
           kubeContext: cc2
+          namespace: oaas-2
           availability:
             uptimePercentage: 0.99
-          fnEnv:
-            OPRC_ZENOH_PEERS: "tcp/router:17447"
+          nodeSelector:
+            kubernetes.io/hostname: k3d-k3s-default-agent-2
+        - id: 6
+          name: edge-3
+          kubeContext: cc2
+          namespace: oaas-3
+          availability:
+            uptimePercentage: 0.99
+          nodeSelector:
+            kubernetes.io/hostname: k3d-k3s-default-agent-3
+        - id: 7
+          name: edge-4
+          kubeContext: cc2
+          namespace: oaas-4
+          availability:
+            uptimePercentage: 0.99
+          nodeSelector:
+            kubernetes.io/hostname: k3d-k3s-default-agent-4
+        - id: 8
+          name: edge-5
+          kubeContext: cc2
+          namespace: oaas-5
+          availability:
+            uptimePercentage: 0.99
+          nodeSelector:
+            kubernetes.io/hostname: k3d-k3s-default-agent-5
+        - id: 9
+          name: edge-6
+          kubeContext: cc2
+          namespace: oaas-6
+          availability:
+            uptimePercentage: 0.99
+          nodeSelector:
+            kubernetes.io/hostname: k3d-k3s-default-agent-6
+        - id: 10
+          name: edge-7
+          kubeContext: cc2
+          namespace: oaas-7
+          availability:
+            uptimePercentage: 0.99
+          nodeSelector:
+            kubernetes.io/hostname: k3d-k3s-default-agent-7
 "%test":
   oprc:
     crm:

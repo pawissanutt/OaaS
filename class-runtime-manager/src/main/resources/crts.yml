@@ -78,7 +78,7 @@ templates:
     condition: { }
     services:
       odgm:
-#        image: ghcr.io/pawissanutt/oaas/odgm
+#        image: ghcr.io/pawissanutt/oaas-rs/odgm
         image: harbor.129.114.109.85.nip.io/oaas/odgm
         # imagePullPolicy: IfNotPresent
         stabilizationWindow: 120000
@@ -86,8 +86,9 @@ templates:
         env:
           ODGM_LOG: "info,zenoh::net::routing=info"
           OPRC_ZENOH_BUFFER_SIZE: "16777216"
-          ODGM_MAX_SESSIONS: 4
-          OPRC_ZENOH_PEERS: "tcp/router:17447"
+          ODGM_MAX_SESSIONS: 1
+          OPRC_ZENOH_MAX_LINKS: 256
+          OPRC_ZENOH_PORT: "17447"
         requestCpu: '1'
         requestMemory: 1Gi
         limitCpu: '4'
@@ -95,6 +96,8 @@ templates:
         maxReplicas: 20
         extensions:
           - name: odgm
+          - name: zenoh
+            options: {router: "tcp/router:17447"}
         objectiveMissThreshold: 0.4
     optimizerConf:
       thresholdUpper: 1.8
@@ -102,6 +105,12 @@ templates:
       fnThresholdUpper: 0.9
       fnThresholdLower: 0.6
     functions:
+      extensions:
+        - name: zenoh
+          options: {router: "tcp/router:17447", peers: "odgm:17447"}
+      env:
+        OPRC_ZENOH_GOSSIP_ENABLED: false
+        OPRC_ZENOH_SCOUTING_MULTICAST_ENABLED: false
       stabilizationWindow: 30000
       maxScaleStep: 3
       defaultRequestCpu: 500m
@@ -111,3 +120,133 @@ templates:
       idleFilterThreshold: 0.6
       enableHpa: true
     priority: 10
+  v2-small:
+    type: "v2alpha"
+    condition: { }
+    services:
+      odgm:
+        image: harbor.129.114.109.85.nip.io/oaas/odgm
+        stabilizationWindow: 120000
+        maxScaleStep: 0
+        env:
+          ODGM_LOG: "info"
+          OPRC_ZENOH_BUFFER_SIZE: "16777216"
+          ODGM_MAX_SESSIONS: 1
+        requestCpu: '1'
+        requestMemory: 0.5Gi
+        limitCpu: '2.5'
+        # limitMemory: 8Gi
+        maxReplicas: 20
+        extensions:
+          - name: odgm
+          - name: zenoh
+            options: {router: "tcp/router:17447"}
+        objectiveMissThreshold: 0.4
+    optimizerConf:
+      thresholdUpper: 1.8
+      thresholdLower: 0.5
+      fnThresholdUpper: 0.9
+      fnThresholdLower: 0.6
+    functions:
+      extensions:
+        - name: zenoh
+          options: {router: "tcp/router:17447", peers: "odgm:17447"}
+      env:
+        OPRC_ZENOH_GOSSIP_ENABLED: false
+      stabilizationWindow: 30000
+      maxScaleStep: 3
+      defaultRequestCpu: 500m
+      defaultRequestMem: 256Mi
+      objectiveAmplifier: 0.6
+      objectiveMissThreshold: 0.75
+      idleFilterThreshold: 0.6
+      enableHpa: true
+    priority: 1
+  v2-micro:
+    type: "v2alpha"
+    condition: { }
+    services:
+      odgm:
+        image: harbor.129.114.109.85.nip.io/oaas/odgm
+        stabilizationWindow: 120000
+        maxScaleStep: 0
+        env:
+          ODGM_LOG: "info,oprc_odgm=info"
+          OPRC_ZENOH_BUFFER_SIZE: "16777216"
+          ODGM_MAX_SESSIONS: 1
+        requestCpu: '1'
+        requestMemory: 0.5Gi
+        limitCpu: '1'
+        maxReplicas: 1
+        extensions:
+          - name: odgm
+          - name: zenoh
+            options: {router: "tcp/router:17447"}
+        objectiveMissThreshold: 0.4
+    optimizerConf:
+      thresholdUpper: 1.8
+      thresholdLower: 0.5
+      fnThresholdUpper: 0.9
+      fnThresholdLower: 0.6
+    functions:
+      extensions:
+        - name: zenoh
+          options: {router: "tcp/router:17447", peers: "odgm:17447"}
+      env:
+        OPRC_ZENOH_GOSSIP_ENABLED: false
+      stabilizationWindow: 30000
+      maxScaleStep: 3
+      defaultRequestCpu: 500m
+      defaultRequestMem: 256Mi
+      objectiveAmplifier: 0.6
+      objectiveMissThreshold: 0.75
+      idleFilterThreshold: 0.6
+      enableHpa: true
+    priority: 0
+  v2-large:
+    type: "v2alpha"
+    condition: { }
+    services:
+      odgm:
+        #        image: ghcr.io/pawissanutt/oaas-rs/odgm
+        image: harbor.129.114.109.85.nip.io/oaas/odgm
+        # imagePullPolicy: IfNotPresent
+        stabilizationWindow: 120000
+        maxScaleStep: 2
+        env:
+          ODGM_LOG: "info,zenoh::net::routing=info"
+          OPRC_ZENOH_BUFFER_SIZE: "16777216"
+          ODGM_MAX_SESSIONS: 1
+          OPRC_ZENOH_MAX_LINKS: 256
+          OPRC_ZENOH_PORT: "17447"
+        requestCpu: '2'
+        requestMemory: 1Gi
+        limitCpu: '8'
+        # limitMemory: 8Gi
+        maxReplicas: 20
+        extensions:
+          - name: odgm
+          - name: zenoh
+            options: { router: "tcp/router:17447" }
+        objectiveMissThreshold: 0.4
+    optimizerConf:
+      thresholdUpper: 1.8
+      thresholdLower: 0.5
+      fnThresholdUpper: 0.9
+      fnThresholdLower: 0.6
+    functions:
+      extensions:
+        - name: zenoh
+          options: { router: "tcp/router:17447", peers: "odgm:17447" }
+      env:
+        OPRC_ZENOH_GOSSIP_ENABLED: false
+        OPRC_ZENOH_SCOUTING_MULTICAST_ENABLED: false
+      stabilizationWindow: 30000
+      maxScaleStep: 3
+      defaultRequestCpu: 500m
+      defaultRequestMem: 256Mi
+      objectiveAmplifier: 0.6
+      objectiveMissThreshold: 0.75
+      idleFilterThreshold: 0.6
+      enableHpa: true
+    priority: 0

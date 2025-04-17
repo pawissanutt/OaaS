@@ -2,6 +2,7 @@ package org.hpcclab.oaas.crm.template;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -32,7 +33,7 @@ import java.util.HashMap;
 public class CrTemplateManager {
   private static final Logger logger = LoggerFactory.getLogger(CrTemplateManager.class);
   public static final String DEFAULT = "default";
-  final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+  final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory().enable(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR));
   final CrmConfig crmConfig;
   final ProtoMapper protoMapper = new ProtoMapperImpl();
   final ConditionProcessor conditionProcessor;
@@ -84,9 +85,9 @@ public class CrTemplateManager {
   }
 
   public CrTemplate selectTemplate(DeploymentUnit deploymentUnit) {
-    var template = deploymentUnit.getCls().getConfig().getCrTemplate();
-    if (!template.isEmpty())
-      return templateMap.get(template);
+    var forceTemplate = deploymentUnit.getForceTemplate();
+    if (!forceTemplate.isEmpty())
+      return templateMap.get(forceTemplate);
     var cls = deploymentUnit.getCls();
     MutableList<CrTemplate> sortedList = templateMap.valuesView()
       .select(tem -> conditionProcessor.matches(tem.getConfig().condition(),

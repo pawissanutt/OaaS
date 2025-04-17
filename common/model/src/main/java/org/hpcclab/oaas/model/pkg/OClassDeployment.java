@@ -36,6 +36,7 @@ public class OClassDeployment {
     boolean allPartitions = false;
     List<String> disabledFn = List.of();
     List<String> standbyFn = List.of();
+    String forceTemplate = "";
   }
 
   @Data

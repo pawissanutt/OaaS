@@ -32,15 +32,43 @@
           - name: cloud-1
             id: 1
             crmUrl: http://localhost:8091
+            availability: 0.99
           - name: cloud-2
             id: 2
             crmUrl: http://localhost:8091
-          - name: edge-1
+            availability: 0.99
+          - name: edge-0
             id: 3
             crmUrl: http://localhost:8091
-          - name: edge-2
+            availability: 0.99
+          - name: edge-1
             id: 4
             crmUrl: http://localhost:8091
+            availability: 0.99
+          - name: edge-2
+            id: 5
+            crmUrl: http://localhost:8091
+            availability: 0.99
+          - name: edge-3
+            id: 6
+            crmUrl: http://localhost:8091
+            availability: 0.99
+          - name: edge-4
+            id: 7
+            crmUrl: http://localhost:8091
+            availability: 0.99
+          - name: edge-5
+            id: 8
+            crmUrl: http://localhost:8091
+            availability: 0.99
+          - name: edge-6
+            id: 9
+            crmUrl: http://localhost:8091
+            availability: 0.99
+          - name: edge-7
+            id: 10
+            crmUrl: http://localhost:8091
+            availability: 0.99
   kafka:
     bootstrap:
       servers: localhost:31000

@@ -5,6 +5,7 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.autoscaling.v2.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.hpcclab.oaas.crm.CrtMappingConfig;
+import org.hpcclab.oaas.crm.controller.ext.CrComponentExtension;
 import org.hpcclab.oaas.crm.env.OprcEnvironment;
 import org.hpcclab.oaas.crm.filter.CrFilter;
 import org.hpcclab.oaas.crm.optimize.CrAdjustmentPlan;
@@ -22,6 +23,7 @@ import java.util.Map;
 public abstract class AbstractK8sCrComponentController implements CrComponentController<HasMetadata> {
   protected final CrtMappingConfig.CrComponentConfig svcConfig;
   protected final OprcEnvironment.EnvConfig envConfig;
+  protected final List<CrComponentExtension> extensions;
   protected K8SCrController parentController;
   protected KubernetesClient kubernetesClient;
   protected String prefix;
@@ -37,6 +39,7 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
     } else {
       this.svcConfig = svcConfig;
     }
+    extensions = new ArrayList<>();
   }
 
   @Override
@@ -55,6 +58,9 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
     List<HasMetadata> hasMetadata = doCreateDeployOperation(plan, unit);
     for (CrFilter<List<HasMetadata>> filter : filters) {
       hasMetadata = filter.applyOnCreate(hasMetadata);
+    }
+    for (CrComponentExtension extension : extensions) {
+      extension.applyOnCreate(hasMetadata, plan, unit, this);
     }
     return hasMetadata;
   }
@@ -276,6 +282,11 @@ public abstract class AbstractK8sCrComponentController implements CrComponentCon
 
   public String getPrefix() {
     return prefix;
+  }
+
+
+  public void addExtension(CrComponentExtension extension) {
+    this.extensions.add(extension);
   }
 }
 

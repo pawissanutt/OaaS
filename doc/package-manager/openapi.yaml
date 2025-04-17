@@ -457,6 +457,8 @@ components:
           type: array
           items:
             type: string
+        forcePackage:
+          type: string
     MemberGroup_Public:
       type: object
       properties:
@@ -478,6 +480,8 @@ components:
           type: array
           items:
             type: string
+        forcePackage:
+          type: string
     OClass:
       type: object
       properties:
