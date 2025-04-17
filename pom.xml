@@ -8,7 +8,6 @@
   <packaging>pom</packaging>
   <modules>
     <module>common</module>
-    <module>invoker</module>
     <module>class-runtime-manager</module>
     <module>package-manager</module>
     <module>cli</module>

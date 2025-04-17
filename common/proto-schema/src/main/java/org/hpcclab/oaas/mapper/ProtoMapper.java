@@ -9,18 +9,11 @@ import org.hpcclab.oaas.model.cr.OcrRouting;
 import org.hpcclab.oaas.model.function.OFunction;
 import org.hpcclab.oaas.model.function.OFunctionConfig;
 import org.hpcclab.oaas.model.function.OFunctionDeploymentStatus;
-import org.hpcclab.oaas.model.invocation.InvocationRequest;
-import org.hpcclab.oaas.model.invocation.InvocationResponse;
-import org.hpcclab.oaas.model.invocation.InvocationStatus;
-import org.hpcclab.oaas.model.object.GOObject;
 import org.hpcclab.oaas.model.object.JsonBytes;
 import org.hpcclab.oaas.model.object.JsonObjectBytes;
-import org.hpcclab.oaas.model.object.OMeta;
 import org.hpcclab.oaas.model.pkg.OPackage;
 import org.hpcclab.oaas.model.proto.DSMap;
 import org.hpcclab.oaas.model.provision.ProvisionConfig;
-import org.hpcclab.oaas.model.task.OTask;
-import org.hpcclab.oaas.model.task.OTaskCompletion;
 import org.hpcclab.oaas.proto.*;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
@@ -71,29 +64,6 @@ public interface ProtoMapper {
   ProtoCrHash toProto(CrHash crHash);
 
   ProtoCr toProto(OClassRuntime clsRuntime);
-  OMeta fromProto(ProtoOMeta oMeta);
-  ProtoOMeta toProto(OMeta oMeta);
-  GOObject fromProto(ProtoPOObject obj);
-  ProtoPOObject toProto(GOObject obj);
-
-  ProtoInvocationRequest toProto(InvocationRequest req);
-
-  ProtoInvocationResponse toProto(InvocationResponse req);
-
-  InvocationRequest fromProto(ProtoInvocationRequest object);
-
-  InvocationResponse fromProto(ProtoInvocationResponse resp);
-
-  ProtoOTask toProto(OTask task);
-  ProtoOTaskCompletion toProto(OTaskCompletion taskCompletion);
-  OTask fromProto(ProtoOTask task);
-  OTaskCompletion fromProto(ProtoOTaskCompletion taskCompletion);
-
-
-  ProtoInvocationStatus convert(InvocationStatus status);
-
-  InvocationStatus convert(ProtoInvocationStatus status);
-
 
   default DSMap map(Map<String, String> map) {
     if (map instanceof DSMap dsMap) return dsMap;

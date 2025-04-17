@@ -17,10 +17,8 @@
     <module>repository</module>
     <module>common-storage</module>
     <module>arango-repository</module>
-    <module>invocation</module>
     <module>test-util</module>
     <module>proto-schema</module>
-    <module>api-gateway</module>
   </modules>
 
 

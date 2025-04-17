@@ -10,12 +10,7 @@ import org.hpcclab.oprc.cli.command.ctx.ContextSelectCommand;
 import org.hpcclab.oprc.cli.command.ctx.ContextSetCommand;
 import org.hpcclab.oprc.cli.command.deploy.DeployDeleteCommand;
 import org.hpcclab.oprc.cli.command.deploy.DeployListCommand;
-import org.hpcclab.oprc.cli.command.dev.*;
 import org.hpcclab.oprc.cli.command.fn.FnListCommand;
-import org.hpcclab.oprc.cli.command.invocation.GrpcInvocationCommand;
-import org.hpcclab.oprc.cli.command.invocation.InvocationCommand;
-import org.hpcclab.oprc.cli.command.invocation.V2GrpcInvocationCommand;
-import org.hpcclab.oprc.cli.command.obj.ObjectEntryCommand;
 import org.hpcclab.oprc.cli.command.pkg.PackageApplyCommand;
 import org.hpcclab.oprc.cli.command.pkg.PackageDeleteCommand;
 import picocli.AutoComplete;
@@ -25,17 +20,12 @@ import picocli.CommandLine.Command;
 @Command(
   mixinStandardHelpOptions = true,
   subcommands = {
-    ObjectEntryCommand.class,
     EntryCommand.ClsEntryCommand.class,
     EntryCommand.CrEntryCommand.class,
     EntryCommand.ContextEntryCommand.class,
-    EntryCommand.DevEntryCommand.class,
     EntryCommand.DeployEntryCommand.class,
     EntryCommand.FnEntryCommand.class,
     EntryCommand.PackageEntryCommand.class,
-    InvocationCommand.class,
-    GrpcInvocationCommand.class,
-    V2GrpcInvocationCommand.class,
     AutoComplete.GenerateCompletion.class,
   },
   description = """
@@ -45,28 +35,6 @@ import picocli.CommandLine.Command;
 )
 public class EntryCommand {
 
-  @Command(name = "local-develop",
-    aliases = {"d", "dev"},
-    description = "Emulator for local development",
-    mixinStandardHelpOptions = true,
-    subcommands = {
-      DevPackageApplyCommand.class,
-      DevPackageDeleteCommand.class,
-      DevClsListCommand.class,
-      DevClsDeleteCommand.class,
-      DevFnListCommand.class,
-      DevFnDeleteCommand.class,
-      DevInvocationCommand.class,
-      DevObjectCreateCommand.class,
-      DevObjectCleanCommand.class,
-      DevObjectFileCommand.class,
-      DevObjectCatFileCommand.class,
-      DevConfigCommand.class,
-      DevServerCommand.class
-    }
-  )
-  public static class DevEntryCommand {
-  }
 
   @Command(
     name = "class",

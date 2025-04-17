@@ -42,11 +42,6 @@
     </dependency>
     <dependency>
       <groupId>org.hpcclab.oaas</groupId>
-      <artifactId>oprc-invocation</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hpcclab.oaas</groupId>
       <artifactId>oprc-common-storage</artifactId>
       <version>${project.version}</version>
     </dependency>
