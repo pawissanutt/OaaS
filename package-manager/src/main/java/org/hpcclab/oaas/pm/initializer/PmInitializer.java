@@ -6,7 +6,7 @@ import io.vertx.mutiny.core.Vertx;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import org.hpcclab.oaas.invocation.BuiltInLoader;
+import org.hpcclab.oaas.pm.BuiltInLoader;
 import org.hpcclab.oaas.repository.ClassRepository;
 import org.hpcclab.oaas.repository.FunctionRepository;
 

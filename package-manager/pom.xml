@@ -36,11 +36,11 @@
       <artifactId>oprc-proto-schema</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.hpcclab.oaas</groupId>
-      <artifactId>oprc-invocation</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.hpcclab.oaas</groupId>-->
+<!--      <artifactId>oprc-invocation</artifactId>-->
+<!--      <version>${project.version}</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.hpcclab.oaas</groupId>
       <artifactId>oprc-arango-repository</artifactId>

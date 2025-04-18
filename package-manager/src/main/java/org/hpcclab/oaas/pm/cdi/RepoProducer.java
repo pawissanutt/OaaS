@@ -8,12 +8,9 @@ import org.hpcclab.oaas.arango.RepoFactory;
 import org.hpcclab.oaas.arango.repo.ArgClsRepository;
 import org.hpcclab.oaas.arango.repo.ArgFunctionRepository;
 import org.hpcclab.oaas.arango.repo.GenericArgRepository;
-import org.hpcclab.oaas.invocation.service.VertxPackageRoutes;
-import org.hpcclab.oaas.mapper.ProtoMapper;
 import org.hpcclab.oaas.model.cr.CrHash;
 import org.hpcclab.oaas.model.cr.OClassRuntime;
 import org.hpcclab.oaas.model.pkg.OClassDeployment;
-import org.hpcclab.oaas.pm.deploy.ClassDeploymentManager;
 import org.hpcclab.oaas.repository.ClassRepository;
 import org.hpcclab.oaas.repository.ClassResolver;
 import org.hpcclab.oaas.repository.FunctionRepository;
@@ -54,32 +51,13 @@ public class RepoProducer {
     return new PackageValidator(functionRepository);
   }
 
-  @Produces
-  @ApplicationScoped
-  VertxPackageRoutes vertxPackageService(ClassRepository classRepo,
-                                         FunctionRepository funcRepo,
-                                         PackageValidator validator,
-                                         ClassResolver classResolver,
-                                         ProtoMapper protoMapper,
-                                         ClassDeploymentManager packageDeployer) {
-    return new VertxPackageRoutes(
-      classRepo,
-      funcRepo,
-      validator,
-      classResolver,
-      protoMapper,
-      packageDeployer
-    );
-  }
 
   @Produces
   @ApplicationScoped
   GenericArgRepository<OClassRuntime> crRepo() {
     DatastoreConfRegistry registry = DatastoreConfRegistry.getDefault();
     var fac = new RepoFactory(registry.getConfMap().get("PKG"));
-    var crRepo = fac.createGenericRepo(OClassRuntime.class, OClassRuntime::getKey, "cr");
-//    crRepo.createIfNotExist();
-    return crRepo;
+    return fac.createGenericRepo(OClassRuntime.class, OClassRuntime::getKey, "cr");
   }
 
   @Produces
@@ -88,7 +66,6 @@ public class RepoProducer {
     DatastoreConfRegistry registry = DatastoreConfRegistry.getDefault();
     var fac = new RepoFactory(registry.getConfMap().get("PKG"));
     var hashRepo = fac.createGenericRepo(CrHash.class, CrHash::getKey, "crHash");
-//    hashRepo.createIfNotExist();
     return hashRepo;
   }
 
@@ -99,7 +76,6 @@ public class RepoProducer {
     var fac = new RepoFactory(registry.getConfMap().get("PKG"));
     var repo = fac.createGenericRepo(OClassDeployment.class,
       OClassDeployment::getKey, "deployment");
-//    repo.createIfNotExist();
     return repo;
   }
 }
