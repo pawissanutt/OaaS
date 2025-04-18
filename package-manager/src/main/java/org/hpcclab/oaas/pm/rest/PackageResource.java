@@ -12,10 +12,10 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import org.hpcclab.oaas.invocation.service.VertxPackageRoutes;
 import org.hpcclab.oaas.model.Views;
 import org.hpcclab.oaas.model.exception.StdOaasException;
 import org.hpcclab.oaas.model.pkg.OPackage;
+import org.hpcclab.oaas.pm.service.VertxPackageRoutes;
 
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
