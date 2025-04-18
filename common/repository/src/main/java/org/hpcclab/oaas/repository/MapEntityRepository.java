@@ -14,13 +14,13 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Map2EntityRepository<K, V extends HasKey<K>> implements EntityRepository<K, V>
+public class MapEntityRepository<K, V extends HasKey<K>> implements EntityRepository<K, V>
   , AsyncEntityRepository<K, V> {
   MutableMap<K, V> map;
   Function<V, K> keyExtractor;
 
-  public Map2EntityRepository(MutableMap<K, V> map,
-                              Function<V, K> keyExtractor) {
+  public MapEntityRepository(MutableMap<K, V> map,
+                             Function<V, K> keyExtractor) {
     this.map = map;
     this.keyExtractor = keyExtractor;
   }
@@ -146,7 +146,7 @@ public class Map2EntityRepository<K, V extends HasKey<K>> implements EntityRepos
     throw new UnsupportedOperationException();
   }
 
-  public static class MapClsRepository extends Map2EntityRepository<String, OClass> implements ClassRepository {
+  public static class MapClsRepository extends MapEntityRepository<String, OClass> implements ClassRepository {
     public MapClsRepository(MutableMap<String, OClass> map) {
       super(map, OClass::getKey);
     }
@@ -162,7 +162,7 @@ public class Map2EntityRepository<K, V extends HasKey<K>> implements EntityRepos
     }
   }
 
-  public static class MapFnRepository extends Map2EntityRepository<String, OFunction> implements FunctionRepository {
+  public static class MapFnRepository extends MapEntityRepository<String, OFunction> implements FunctionRepository {
     public MapFnRepository(MutableMap<String, OFunction> map) {
       super(map, OFunction::getKey);
     }

@@ -1,5 +1,6 @@
 package org.hpcclab.oprc.cli.command.pkg;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -48,7 +49,7 @@ public class PackageApplyCommand implements Callable<Integer> {
   public Integer call() throws Exception {
     var yamlMapper = YAMLMapper.builder().build();
     var pkg = Files.readString(pkgFile.toPath());
-    var json = new JsonObject(yamlMapper.readValue(pkg, Map.class));
+    var json = new JsonObject(yamlMapper.readValue(pkg, new TypeReference<Map<String, Object>>() {}));
     if (overridePackageName!=null && !overridePackageName.isEmpty())
       json.put("name",overridePackageName);
     if (overrideThroughput>0) {

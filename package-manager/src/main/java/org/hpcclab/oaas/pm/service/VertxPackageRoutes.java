@@ -6,6 +6,7 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.Json;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.hpcclab.oaas.mapper.ProtoMapper;
 import org.hpcclab.oaas.model.Pagination;
 import org.hpcclab.oaas.model.cls.OClass;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 /**
  * @author Pawissanutt
  */
+@ApplicationScoped
 public class VertxPackageRoutes implements VertxRouteService {
   private static final Logger logger = LoggerFactory.getLogger(VertxPackageRoutes.class);
   final ClassRepository classRepo;
@@ -164,7 +166,7 @@ public class VertxPackageRoutes implements VertxRouteService {
     var limit = getQueryAsLong(ctx, "limit", 20);
     var sort = getQueryAsStr(ctx, "sort", "_key");
     var desc = getQueryAsBool(ctx, "desc", false);
-    if (classRepo instanceof Map2EntityRepository<?, ?> map) {
+    if (classRepo instanceof MapEntityRepository<?, ?> map) {
       Collection values = map.getMap().values();
       int size = map.getMap().size();
       return Uni.createFrom()
