@@ -164,7 +164,7 @@ public class VertxPackageRoutes implements VertxRouteService {
     var limit = getQueryAsLong(ctx, "limit", 20);
     var sort = getQueryAsStr(ctx, "sort", "_key");
     var desc = getQueryAsBool(ctx, "desc", false);
-    if (classRepo instanceof MapEntityRepository<?, ?> map) {
+    if (classRepo instanceof Map2EntityRepository<?, ?> map) {
       Collection values = map.getMap().values();
       int size = map.getMap().size();
       return Uni.createFrom()
